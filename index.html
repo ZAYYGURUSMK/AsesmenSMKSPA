@@ -2,133 +2,138 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBT Premium - Sistem Ujian Online Cloud</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CBT Premium - Mobile & Cloud Optimized</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- SUPABASE JS LIBRARY -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .hidden { display: none !important; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between antialiased">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between antialiased selection:bg-indigo-500 selection:text-white">
 
-    <!-- TOP NAVBAR -->
+    <!-- TOP NAVBAR (RESPONSIF HP) -->
     <nav class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="bg-indigo-600 p-2 rounded-lg text-white font-bold tracking-wider text-sm shadow-md shadow-indigo-200">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+            <div class="flex items-center space-x-2 min-w-0">
+                <div class="bg-indigo-600 px-2 py-1 rounded-lg text-white font-bold tracking-wider text-xs sm:text-sm shadow-md shadow-indigo-200 shrink-0">
                     CBT
                 </div>
-                <span class="font-bold text-lg text-slate-900 tracking-tight">Portal Asesmen Digital Cloud</span>
-                <!-- INDIKATOR KONEKSI DATABASE -->
-                <span id="db-status" class="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-800">Menghubungkan...</span>
+                <!-- Judul adaptif: pendek di HP, lengkap di laptop -->
+                <span class="font-bold text-sm sm:text-lg text-slate-900 tracking-tight truncate">
+                    <span class="inline sm:hidden">Portal Ujian</span>
+                    <span class="hidden sm:inline">Portal Asesmen Digital Cloud</span>
+                </span>
+                <span id="db-status" class="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-800 shrink-0 truncate">Menghubungkan...</span>
             </div>
-            <button onclick="kembaliKeMenuUtama()" id="btn-home" class="flex items-center space-x-2 text-sm font-medium text-slate-600 hover:text-indigo-600 transition border border-slate-200 px-3 py-1.5 rounded-lg hover:border-indigo-100 bg-slate-50">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                <span>Menu Utama</span>
+            <button onclick="kembaliKeMenuUtama()" id="btn-home" class="flex items-center space-x-1 text-xs sm:text-sm font-medium text-slate-600 hover:text-indigo-600 transition border border-slate-200 px-2.5 py-1.5 rounded-lg bg-slate-50 shrink-0 active:scale-95">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span>Menu</span>
             </button>
         </div>
     </nav>
 
-    <!-- MAIN WRAPPER -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex items-center justify-center">
+    <!-- MAIN WRAPPER (PADDING DISESUAIKAN UNTUK LAYAR HP) -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 flex items-center justify-center">
 
         <!-- 1. VIEW: MENU UTAMA -->
-        <div id="view-menu" class="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-slate-100 p-8 text-center transition-all duration-300">
-            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Selamat Datang di Portal Ujian</h2>
-            <p class="text-slate-500 mb-8 max-w-md mx-auto">Silakan pilih gerbang masuk sesuai dengan hak akses Anda untuk memulai aktivitas.</p>
+        <div id="view-menu" class="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-slate-100 p-5 sm:p-8 text-center transition-all duration-300">
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Selamat Datang</h2>
+            <p class="text-slate-500 text-xs sm:text-sm mb-6 sm:mb-8 max-w-md mx-auto">Silakan pilih gerbang masuk sesuai dengan hak akses Anda untuk memulai aktivitas.</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button onclick="gantiHalaman('view-siswa-login')" class="group p-6 bg-white border-2 border-slate-100 hover:border-emerald-500 rounded-xl text-left transition-all duration-200 shadow-sm hover:shadow-md flex flex-col justify-between">
-                    <div class="bg-emerald-50 text-emerald-600 p-3 rounded-lg w-fit group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-200">
+                <button onclick="gantiHalaman('view-siswa-login')" class="group p-5 sm:p-6 bg-white border-2 border-slate-100 hover:border-emerald-500 rounded-xl text-left transition shadow-sm flex flex-row sm:flex-col justify-between items-center sm:items-start gap-4 active:bg-slate-50">
+                    <div class="bg-emerald-50 text-emerald-600 p-3 rounded-lg w-fit shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                     </div>
-                    <div class="mt-4">
-                        <h3 class="font-bold text-lg text-slate-800 group-hover:text-emerald-600">Ruang Siswa</h3>
-                        <p class="text-slate-400 text-sm mt-1">Masuk untuk mengerjakan token ujian aktif.</p>
+                    <div>
+                        <h3 class="font-bold text-base sm:text-lg text-slate-800">Ruang Siswa</h3>
+                        <p class="text-slate-400 text-xs mt-0.5">Masuk untuk mengerjakan ujian.</p>
                     </div>
                 </button>
-                <button onclick="gantiHalaman('view-guru-login')" class="group p-6 bg-white border-2 border-slate-100 hover:border-indigo-500 rounded-xl text-left transition-all duration-200 shadow-sm hover:shadow-md flex flex-col justify-between">
-                    <div class="bg-indigo-50 text-indigo-600 p-3 rounded-lg w-fit group-hover:bg-indigo-500 group-hover:text-white transition-colors duration-200">
+                <button onclick="gantiHalaman('view-guru-login')" class="group p-5 sm:p-6 bg-white border-2 border-slate-100 hover:border-indigo-500 rounded-xl text-left transition shadow-sm flex flex-row sm:flex-col justify-between items-center sm:items-start gap-4 active:bg-slate-50">
+                    <div class="bg-indigo-50 text-indigo-600 p-3 rounded-lg w-fit shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                     </div>
-                    <div class="mt-4">
-                        <h3 class="font-bold text-lg text-slate-800 group-hover:text-indigo-600">Panel Guru</h3>
-                        <p class="text-slate-400 text-sm mt-1">Atur bank soal dan tinjau hasil penilaian.</p>
+                    <div>
+                        <h3 class="font-bold text-base sm:text-lg text-slate-800">Panel Guru</h3>
+                        <p class="text-slate-400 text-xs mt-0.5">Atur bank soal & tinjau nilai.</p>
                     </div>
                 </button>
             </div>
         </div>
 
         <!-- 2. VIEW: LOGIN GURU -->
-        <div id="view-guru-login" class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-8 hidden">
-            <h2 class="text-2xl font-bold text-slate-900 mb-2">Autentikasi Guru</h2>
-            <p class="text-slate-500 text-sm mb-6">Masukkan kunci akses administrasi untuk mengelola dashboard.</p>
+        <div id="view-guru-login" class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-8 hidden">
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">Autentikasi Guru</h2>
+            <p class="text-slate-500 text-xs sm:text-sm mb-6">Masukkan kunci akses administrasi dashboard.</p>
             <div class="space-y-4">
                 <div>
                     <label class="block text-slate-700 text-xs font-semibold uppercase tracking-wider mb-2">Password Akses</label>
-                    <input type="password" id="input-pass-guru" class="w-full border border-slate-200 rounded-xl py-3 px-4 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" placeholder="Default: guru123">
+                    <!-- text-base mencegah zoom otomatis di browser HP -->
+                    <input type="password" id="input-pass-guru" class="w-full border border-slate-200 rounded-xl py-3 px-4 text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" placeholder="Default: guru123">
                 </div>
-                <p id="error-guru" class="text-rose-500 text-xs hidden flex items-center space-x-1">⚠ <span>Password yang Anda masukkan salah.</span></p>
-                <button onclick="loginGuru()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl transition shadow-md shadow-indigo-100">
+                <p id="error-guru" class="text-rose-500 text-xs hidden flex items-center space-x-1">⚠ <span>Password salah.</span></p>
+                <button onclick="loginGuru()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl transition shadow-md active:scale-[0.98]">
                     Buka Dashboard
                 </button>
             </div>
         </div>
 
         <!-- 3. VIEW: DASHBOARD GURU -->
-        <div id="view-guru-dashboard" class="w-full bg-white rounded-2xl shadow-xl border border-slate-100 p-8 hidden">
-            <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-6 mb-6 gap-4">
+        <div id="view-guru-dashboard" class="w-full bg-white rounded-2xl shadow-xl border border-slate-100 p-4 sm:p-8 hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-4 mb-4 gap-3">
                 <div>
-                    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Panel Administrasi Guru</h2>
-                    <p class="text-slate-400 text-sm mt-0.5">Kelola bank soal dan pantau capaian hasil ujian siswa secara Real-Time.</p>
+                    <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Panel Guru</h2>
+                    <p class="text-slate-400 text-xs mt-0.5">Kelola bank soal & pantau hasil Real-Time.</p>
                 </div>
-                <button onclick="bukaModalReset()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold py-2 px-4 rounded-lg border border-rose-100 transition self-end md:self-auto">
+                <button onclick="bukaModalReset()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold py-2 px-3 rounded-lg border border-rose-100 transition self-start md:self-auto active:scale-95">
                     Reset Semua Hasil
                 </button>
             </div>
 
-            <!-- TAB CONTROLS -->
-            <div class="flex border-b border-slate-200 mb-8">
-                <button onclick="setTabGuru('hasil')" id="tab-btn-hasil" class="py-3 px-6 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition focus:outline-none">
+            <!-- TAB CONTROLS (SWIPEABLE DI HP) -->
+            <div class="flex border-b border-slate-200 mb-6 overflow-x-auto whitespace-nowrap scrollbar-none">
+                <button onclick="setTabGuru('hasil')" id="tab-btn-hasil" class="py-3 px-4 sm:px-6 text-xs sm:text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition focus:outline-none">
                     Hasil Ujian Siswa
                 </button>
-                <button onclick="setTabGuru('soal')" id="tab-btn-soal" class="py-3 px-6 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-indigo-600 hover:border-slate-300 transition focus:outline-none">
+                <button onclick="setTabGuru('soal')" id="tab-btn-soal" class="py-3 px-4 sm:px-6 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-indigo-600 transition focus:outline-none">
                     Kelola Bank Soal (Cloud)
                 </button>
             </div>
 
             <!-- TAB CONTENT 1: MONITOR HASIL -->
-            <div id="tab-content-hasil" class="space-y-6">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                    <div class="bg-slate-50 border border-slate-100 p-5 rounded-xl">
-                        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Total Partisipan</span>
-                        <span id="stat-total" class="text-3xl font-bold text-slate-800 block mt-1">0</span>
+            <div id="tab-content-hasil" class="space-y-4">
+                <div class="grid grid-cols-3 gap-2 sm:gap-6">
+                    <div class="bg-slate-50 border border-slate-100 p-3 sm:p-5 rounded-xl text-center sm:text-left">
+                        <span class="text-[9px] sm:text-xs text-slate-400 font-semibold uppercase tracking-wider block">Siswa</span>
+                        <span id="stat-total" class="text-lg sm:text-3xl font-bold text-slate-800 block mt-0.5 sm:mt-1">0</span>
                     </div>
-                    <div class="bg-slate-50 border border-slate-100 p-5 rounded-xl">
-                        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Rata-Rata Nilai</span>
-                        <span id="stat-rata" class="text-3xl font-bold text-indigo-600 block mt-1">0</span>
+                    <div class="bg-slate-50 border border-slate-100 p-3 sm:p-5 rounded-xl text-center sm:text-left">
+                        <span class="text-[9px] sm:text-xs text-slate-400 font-semibold uppercase tracking-wider block">Rata-Rata</span>
+                        <span id="stat-rata" class="text-lg sm:text-3xl font-bold text-indigo-600 block mt-0.5 sm:mt-1">0</span>
                     </div>
-                    <div class="bg-slate-50 border border-slate-100 p-5 rounded-xl">
-                        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Nilai Tertinggi</span>
-                        <span id="stat-tinggi" class="text-3xl font-bold text-emerald-600 block mt-1">0</span>
+                    <div class="bg-slate-50 border border-slate-100 p-3 sm:p-5 rounded-xl text-center sm:text-left">
+                        <span class="text-[9px] sm:text-xs text-slate-400 font-semibold uppercase tracking-wider block">Tertinggi</span>
+                        <span id="stat-tinggi" class="text-lg sm:text-3xl font-bold text-emerald-600 block mt-0.5 sm:mt-1">0</span>
                     </div>
                 </div>
 
+                <!-- RESPONSIVE TABLE FOR ANDROID -->
                 <div class="overflow-x-auto border border-slate-100 rounded-xl shadow-sm bg-white">
-                    <table class="min-w-full divide-y divide-slate-100">
+                    <table class="min-w-full divide-y divide-slate-100 min-w-[500px]">
                         <thead class="bg-slate-50">
                             <tr>
-                                <th class="py-3.5 px-6 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">No</th>
-                                <th class="py-3.5 px-6 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Nama Peserta</th>
-                                <th class="py-3.5 px-6 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Capaian Nilai</th>
-                                <th class="py-3.5 px-6 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Waktu Selesai</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider w-12">No</th>
+                                <th class="py-3 px-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Nama Peserta</th>
+                                <th class="py-3 px-4 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider w-24">Nilai</th>
+                                <th class="py-3 px-4 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider w-40">Waktu Selesai</th>
                             </tr>
                         </thead>
-                        <tbody id="tabel-hasil" class="divide-y divide-slate-100 text-sm text-slate-600">
-                            <!-- JS Inserted Data -->
+                        <tbody id="tabel-hasil" class="divide-y divide-slate-100 text-xs sm:text-sm text-slate-600">
+                            <!-- Data -->
                         </tbody>
                     </table>
                 </div>
@@ -136,121 +141,121 @@
 
             <!-- TAB CONTENT 2: KELOLA SOAL -->
             <div id="tab-content-soal" class="hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     <!-- FORM TAMBAH SOAL -->
-                    <div class="lg:col-span-5 bg-slate-50 p-6 rounded-xl border border-slate-100 shadow-sm">
-                        <h3 class="font-bold text-base text-slate-900 mb-4 flex items-center space-x-2">
-                            <span class="p-1 bg-indigo-50 text-indigo-600 rounded">➕</span>
-                            <span>Tambah Soal ke Cloud</span>
+                    <div class="lg:col-span-5 bg-slate-50 p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm">
+                        <h3 class="font-bold text-sm sm:text-base text-slate-900 mb-3 flex items-center space-x-2">
+                            <span>➕</span> <span>Tambah Soal Cloud</span>
                         </h3>
-                        <div class="space-y-4">
+                        <div class="space-y-3">
                             <div>
-                                <label class="block text-slate-600 text-xs font-semibold mb-1">Butir Pertanyaan</label>
-                                <textarea id="input-tanya" rows="3" class="w-full border border-slate-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white resize-none" placeholder="Masukkan teks pertanyaan..."></textarea>
+                                <label class="block text-slate-600 text-xs font-semibold mb-1">Pertanyaan</label>
+                                <textarea id="input-tanya" rows="3" class="w-full border border-slate-200 rounded-lg p-2.5 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white resize-none" placeholder="Teks pertanyaan..."></textarea>
                             </div>
                             <div>
-                                <label class="block text-slate-600 text-xs font-semibold mb-1">Opsi Jawaban A</label>
-                                <input type="text" id="input-opsi-0" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Opsi A">
+                                <label class="block text-slate-600 text-xs font-semibold mb-1">Opsi A</label>
+                                <input type="text" id="input-opsi-0" class="w-full border border-slate-200 rounded-lg p-2 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Opsi A">
                             </div>
                             <div>
-                                <label class="block text-slate-600 text-xs font-semibold mb-1">Opsi Jawaban B</label>
-                                <input type="text" id="input-opsi-1" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Opsi B">
+                                <label class="block text-slate-600 text-xs font-semibold mb-1">Opsi B</label>
+                                <input type="text" id="input-opsi-1" class="w-full border border-slate-200 rounded-lg p-2 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Opsi B">
                             </div>
                             <div>
-                                <label class="block text-slate-600 text-xs font-semibold mb-1">Opsi Jawaban C</label>
-                                <input type="text" id="input-opsi-2" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Opsi C">
+                                <label class="block text-slate-600 text-xs font-semibold mb-1">Opsi C</label>
+                                <input type="text" id="input-opsi-2" class="w-full border border-slate-200 rounded-lg p-2 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Opsi C">
                             </div>
                             <div>
-                                <label class="block text-slate-600 text-xs font-semibold mb-1">Opsi Jawaban D</label>
-                                <input type="text" id="input-opsi-3" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Opsi D">
+                                <label class="block text-slate-600 text-xs font-semibold mb-1">Opsi D</label>
+                                <input type="text" id="input-opsi-3" class="w-full border border-slate-200 rounded-lg p-2 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Opsi D">
                             </div>
                             <div>
                                 <label class="block text-slate-600 text-xs font-semibold mb-1">Kunci Jawaban</label>
-                                <select id="input-kunci" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                <select id="input-kunci" class="w-full border border-slate-200 rounded-lg p-2 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
                                     <option value="0">Opsi A</option>
                                     <option value="1">Opsi B</option>
                                     <option value="2">Opsi C</option>
                                     <option value="3">Opsi D</option>
                                 </select>
                             </div>
-                            <button onclick="tambahSoalProses()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl text-sm transition shadow">
-                                Simpan Permanen ke Cloud
+                            <button onclick="tambahSoalProses()" class="w-full bg-indigo-600 text-white font-semibold py-3 px-4 rounded-xl text-sm transition shadow active:scale-95">
+                                Simpan ke Cloud
                             </button>
                         </div>
                     </div>
 
                     <!-- DAFTAR SOAL -->
-                    <div class="lg:col-span-7 border border-slate-100 rounded-xl p-6 bg-white shadow-sm">
-                        <div class="flex justify-between items-center mb-6">
+                    <div class="lg:col-span-7 border border-slate-100 rounded-xl p-4 sm:p-6 bg-white shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
                             <div>
-                                <h3 class="font-bold text-base text-slate-900">Daftar Soal Aktif (<span id="count-soal">0</span>)</h3>
-                                <p class="text-xs text-slate-400 mt-0.5">Semua data berikut ditarik langsung dari database cloud.</p>
+                                <h3 class="font-bold text-sm sm:text-base text-slate-900">Daftar Soal Aktif (<span id="count-soal">0</span>)</h3>
                             </div>
-                            <button onclick="resetBankSoal()" class="text-xs text-rose-500 font-semibold hover:text-rose-600 border border-rose-100 px-3 py-1.5 rounded-lg hover:bg-rose-50 transition">
-                                Reset ke Default
+                            <button onclick="resetBankSoal()" class="text-xs text-rose-500 font-semibold border border-rose-100 px-2.5 py-1.5 rounded-lg hover:bg-rose-50 transition active:scale-95">
+                                Reset Default
                             </button>
                         </div>
-                        <div id="list-soal-guru" class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                        <div id="list-soal-guru" class="space-y-4 max-h-[400px] overflow-y-auto pr-1">
                             <!-- Loaded via JS -->
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
 
         <!-- 4. VIEW: REGISTRASI SISWA -->
-        <div id="view-siswa-login" class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-8 hidden">
-            <h2 class="text-2xl font-bold text-slate-900 mb-2">Identitas Peserta</h2>
-            <p class="text-slate-500 text-sm mb-6">Pastikan mengisi nama lengkap sesuai dengan kartu ujian resmi.</p>
+        <div id="view-siswa-login" class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-8 hidden">
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">Identitas Peserta</h2>
+            <p class="text-slate-500 text-xs sm:text-sm mb-6">Masukkan nama lengkap sesuai absen kelas.</p>
             <div class="space-y-4">
                 <div>
                     <label class="block text-slate-700 text-xs font-semibold uppercase tracking-wider mb-2">Nama Lengkap</label>
-                    <input type="text" id="nama-siswa" class="w-full border border-slate-200 rounded-xl py-3 px-4 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition" placeholder="Masukkan nama Anda">
+                    <input type="text" id="nama-siswa" class="w-full border border-slate-200 rounded-xl py-3 px-4 text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition" placeholder="Masukkan nama Anda">
                 </div>
-                <button onclick="mulaiUjian()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl transition shadow-md shadow-emerald-100">
-                    Konfirmasi & Mulai Ujian
+                <button onclick="mulaiUjian()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl transition shadow-md active:scale-[0.98]">
+                    Mulai Ujian Sekarang
                 </button>
             </div>
         </div>
 
-        <!-- 5. VIEW: HALAMAN UTAMA UJIAN -->
-        <div id="view-ujian" class="w-full grid grid-cols-1 lg:grid-cols-3 gap-8 items-start hidden">
-            <!-- Lembar Pertanyaan -->
-            <div class="lg:col-span-2 bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-8">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-6">
-                    <div>
-                        <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider bg-indigo-50 px-2 py-1 rounded">Lembar Soal</span>
-                        <h3 id="display-nama-siswa" class="font-bold text-lg text-slate-900 mt-2">-</h3>
+        <!-- 5. VIEW: MAIN EXAM (OPTIMAL DI LAYAR HP) -->
+        <div id="view-ujian" class="w-full flex flex-col lg:grid lg:grid-cols-3 gap-4 items-start hidden">
+            
+            <!-- Lembar Soal -->
+            <div class="w-full lg:col-span-2 bg-white rounded-2xl shadow-xl border border-slate-100 p-4 sm:p-8 order-2 lg:order-1">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                    <div class="min-w-0 pr-2">
+                        <span class="text-[10px] font-bold text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded">Lembar Soal</span>
+                        <h3 id="display-nama-siswa" class="font-bold text-sm sm:text-base text-slate-900 mt-1 truncate">-</h3>
                     </div>
-                    <div class="bg-rose-50 border border-rose-100 px-4 py-2 rounded-xl text-center">
-                        <span class="text-[10px] text-rose-400 font-semibold uppercase tracking-wider block">Sisa Waktu</span>
-                        <div id="timer" class="text-xl font-mono font-bold text-rose-600 tracking-tight">30:00</div>
+                    <!-- Timer yang menonjol di HP -->
+                    <div class="bg-rose-50 border border-rose-100 px-3 py-1.5 rounded-xl text-center shrink-0">
+                        <span class="text-[8px] sm:text-[10px] text-rose-400 font-bold uppercase tracking-wider block">Sisa Waktu</span>
+                        <div id="timer" class="text-base sm:text-xl font-mono font-bold text-rose-600 tracking-tight">30:00</div>
                     </div>
                 </div>
 
-                <div id="kontainer-soal-aktif" class="min-h-[250px]">
+                <div id="kontainer-soal-aktif" class="min-h-[180px] sm:min-h-[220px]">
                     <!-- Rendered by JS -->
                 </div>
 
-                <div class="flex flex-wrap justify-between items-center gap-4 mt-8 border-t border-slate-100 pt-6">
+                <!-- Tombol Navigasi Bawah Mudah Dijangkau Ibu Jari -->
+                <div class="flex justify-between items-center gap-2 mt-6 border-t border-slate-100 pt-4">
                     <div class="flex space-x-2">
-                        <button onclick="soalSebelumnya()" id="btn-prev" class="px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 text-sm font-medium transition disabled:opacity-40">Sebelumnya</button>
-                        <button onclick="tandaiRagu()" id="btn-ragu" class="px-4 py-2 border border-amber-200 text-amber-700 bg-amber-50 rounded-lg text-sm font-medium transition hover:bg-amber-100">Ragu-Ragu</button>
+                        <button onclick="soalSebelumnya()" id="btn-prev" class="px-3 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm font-medium bg-white active:bg-slate-100 disabled:opacity-40">Kembali</button>
+                        <button onclick="tandaiRagu()" id="btn-ragu" class="px-3 py-2.5 border border-amber-200 text-amber-700 bg-amber-50 rounded-xl text-xs sm:text-sm font-medium active:bg-amber-100">Ragu</button>
                     </div>
-                    <button onclick="soalBerikutnya()" id="btn-next" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition shadow-sm">Berikutnya</button>
+                    <button onclick="soalBerikutnya()" id="btn-next" class="px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-xs sm:text-sm font-medium shadow-sm active:scale-95">Berikutnya</button>
                 </div>
             </div>
 
-            <!-- Panel Navigasi -->
-            <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-6">
-                <h4 class="font-bold text-sm text-slate-800 uppercase tracking-wider mb-4 text-center border-b border-slate-100 pb-2">Navigasi Soal</h4>
-                <div id="grid-nomor-soal" class="grid grid-cols-5 gap-2.5">
+            <!-- Panel Navigasi Nomor Soal -->
+            <div class="w-full lg:col-span-1 bg-white rounded-2xl shadow-xl border border-slate-100 p-4 order-1 lg:order-2">
+                <h4 class="font-bold text-xs text-slate-400 uppercase tracking-wider mb-3 text-center lg:text-left border-b border-slate-50 pb-1.5">Peta Navigasi Soal</h4>
+                <!-- Responsive Grid: menyesuaikan ukuran layar HP secara dinamis -->
+                <div id="grid-nomor-soal" class="grid grid-cols-5 xs:grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-5 gap-2">
                     <!-- Rendered by JS -->
                 </div>
-                <div class="mt-8 pt-4 border-t border-slate-100">
-                    <button onclick="bukaModalKumpul()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3 px-4 rounded-xl transition text-sm shadow-md shadow-rose-100 text-center">
+                <div class="mt-4 pt-3 border-t border-slate-100">
+                    <button onclick="bukaModalKumpul()" class="w-full bg-rose-600 text-white font-semibold py-2.5 rounded-xl text-xs sm:text-sm shadow active:scale-[0.98]">
                         Akhiri & Kumpulkan Ujian
                     </button>
                 </div>
@@ -258,36 +263,36 @@
         </div>
 
         <!-- 6. VIEW: SELESAI -->
-        <div id="view-selesai" class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-8 text-center hidden">
-            <div class="inline-flex bg-emerald-50 text-emerald-600 p-4 rounded-full mb-4 shadow-inner">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+        <div id="view-selesai" class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-8 text-center hidden">
+            <div class="inline-flex bg-emerald-50 text-emerald-600 p-3 rounded-full mb-3 shadow-inner">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
             </div>
-            <h2 class="text-2xl font-bold text-slate-900 mb-1">Respons Terkirim!</h2>
-            <p class="text-slate-500 text-sm mb-6">Jawaban Anda telah terkirim dan disimpan permanen di database cloud.</p>
-            <div class="bg-slate-50 border border-slate-100 rounded-xl p-5 mb-6">
-                <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Skor Akhir Capaian</span>
-                <span id="display-nilai-siswa" class="text-5xl font-black text-indigo-600 block mt-1">0</span>
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">Ujian Selesai!</h2>
+            <p class="text-slate-500 text-xs sm:text-sm mb-5">Jawaban Anda sukses diunggah ke database utama.</p>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 mb-5">
+                <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Skor Capaian</span>
+                <span id="display-nilai-siswa" class="text-4xl sm:text-5xl font-black text-indigo-600 block mt-1">0</span>
             </div>
-            <button onclick="kembaliKeMenuUtama()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl transition text-sm">
-                Selesai & Keluar Sesi
+            <button onclick="kembaliKeMenuUtama()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl text-xs sm:text-sm transition">
+                Keluar Sesi
             </button>
         </div>
 
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-white border-t border-slate-100 py-4 text-center text-xs text-slate-400 font-medium">
+    <footer class="bg-white border-t border-slate-100 py-3 text-center text-[10px] sm:text-xs text-slate-400 font-medium shrink-0">
         &copy; 2026 CBT Premium Engine. Connected to Enterprise Cloud Database.
     </footer>
 
-    <!-- MODAL POPUPS -->
-    <div id="custom-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 transition-all transform scale-95 opacity-0 duration-200" id="modal-content">
-            <h3 id="modal-title" class="text-lg font-bold text-slate-900">Judul</h3>
-            <p id="modal-desc" class="text-slate-500 text-sm mt-2">Deskripsi.</p>
-            <div class="flex space-x-2 mt-6 justify-end">
-                <button onclick="tutupModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-xs font-medium hover:bg-slate-50 transition">Batal</button>
-                <button id="modal-confirm-btn" class="px-4 py-2 text-white bg-indigo-600 rounded-lg text-xs font-medium hover:bg-indigo-700 transition">Konfirmasi</button>
+    <!-- INTERFACE MODAL DIALOG KUSTOM (RESPONSIF HP) -->
+    <div id="custom-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-xs sm:max-w-sm w-full p-5 sm:p-6 shadow-2xl border border-slate-100 transition-all transform scale-95 opacity-0 duration-200" id="modal-content">
+            <h3 id="modal-title" class="text-base sm:text-lg font-bold text-slate-900">Judul</h3>
+            <p id="modal-desc" class="text-slate-500 text-xs sm:text-sm mt-1.5 leading-relaxed">Deskripsi.</p>
+            <div class="flex space-x-2 mt-5 justify-end">
+                <button onclick="tutupModal()" class="px-3.5 py-2 border border-slate-200 text-slate-600 rounded-lg text-xs font-medium bg-slate-50 active:bg-slate-100">Batal</button>
+                <button id="modal-confirm-btn" class="px-3.5 py-2 text-white bg-indigo-600 rounded-lg text-xs font-medium active:bg-indigo-700">OK</button>
             </div>
         </div>
     </div>
@@ -297,8 +302,8 @@
         // ==========================================
         // 🔑 MASUKKAN KREDENSIAL SUPABASE ANDA DI SINI
         // ==========================================
-        const SUPABASE_URL = "https://rsfepmlqbcpnqnavhesw.supabase.co"; 
-        const SUPABASE_ANON_KEY = "sb_publishable_7LIF8iXLO-13iJOsVjJhPg_MRTt33Y7";
+        const SUPABASE_URL = "MASUKKAN_PROJECT_URL_ANDA"; 
+        const SUPABASE_ANON_KEY = "MASUKKAN_ANON_KEY_ANDA";
         // ==========================================
 
         const defaultSoal = [
@@ -311,15 +316,15 @@
         let dbActive = false;
         let supabaseClient = null;
 
-        // Inisialisasi Database
+        // Inisialisasi Database Cloud
         if (SUPABASE_URL !== "MASUKKAN_PROJECT_URL_ANDA" && SUPABASE_ANON_KEY !== "MASUKKAN_ANON_KEY_ANDA") {
             try {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 dbActive = true;
-                document.getElementById('db-status').className = "text-[10px] px-2 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-800";
-                document.getElementById('db-status').innerText = "Cloud Active";
+                document.getElementById('db-status').className = "text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-800 shrink-0 truncate";
+                document.getElementById('db-status').innerText = "Cloud Online";
             } catch (e) {
-                console.error("Error inisialisasi Supabase:", e);
+                console.error("Error Supabase:", e);
                 setOfflineMode();
             }
         } else {
@@ -328,8 +333,8 @@
 
         function setOfflineMode() {
             dbActive = false;
-            document.getElementById('db-status').className = "text-[10px] px-2 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-800";
-            document.getElementById('db-status').innerText = "Local Mode (Offline)";
+            document.getElementById('db-status').className = "text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-800 shrink-0 truncate";
+            document.getElementById('db-status').innerText = "Local Storage";
         }
 
         let waktuUjian = 30 * 60; 
@@ -339,7 +344,6 @@
         let jawabanSiswa = {}; 
         let raguRaguSiswa = {}; 
 
-        // Muat Soal Saat Aplikasi Terbuka
         window.onload = async () => {
             await sinkronisasiSoal();
         };
@@ -350,7 +354,6 @@
                     const { data, error } = await supabaseClient.from('bank_soal').select('*').order('id', { ascending: true });
                     if (error) throw error;
                     if (data.length === 0) {
-                        // Jika database cloud kosong, isi otomatis dengan default
                         for (let s of defaultSoal) {
                             await supabaseClient.from('bank_soal').insert([{
                                 tanya: s.tanya,
@@ -385,7 +388,6 @@
             localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
         }
 
-        // --- SISTEM NAVIGASI CORE ---
         function gantiHalaman(idHalaman) {
             const listHalaman = ['view-menu', 'view-guru-login', 'view-guru-dashboard', 'view-siswa-login', 'view-ujian', 'view-selesai'];
             listHalaman.forEach(id => document.getElementById(id).classList.add('hidden'));
@@ -407,7 +409,6 @@
             gantiHalaman('view-menu');
         }
 
-        // --- GURU AREA ENGINE ---
         function loginGuru() {
             const passInput = document.getElementById('input-pass-guru').value;
             if(passInput === 'guru123') {
@@ -426,14 +427,14 @@
             const contentSoal = document.getElementById('tab-content-soal');
 
             if (tab === 'hasil') {
-                btnHasil.className = "py-3 px-6 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition focus:outline-none";
-                btnSoal.className = "py-3 px-6 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-indigo-600 hover:border-slate-300 transition focus:outline-none";
+                btnHasil.className = "py-3 px-4 sm:px-6 text-xs sm:text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition focus:outline-none";
+                btnSoal.className = "py-3 px-4 sm:px-6 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-indigo-600 transition focus:outline-none";
                 contentHasil.classList.remove('hidden');
                 contentSoal.classList.add('hidden');
                 muatDashboardGuru();
             } else {
-                btnSoal.className = "py-3 px-6 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition focus:outline-none";
-                btnHasil.className = "py-3 px-6 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-indigo-600 hover:border-slate-300 transition focus:outline-none";
+                btnSoal.className = "py-3 px-4 sm:px-6 text-xs sm:text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition focus:outline-none";
+                btnHasil.className = "py-3 px-4 sm:px-6 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-indigo-600 transition focus:outline-none";
                 contentSoal.classList.remove('hidden');
                 contentHasil.classList.add('hidden');
                 muatDaftarSoalGuru();
@@ -442,7 +443,7 @@
 
         async function muatDashboardGuru() {
             const tbody = document.getElementById('tabel-hasil');
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-slate-400 italic">Memuat data dari cloud database...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-slate-400 italic">Memuat data cloud...</td></tr>`;
             
             let dataHasil = [];
             if (dbActive) {
@@ -451,7 +452,6 @@
                     if (error) throw error;
                     dataHasil = data;
                 } catch (err) {
-                    console.error("Gagal menarik data hasil:", err);
                     dataHasil = JSON.parse(localStorage.getItem('local_hasil_ujian')) || [];
                 }
             } else {
@@ -471,15 +471,15 @@
                 dataHasil.forEach((item, index) => {
                     tbody.innerHTML += `
                         <tr class="hover:bg-slate-50 transition">
-                            <td class="py-4 px-6 font-medium text-slate-900">${index + 1}</td>
-                            <td class="py-4 px-6 font-semibold text-slate-800">${item.nama}</td>
-                            <td class="py-4 px-6 text-center"><span class="bg-indigo-50 text-indigo-700 font-bold px-3 py-1 rounded-full text-xs border border-indigo-100">${item.nilai}</span></td>
-                            <td class="py-4 px-6 text-center text-xs text-slate-400 font-medium">${item.waktu}</td>
+                            <td class="py-3 px-4 font-medium text-slate-900">${index + 1}</td>
+                            <td class="py-3 px-4 font-semibold text-slate-800">${item.nama}</td>
+                            <td class="py-3 px-4 text-center"><span class="bg-indigo-50 text-indigo-700 font-bold px-2.5 py-1 rounded-full text-xs border border-indigo-100">${item.nilai}</span></td>
+                            <td class="py-3 px-4 text-center text-[11px] text-slate-400 font-medium">${item.waktu}</td>
                         </tr>
                     `;
                 });
             } else {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-slate-400 italic">Belum ada rekaman data aktivitas ujian dari siswa.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-slate-400 italic">Belum ada data nilai masuk.</td></tr>`;
             }
 
             document.getElementById('stat-total').innerText = total;
@@ -487,7 +487,6 @@
             document.getElementById('stat-tinggi').innerText = tertinggi;
         }
 
-        // --- SISTEM DINAMIS KELOLA BANK SOAL ---
         function muatDaftarSoalGuru() {
             const container = document.getElementById('list-soal-guru');
             const countSpan = document.getElementById('count-soal');
@@ -495,10 +494,7 @@
             countSpan.innerText = bankSoal.length;
 
             if (bankSoal.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-12 border border-dashed border-slate-200 rounded-xl">
-                        <p class="text-slate-400 italic text-sm">Belum ada butir pertanyaan yang aktif.</p>
-                    </div>`;
+                container.innerHTML = `<div class="text-center py-8 border border-dashed border-slate-200 rounded-xl"><p class="text-slate-400 italic text-xs">Bank soal kosong.</p></div>`;
                 return;
             }
 
@@ -506,26 +502,18 @@
                 let opsiList = '';
                 soal.opsi.forEach((opsi, idx) => {
                     const isCorrect = idx === soal.kunci ? 'text-emerald-600 font-bold' : 'text-slate-500';
-                    opsiList += `
-                        <p class="text-xs ${isCorrect} mt-1 flex items-center space-x-1">
-                            <span>${idx === soal.kunci ? '✔️' : '•'}</span>
-                            <span>${opsi}</span>
-                        </p>`;
+                    opsiList += `<p class="text-xs ${isCorrect} mt-0.5"><span>${idx === soal.kunci ? '✔️' : '•'}</span> <span>${opsi}</span></p>`;
                 });
 
                 container.innerHTML += `
-                    <div class="p-4 border border-slate-100 rounded-xl bg-slate-50/50 flex justify-between items-start gap-4 hover:border-indigo-100 transition shadow-sm">
-                        <div class="flex-grow">
-                            <span class="text-[10px] font-bold text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded">Soal No. ${index + 1}</span>
-                            <h4 class="font-semibold text-sm text-slate-800 mt-2 leading-relaxed">${soal.tanya}</h4>
-                            <div class="mt-2 pt-2 border-t border-slate-100">
-                                ${opsiList}
-                            </div>
+                    <div class="p-3.5 border border-slate-100 rounded-xl bg-slate-50/60 flex justify-between items-start gap-3 hover:border-indigo-100 transition shadow-sm">
+                        <div class="flex-grow min-w-0">
+                            <span class="text-[9px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">No. ${index + 1}</span>
+                            <h4 class="font-semibold text-xs sm:text-sm text-slate-800 mt-1.5 leading-relaxed break-words">${soal.tanya}</h4>
+                            <div class="mt-2 pt-1.5 border-t border-slate-100">${opsiList}</div>
                         </div>
-                        <button onclick="hapusSoal(${soal.id})" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-2 rounded-lg transition" title="Hapus Soal">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
+                        <button onclick="hapusSoal(${soal.id})" class="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg transition shrink-0">
+                            🗑
                         </button>
                     </div>`;
             });
@@ -540,35 +528,26 @@
             const kunci = parseInt(document.getElementById('input-kunci').value);
 
             if(!tanya || !opsi0 || !opsi1 || !opsi2 || !opsi3) {
-                alert("Harap isi seluruh kolom pertanyaan dan opsi jawaban ganda!");
+                alert("Semua kolom pertanyaan dan opsi wajib diisi!");
                 return;
             }
 
             if (dbActive) {
                 try {
                     const { error } = await supabaseClient.from('bank_soal').insert([{
-                        tanya: tanya,
-                        opsi_a: opsi0,
-                        opsi_b: opsi1,
-                        opsi_c: opsi2,
-                        opsi_d: opsi3,
-                        kunci: kunci
+                        tanya, opsi_a: opsi0, opsi_b: opsi1, opsi_c: opsi2, opsi_d: opsi3, kunci
                     }]);
                     if (error) throw error;
                     await sinkronisasiSoal();
-                    alert("Berhasil menyimpan soal baru ke Cloud Database!");
                 } catch (err) {
-                    alert("Gagal menyimpan ke cloud. Periksa jaringan Anda.");
-                    console.error(err);
+                    alert("Gagal kirim ke cloud.");
                 }
             } else {
                 const newId = bankSoal.length > 0 ? Math.max(...bankSoal.map(s => s.id)) + 1 : 1;
                 bankSoal.push({ id: newId, tanya, opsi: [opsi0, opsi1, opsi2, opsi3], kunci });
                 localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
-                alert("Tersimpan di penyimpanan lokal.");
             }
 
-            // Reset Form
             document.getElementById('input-tanya').value = '';
             document.getElementById('input-opsi-0').value = '';
             document.getElementById('input-opsi-1').value = '';
@@ -580,15 +559,13 @@
         }
 
         async function hapusSoal(id) {
-            tampilkanModal("Hapus Soal Ini?", "Langkah ini akan menghapus pertanyaan terkait dari sistem ujian di cloud.", async () => {
+            tampilkanModal("Hapus Soal?", "Tindakan ini akan membuang butir soal dari database cloud.", async () => {
                 if (dbActive) {
                     try {
                         const { error } = await supabaseClient.from('bank_soal').delete().eq('id', id);
                         if (error) throw error;
                         await sinkronisasiSoal();
-                    } catch (err) {
-                        alert("Gagal menghapus data di cloud.");
-                    }
+                    } catch (err) { alert("Gagal menghapus."); }
                 } else {
                     bankSoal = bankSoal.filter(soal => soal.id !== id);
                     localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
@@ -599,26 +576,17 @@
         }
 
         async function resetBankSoal() {
-            tampilkanModal("Pulihkan ke Pengaturan Awal?", "Apakah Anda yakin ingin mengganti bank soal cloud saat ini dengan 3 butir soal default bawaan?", async () => {
+            tampilkanModal("Kembalikan Soal Default?", "Mengganti bank soal cloud saat ini dengan setingan pabrikan bawaan.", async () => {
                 if (dbActive) {
                     try {
-                        // Kosongkan tabel
                         await supabaseClient.from('bank_soal').delete().neq('id', 0);
-                        // Tulis Ulang Default
                         for (let s of defaultSoal) {
                             await supabaseClient.from('bank_soal').insert([{
-                                tanya: s.tanya,
-                                opsi_a: s.opsi[0],
-                                opsi_b: s.opsi[1],
-                                opsi_c: s.opsi[2],
-                                opsi_d: s.opsi[3],
-                                kunci: s.kunci
+                                tanya: s.tanya, opsi_a: s.opsi[0], opsi_b: s.opsi[1], opsi_c: s.opsi[2], opsi_d: s.opsi[3], kunci: s.kunci
                             }]);
                         }
                         await sinkronisasiSoal();
-                    } catch (err) {
-                        alert("Gagal melakukan reset bank soal.");
-                    }
+                    } catch (err) { alert("Gagal reset."); }
                 } else {
                     bankSoal = [...defaultSoal];
                     localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
@@ -629,15 +597,12 @@
         }
 
         async function bukaModalReset() {
-            tampilkanModal("Hapus Basis Data Hasil?", "Tindakan ini akan memusnahkan seluruh riwayat hasil pengerjaan siswa secara permanen.", async () => {
+            tampilkanModal("Hapus Semua Hasil?", "Akan menghapus total seluruh log lembar nilai siswa secara permanen.", async () => {
                 if (dbActive) {
                     try {
-                        const { error } = await supabaseClient.from('hasil_ujian').delete().neq('id', 0);
-                        if (error) throw error;
+                        await supabaseClient.from('hasil_ujian').delete().neq('id', 0);
                         await muatDashboardGuru();
-                    } catch (err) {
-                        alert("Gagal menghapus basis data cloud.");
-                    }
+                    } catch (err) { alert("Gagal membersihkan cloud database."); }
                 } else {
                     localStorage.removeItem('local_hasil_ujian');
                     muatDashboardGuru();
@@ -646,16 +611,15 @@
             });
         }
 
-        // --- SISWA AREA ENGINE ---
         async function mulaiUjian() {
             await sinkronisasiSoal();
             if(bankSoal.length === 0) {
-                alert("Ujian tidak dapat dimulai karena bank soal kosong. Hubungi guru Anda untuk menambahkan materi soal!");
+                alert("Bank soal kosong! Hubungi guru pengampu untuk mengisi soal.");
                 return;
             }
 
             const inputNama = document.getElementById('nama-siswa').value.trim();
-            if(inputNama === "") return alert("Harap isi nama lengkap sebelum masuk ruangan!");
+            if(inputNama === "") return alert("Mohon isi nama lengkap Anda!");
             
             namaPesertaAktif = inputNama;
             document.getElementById('display-nama-siswa').innerText = namaPesertaAktif;
@@ -683,21 +647,21 @@
             let opsiHtml = '';
             soal.opsi.forEach((opsi, idx) => {
                 const tercheck = jawabanSiswa[soal.id] === idx ? 'checked' : '';
-                const styleAktif = jawabanSiswa[soal.id] === idx ? 'border-indigo-600 bg-indigo-50/50' : 'border-slate-200 hover:bg-slate-50';
+                const styleAktif = jawabanSiswa[soal.id] === idx ? 'border-indigo-600 bg-indigo-50/60 font-semibold' : 'border-slate-200 bg-white';
                 
                 opsiHtml += `
-                    <label class="flex items-center p-4 my-3 border rounded-xl cursor-pointer transition shadow-sm ${styleAktif}">
-                        <input type="radio" name="opsi-soal" value="${idx}" ${tercheck} onchange="pilihJawaban(${soal.id}, ${idx})" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300">
-                        <span class="ml-4 text-sm font-medium text-slate-700">${opsi}</span>
+                    <label class="flex items-center p-3.5 my-2.5 border rounded-xl cursor-pointer transition shadow-sm active:bg-slate-50 ${styleAktif}">
+                        <input type="radio" name="opsi-soal" value="${idx}" ${tercheck} onchange="pilihJawaban(${soal.id}, ${idx})" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 scale-110">
+                        <span class="ml-3 text-xs sm:text-sm text-slate-700 leading-relaxed">${opsi}</span>
                     </label>
                 `;
             });
 
             kontainer.innerHTML = `
-                <div class="mt-4">
-                    <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-500 rounded-md">Soal Nomor ${indeksSoalAktif + 1} dari ${bankSoal.length}</span>
-                    <p class="font-semibold text-base text-slate-800 mt-4 leading-relaxed">${soal.tanya}</p>
-                    <div class="mt-6">${opsiHtml}</div>
+                <div class="mt-2">
+                    <span class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-500 rounded">Soal ${indeksSoalAktif + 1} / ${bankSoal.length}</span>
+                    <p class="font-semibold text-sm sm:text-base text-slate-800 mt-3 leading-relaxed break-words">${soal.tanya}</p>
+                    <div class="mt-4">${opsiHtml}</div>
                 </div>
             `;
 
@@ -706,9 +670,9 @@
             
             const btnRagu = document.getElementById('btn-ragu');
             if(raguRaguSiswa[soal.id]) {
-                btnRagu.className = "px-4 py-2 border-2 border-amber-400 text-white bg-amber-500 rounded-lg text-sm font-semibold transition";
+                btnRagu.className = "px-3 py-2.5 border border-amber-500 text-white bg-amber-500 rounded-xl text-xs sm:text-sm font-semibold transition";
             } else {
-                btnRagu.className = "px-4 py-2 border border-amber-200 text-amber-700 bg-amber-50 rounded-lg text-sm font-medium transition hover:bg-amber-100";
+                btnRagu.className = "px-3 py-2.5 border border-amber-200 text-amber-700 bg-amber-50 rounded-xl text-xs sm:text-sm font-medium transition";
             }
         }
 
@@ -717,18 +681,18 @@
             grid.innerHTML = '';
 
             bankSoal.forEach((soal, idx) => {
-                let statusStyle = "bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100";
+                let statusStyle = "bg-slate-50 text-slate-600 border border-slate-200";
                 
                 if (idx === indeksSoalAktif) {
                     statusStyle = "bg-indigo-600 text-white ring-4 ring-indigo-100 border-indigo-600 font-bold";
                 } else if (raguRaguSiswa[soal.id]) {
-                    statusStyle = "bg-amber-500 text-white border-amber-500 font-medium";
+                    statusStyle = "bg-amber-500 text-white border-amber-500";
                 } else if (jawabanSiswa[soal.id] !== undefined) {
-                    statusStyle = "bg-emerald-500 text-white border-emerald-500 font-medium";
+                    statusStyle = "bg-emerald-500 text-white border-emerald-500";
                 }
 
                 grid.innerHTML += `
-                    <button onclick="lompatKeSoal(${idx})" class="w-full aspect-square flex items-center justify-center rounded-xl text-xs sm:text-sm font-semibold tracking-tight transition shadow-sm ${statusStyle}">
+                    <button onclick="lompatKeSoal(${idx})" class="w-full aspect-square flex items-center justify-center rounded-xl text-xs sm:text-sm font-semibold transition active:scale-90 shadow-sm ${statusStyle}">
                         ${idx + 1}
                     </button>
                 `;
@@ -767,7 +731,6 @@
             }
         }
 
-        // --- CORE TIMER ENGINE ---
         function jalankanTimer() {
             const elemenTimer = document.getElementById('timer');
             intervalTimer = setInterval(() => {
@@ -787,7 +750,7 @@
         }
 
         function bukaModalKumpul() {
-            tampilkanModal("Kumpulkan Ujian Sekarang?", "Jawaban Anda akan langsung dikirim dan dievaluasi.", () => {
+            tampilkanModal("Kumpulkan Ujian?", "Seluruh berkas lembar kerja Anda akan langsung dievaluasi sistem.", () => {
                 tutupModal();
                 kumpulkanHasilAkhir();
             });
@@ -809,14 +772,10 @@
             if (dbActive) {
                 try {
                     const { error } = await supabaseClient.from('hasil_ujian').insert([{
-                        nama: namaPesertaAktif,
-                        nilai: nilaiAkhir,
-                        waktu: stringWaktu
+                        nama: namaPesertaAktif, nilai: nilaiAkhir, waktu: stringWaktu
                     }]);
                     if (error) throw error;
                 } catch (err) {
-                    console.error("Gagal mengirim nilai ke cloud:", err);
-                    alert("Koneksi gagal. Menyimpan nilai cadangan secara lokal.");
                     simpanHasilLokal(namaPesertaAktif, nilaiAkhir, stringWaktu);
                 }
             } else {
@@ -833,7 +792,6 @@
             localStorage.setItem('local_hasil_ujian', JSON.stringify(dataHasil));
         }
 
-        // --- MODAL DIALOG ENGINE KUSTOM ---
         function tampilkanModal(judul, deskripsi, aksiKonfirmasi) {
             document.getElementById('modal-title').innerText = judul;
             document.getElementById('modal-desc').innerText = deskripsi;
