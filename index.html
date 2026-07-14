@@ -291,8 +291,8 @@
 
     <!-- APP LOGIC JAVASCRIPT -->
     <script>
-        const SUPABASE_URL = ""; 
-        const SUPABASE_ANON_KEY = "";
+        const SUPABASE_URL = "https://rsfepmlqbcpnqnavhesw.supabase.co/rest/v1/"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZmVwbWxxYmNwbnFuYXZoZXN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDQzMDYsImV4cCI6MjA5OTYyMDMwNn0.jRbCyr19TBrQjtjD76kQQFIdqjh4isZ3clxCXQ6xK5g";
 
         const defaultSoal = [
             { id: 1, tanya: "Sebuah toko memberikan diskon 20% untuk semua jenis jaket. Jika harga sebuah jaket adalah Rp 150.000, berapa uang yang harus dibayarkan setelah diskon?", opsi: ["A. Rp 110.000", "B. Rp 120.000", "C. Rp 130.000", "D. Rp 140.000"], kunci: 1 },
@@ -416,7 +416,7 @@
         function loginGuru() {
             const passInput = document.getElementById('input-pass-guru').value;
             // Disesuaikan agar match dengan placeholder HTML yaitu 'guru123'
-            if(passInput === 'guru123') {
+            if(passInput === 'zayy123') {
                 document.getElementById('error-guru').classList.add('hidden');
                 document.getElementById('input-pass-guru').value = '';
                 gantiHalaman('view-guru-dashboard');
