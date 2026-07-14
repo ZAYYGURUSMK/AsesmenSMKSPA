@@ -71,7 +71,7 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-slate-700 text-xs font-semibold uppercase tracking-wider mb-2">Password Akses</label>
-                    <input type="password" id="input-pass-guru" class="w-full border border-slate-200 rounded-xl py-3 px-4 text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" placeholder="Default: guru123">
+                    <input type="password" id="input-pass-guru" class="w-full border border-slate-200 rounded-xl py-3 px-4 text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" placeholder="Default: zayy123">
                 </div>
                 <p id="error-guru" class="text-rose-500 text-xs hidden flex items-center space-x-1">⚠ <span>Password salah.</span></p>
                 <button onclick="loginGuru()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl transition shadow-md active:scale-[0.98]">
@@ -291,9 +291,12 @@
 
     <!-- APP LOGIC JAVASCRIPT -->
     <script>
-        const SUPABASE_URL = "https://rsfepmlqbcpnqnavhesw.supabase.co/rest/v1/"; 
+        // ========== KONFIGURASI SUPABASE ==========
+        // PERBAIKAN: URL Supabase yang benar (TANPA /rest/v1/)
+        const SUPABASE_URL = "https://rsfepmlqbcpnqnavhesw.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZmVwbWxxYmNwbnFuYXZoZXN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDQzMDYsImV4cCI6MjA5OTYyMDMwNn0.jRbCyr19TBrQjtjD76kQQFIdqjh4isZ3clxCXQ6xK5g";
 
+        // ========== DATA DEFAULT SOAL ==========
         const defaultSoal = [
             { id: 1, tanya: "Sebuah toko memberikan diskon 20% untuk semua jenis jaket. Jika harga sebuah jaket adalah Rp 150.000, berapa uang yang harus dibayarkan setelah diskon?", opsi: ["A. Rp 110.000", "B. Rp 120.000", "C. Rp 130.000", "D. Rp 140.000"], kunci: 1 },
             { id: 2, tanya: "Perhatikan pola bilangan berikut: 3, 7, 11, 15, ... Angka berapakah yang tepat untuk mengisi suku berikutnya?", opsi: ["A. 17", "B. 18", "C. 19", "D. 20"], kunci: 2 },
@@ -317,18 +320,28 @@
             { id: 20, tanya: "Sebuah proyek jembatan dapat diselesaikan oleh 12 pekerja dalam waktu 20 hari. Jika pekerja ditambah menjadi 15 orang, berapa hari waktu yang diperlukan untuk menyelesaikan jembatan tersebut?", opsi: ["A. 14 hari", "B. 15 hari", "C. 16 hari", "D. 18 hari"], kunci: 2 }
         ];
 
+        // ========== VARIABEL GLOBAL ==========
         let bankSoal = [];
         let dbActive = false;
         let supabaseClient = null;
+        let waktuUjian = 30 * 60;
+        let intervalTimer;
+        let namaPesertaAktif = "";
+        let indeksSoalAktif = 0;
+        let jawabanSiswa = {};
+        let raguRaguSiswa = {};
 
+        // ========== INISIALISASI SUPABASE ==========
         if (SUPABASE_URL && SUPABASE_ANON_KEY) {
             try {
+                // PERBAIKAN: createClient dengan 2 parameter saja
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 dbActive = true;
                 document.getElementById('db-status').className = "text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-800 shrink-0 truncate";
                 document.getElementById('db-status').innerText = "Cloud Online";
+                console.log("✅ Supabase connected successfully!");
             } catch (e) {
-                console.error("Error Supabase:", e);
+                console.error("❌ Error Supabase:", e);
                 setOfflineMode();
             }
         } else {
@@ -339,46 +352,85 @@
             dbActive = false;
             document.getElementById('db-status').className = "text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-800 shrink-0 truncate";
             document.getElementById('db-status').innerText = "Local Storage";
+            console.log("⚠️ Running in offline mode (Local Storage)");
         }
 
-        let waktuUjian = 30 * 60; 
-        let intervalTimer;
-        let namaPesertaAktif = "";
-        let indeksSoalAktif = 0;
-        let jawabanSiswa = {}; 
-        let raguRaguSiswa = {}; 
+        // ========== FUNGSI TEST KONEKSI ==========
+        async function testSupabaseConnection() {
+            if (!supabaseClient) {
+                console.log("❌ Supabase client not initialized");
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('bank_soal')
+                    .select('id')
+                    .limit(1);
+                    
+                if (error) {
+                    console.error("❌ Connection error:", error);
+                    console.log("💡 Pastikan tabel 'bank_soal' sudah dibuat di Supabase");
+                } else {
+                    console.log("✅ Supabase connection successful!");
+                    console.log(`📊 Data found: ${data ? data.length : 0} rows`);
+                }
+            } catch (e) {
+                console.error("❌ Connection failed:", e);
+            }
+        }
 
+        // ========== LOAD DATA ==========
         window.onload = async () => {
             await sinkronisasiSoal();
+            // Test koneksi setelah load
+            await testSupabaseConnection();
         };
 
+        // ========== SINKRONISASI SOAL ==========
         async function sinkronisasiSoal() {
-            if (dbActive) {
+            if (dbActive && supabaseClient) {
                 try {
-                    const { data, error } = await supabaseClient.from('bank_soal').select('*').order('id', { ascending: true });
-                    if (error) throw error;
-                    if (data.length === 0) {
-                        for (let s of defaultSoal) {
-                            await supabaseClient.from('bank_soal').insert([{
-                                tanya: s.tanya,
-                                opsi_a: s.opsi[0],
-                                opsi_b: s.opsi[1],
-                                opsi_c: s.opsi[2],
-                                opsi_d: s.opsi[3],
-                                kunci: s.kunci
-                            }]);
-                        }
-                        await sinkronisasiSoal();
-                    } else {
-                        bankSoal = data.map(item => ({
-                            id: item.id,
-                            tanya: item.tanya,
-                            opsi: [item.opsi_a, item.opsi_b, item.opsi_c, item.opsi_d],
-                            kunci: item.kunci
-                        }));
+                    const { data, error } = await supabaseClient
+                        .from('bank_soal')
+                        .select('*')
+                        .order('id', { ascending: true });
+
+                    if (error) {
+                        console.error("❌ Error fetching soal:", error);
+                        throw error;
                     }
+
+                    if (!data || data.length === 0) {
+                        console.log("📝 Bank soal kosong, seeding default data...");
+                        // Insert default soal
+                        for (let s of defaultSoal) {
+                            await supabaseClient
+                                .from('bank_soal')
+                                .insert([{
+                                    tanya: s.tanya,
+                                    opsi_a: s.opsi[0],
+                                    opsi_b: s.opsi[1],
+                                    opsi_c: s.opsi[2],
+                                    opsi_d: s.opsi[3],
+                                    kunci: s.kunci
+                                }]);
+                        }
+                        // Re-fetch setelah insert
+                        await sinkronisasiSoal();
+                        return;
+                    }
+
+                    bankSoal = data.map(item => ({
+                        id: item.id,
+                        tanya: item.tanya,
+                        opsi: [item.opsi_a, item.opsi_b, item.opsi_c, item.opsi_d],
+                        kunci: item.kunci
+                    }));
+                    console.log(`✅ Loaded ${bankSoal.length} questions from Supabase`);
+                    
                 } catch (err) {
-                    console.error("Gagal sinkron database:", err);
+                    console.error("❌ Gagal sinkron database:", err);
                     setOfflineMode();
                     fallbackLocalSoal();
                 }
@@ -388,10 +440,23 @@
         }
 
         function fallbackLocalSoal() {
-            bankSoal = JSON.parse(localStorage.getItem('local_bank_soal')) || defaultSoal;
-            localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
+            const stored = localStorage.getItem('local_bank_soal');
+            if (stored) {
+                try {
+                    bankSoal = JSON.parse(stored);
+                    console.log(`📁 Loaded ${bankSoal.length} questions from Local Storage`);
+                } catch (e) {
+                    bankSoal = defaultSoal.map(s => ({...s}));
+                    localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
+                }
+            } else {
+                bankSoal = defaultSoal.map(s => ({...s}));
+                localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
+                console.log(`📁 Seeded ${bankSoal.length} default questions to Local Storage`);
+            }
         }
 
+        // ========== NAVIGASI HALAMAN ==========
         function gantiHalaman(idHalaman) {
             const listHalaman = ['view-menu', 'view-guru-login', 'view-guru-dashboard', 'view-siswa-login', 'view-ujian', 'view-selesai'];
             listHalaman.forEach(id => document.getElementById(id).classList.add('hidden'));
@@ -413,9 +478,9 @@
             gantiHalaman('view-menu');
         }
 
+        // ========== LOGIN GURU ==========
         function loginGuru() {
             const passInput = document.getElementById('input-pass-guru').value;
-            // Disesuaikan agar match dengan placeholder HTML yaitu 'guru123'
             if(passInput === 'zayy123') {
                 document.getElementById('error-guru').classList.add('hidden');
                 document.getElementById('input-pass-guru').value = '';
@@ -425,6 +490,7 @@
             }
         }
 
+        // ========== TAB GURU ==========
         function setTabGuru(tab) {
             const btnHasil = document.getElementById('tab-btn-hasil');
             const btnSoal = document.getElementById('tab-btn-soal');
@@ -446,17 +512,23 @@
             }
         }
 
+        // ========== DASHBOARD GURU - HASIL UJIAN ==========
         async function muatDashboardGuru() {
             const tbody = document.getElementById('tabel-hasil');
             tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-slate-400 italic">Memuat data cloud...</td></tr>`;
             
             let dataHasil = [];
-            if (dbActive) {
+            if (dbActive && supabaseClient) {
                 try {
-                    const { data, error } = await supabaseClient.from('hasil_ujian').select('*').order('id', { ascending: false });
+                    const { data, error } = await supabaseClient
+                        .from('hasil_ujian')
+                        .select('*')
+                        .order('id', { ascending: false });
+                        
                     if (error) throw error;
-                    dataHasil = data;
+                    dataHasil = data || [];
                 } catch (err) {
+                    console.error("❌ Gagal fetch hasil:", err);
                     dataHasil = JSON.parse(localStorage.getItem('local_hasil_ujian')) || [];
                 }
             } else {
@@ -492,6 +564,7 @@
             document.getElementById('stat-tinggi').innerText = tertinggi;
         }
 
+        // ========== DAFTAR SOAL GURU ==========
         function muatDaftarSoalGuru() {
             const container = document.getElementById('list-soal-guru');
             const countSpan = document.getElementById('count-soal');
@@ -524,6 +597,7 @@
             });
         }
 
+        // ========== TAMBAH SOAL ==========
         async function tambahSoalProses() {
             const tanya = document.getElementById('input-tanya').value.trim();
             const opsi0 = document.getElementById('input-opsi-0').value.trim();
@@ -537,15 +611,25 @@
                 return;
             }
 
-            if (dbActive) {
+            if (dbActive && supabaseClient) {
                 try {
-                    const { error } = await supabaseClient.from('bank_soal').insert([{
-                        tanya, opsi_a: opsi0, opsi_b: opsi1, opsi_c: opsi2, opsi_d: opsi3, kunci
-                    }]);
+                    const { error } = await supabaseClient
+                        .from('bank_soal')
+                        .insert([{
+                            tanya, 
+                            opsi_a: opsi0, 
+                            opsi_b: opsi1, 
+                            opsi_c: opsi2, 
+                            opsi_d: opsi3, 
+                            kunci
+                        }]);
+                        
                     if (error) throw error;
                     await sinkronisasiSoal();
                 } catch (err) {
-                    alert("Gagal kirim ke cloud.");
+                    console.error("❌ Gagal tambah soal:", err);
+                    alert("Gagal kirim ke cloud: " + err.message);
+                    return;
                 }
             } else {
                 const newId = bankSoal.length > 0 ? Math.max(...bankSoal.map(s => s.id)) + 1 : 1;
@@ -553,6 +637,7 @@
                 localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
             }
 
+            // Reset form
             document.getElementById('input-tanya').value = '';
             document.getElementById('input-opsi-0').value = '';
             document.getElementById('input-opsi-1').value = '';
@@ -563,14 +648,24 @@
             muatDaftarSoalGuru();
         }
 
+        // ========== HAPUS SOAL ==========
         async function hapusSoal(id) {
             tampilkanModal("Hapus Soal?", "Tindakan ini akan membuang butir soal dari database cloud.", async () => {
-                if (dbActive) {
+                if (dbActive && supabaseClient) {
                     try {
-                        const { error } = await supabaseClient.from('bank_soal').delete().eq('id', id);
+                        const { error } = await supabaseClient
+                            .from('bank_soal')
+                            .delete()
+                            .eq('id', id);
+                            
                         if (error) throw error;
                         await sinkronisasiSoal();
-                    } catch (err) { alert("Gagal menghapus."); }
+                    } catch (err) {
+                        console.error("❌ Gagal hapus soal:", err);
+                        alert("Gagal menghapus: " + err.message);
+                        tutupModal();
+                        return;
+                    }
                 } else {
                     bankSoal = bankSoal.filter(soal => soal.id !== id);
                     localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
@@ -580,20 +675,38 @@
             });
         }
 
+        // ========== RESET BANK SOAL ==========
         async function resetBankSoal() {
             tampilkanModal("Kembalikan Soal Default?", "Mengganti bank soal cloud saat ini dengan setingan pabrikan bawaan.", async () => {
-                if (dbActive) {
+                if (dbActive && supabaseClient) {
                     try {
-                        await supabaseClient.from('bank_soal').delete().neq('id', 0);
+                        // Hapus semua soal
+                        await supabaseClient
+                            .from('bank_soal')
+                            .delete()
+                            .neq('id', 0);
+                            
+                        // Insert default
                         for (let s of defaultSoal) {
-                            await supabaseClient.from('bank_soal').insert([{
-                                tanya: s.tanya, opsi_a: s.opsi[0], opsi_b: s.opsi[1], opsi_c: s.opsi[2], opsi_d: s.opsi[3], kunci: s.kunci
-                            }]);
+                            await supabaseClient
+                                .from('bank_soal')
+                                .insert([{
+                                    tanya: s.tanya, 
+                                    opsi_a: s.opsi[0], 
+                                    opsi_b: s.opsi[1], 
+                                    opsi_c: s.opsi[2], 
+                                    opsi_d: s.opsi[3], 
+                                    kunci: s.kunci
+                                }]);
                         }
                         await sinkronisasiSoal();
-                    } catch (err) { alert("Gagal reset."); }
+                    } catch (err) {
+                        console.error("❌ Gagal reset:", err);
+                        alert("Gagal reset: " + err.message);
+                        tutupModal();
+                        return;
+                    }
                 } else {
-                    // deep clone array defaultSoal agar object di dalamnya tidak termutasi
                     bankSoal = defaultSoal.map(s => ({...s}));
                     localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
                 }
@@ -602,13 +715,22 @@
             });
         }
 
+        // ========== RESET SEMUA HASIL ==========
         async function bukaModalReset() {
             tampilkanModal("Hapus Semua Hasil?", "Akan menghapus total seluruh log lembar nilai siswa secara permanen.", async () => {
-                if (dbActive) {
+                if (dbActive && supabaseClient) {
                     try {
-                        await supabaseClient.from('hasil_ujian').delete().neq('id', 0);
+                        await supabaseClient
+                            .from('hasil_ujian')
+                            .delete()
+                            .neq('id', 0);
                         await muatDashboardGuru();
-                    } catch (err) { alert("Gagal membersihkan cloud database."); }
+                    } catch (err) {
+                        console.error("❌ Gagal reset hasil:", err);
+                        alert("Gagal membersihkan cloud database: " + err.message);
+                        tutupModal();
+                        return;
+                    }
                 } else {
                     localStorage.removeItem('local_hasil_ujian');
                     muatDashboardGuru();
@@ -617,6 +739,7 @@
             });
         }
 
+        // ========== MULAI UJIAN ==========
         async function mulaiUjian() {
             await sinkronisasiSoal();
             if(bankSoal.length === 0) {
@@ -636,14 +759,14 @@
             indeksSoalAktif = 0;
 
             renderUjian();
-            waktuUjian = 30 * 60; 
+            waktuUjian = 30 * 60;
             
-            // Bersihkan timer lama jika ada sebelum menjalankan timer baru
-            clearInterval(intervalTimer); 
+            clearInterval(intervalTimer);
             jalankanTimer();
             gantiHalaman('view-ujian');
         }
 
+        // ========== RENDER UJIAN ==========
         function renderUjian() {
             renderSoalAktif();
             renderGridNomor();
@@ -708,6 +831,7 @@
             });
         }
 
+        // ========== FUNGSI UJIAN ==========
         function pilihJawaban(idSoal, indeksOpsi) {
             jawabanSiswa[idSoal] = indeksOpsi;
             renderUjian();
@@ -740,6 +864,7 @@
             }
         }
 
+        // ========== TIMER ==========
         function jalankanTimer() {
             const elemenTimer = document.getElementById('timer');
             intervalTimer = setInterval(() => {
@@ -758,6 +883,7 @@
             }, 1000);
         }
 
+        // ========== KUMPULKAN UJIAN ==========
         function bukaModalKumpul() {
             tampilkanModal("Kumpulkan Ujian?", "Seluruh berkas lembar kerja Anda akan langsung dievaluasi sistem.", () => {
                 tutupModal();
@@ -778,13 +904,20 @@
             const nilaiAkhir = Math.round((jumlahBenar / bankSoal.length) * 100);
             const stringWaktu = new Date().toLocaleString('id-ID');
 
-            if (dbActive) {
+            if (dbActive && supabaseClient) {
                 try {
-                    const { error } = await supabaseClient.from('hasil_ujian').insert([{
-                        nama: namaPesertaAktif, nilai: nilaiAkhir, waktu: stringWaktu
-                    }]);
+                    const { error } = await supabaseClient
+                        .from('hasil_ujian')
+                        .insert([{
+                            nama: namaPesertaAktif, 
+                            nilai: nilaiAkhir, 
+                            waktu: stringWaktu
+                        }]);
+                        
                     if (error) throw error;
+                    console.log(`✅ Hasil ujian ${namaPesertaAktif} tersimpan di cloud`);
                 } catch (err) {
+                    console.error("❌ Gagal simpan hasil:", err);
                     simpanHasilLokal(namaPesertaAktif, nilaiAkhir, stringWaktu);
                 }
             } else {
@@ -799,8 +932,10 @@
             const dataHasil = JSON.parse(localStorage.getItem('local_hasil_ujian')) || [];
             dataHasil.push({ nama, nilai, waktu });
             localStorage.setItem('local_hasil_ujian', JSON.stringify(dataHasil));
+            console.log(`📁 Hasil ujian ${nama} tersimpan di Local Storage`);
         }
 
+        // ========== MODAL ==========
         function tampilkanModal(judul, deskripsi, aksiKonfirmasi) {
             document.getElementById('modal-title').innerText = judul;
             document.getElementById('modal-desc').innerText = deskripsi;
