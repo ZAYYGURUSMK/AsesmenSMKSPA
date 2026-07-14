@@ -52,7 +52,7 @@
                     </div>
                     <div class="mt-4">
                         <h3 class="font-bold text-lg text-slate-800 group-hover:text-indigo-600">Panel Guru</h3>
-                        <p class="text-slate-400 text-sm mt-1">Pantau hasil penilaian dan statistik siswa.</p>
+                        <p class="text-slate-400 text-sm mt-1">Atur bank soal dan tinjau hasil penilaian.</p>
                     </div>
                 </button>
             </div>
@@ -76,52 +76,125 @@
 
         <!-- 3. VIEW: DASHBOARD GURU -->
         <div id="view-guru-dashboard" class="w-full bg-white rounded-2xl shadow-xl border border-slate-100 p-8 hidden">
-            <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-6 mb-8 gap-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-6 mb-6 gap-4">
                 <div>
-                    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Monitor Hasil Belajar</h2>
-                    <p class="text-slate-400 text-sm mt-0.5">Ringkasan performa dan nilai pengerjaan siswa.</p>
+                    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Panel Administrasi Guru</h2>
+                    <p class="text-slate-400 text-sm mt-0.5">Kelola bank soal dan pantau capaian hasil ujian siswa.</p>
                 </div>
-                <div class="flex space-x-2">
-                    <button onclick="eksporCSV()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold py-2 px-4 rounded-lg border border-emerald-200 transition">
-                        Ekspor CSV (Excel)
-                    </button>
-                    <button onclick="bukaModalReset()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold py-2 px-4 rounded-lg border border-rose-100 transition">
-                        Reset Semua Data
-                    </button>
+                <button onclick="bukaModalReset()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold py-2 px-4 rounded-lg border border-rose-100 transition self-end md:self-auto">
+                    Reset Semua Hasil
+                </button>
+            </div>
+
+            <!-- TAB CONTROLS -->
+            <div class="flex border-b border-slate-200 mb-8">
+                <button onclick="setTabGuru('hasil')" id="tab-btn-hasil" class="py-3 px-6 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition focus:outline-none">
+                    Hasil Ujian
+                </button>
+                <button onclick="setTabGuru('soal')" id="tab-btn-soal" class="py-3 px-6 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-indigo-600 hover:border-slate-300 transition focus:outline-none">
+                    Kelola Bank Soal
+                </button>
+            </div>
+
+            <!-- TAB CONTENT 1: MONITOR HASIL -->
+            <div id="tab-content-hasil" class="space-y-6">
+                <!-- STATS BADGES -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div class="bg-slate-50 border border-slate-100 p-5 rounded-xl">
+                        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Total Partisipan</span>
+                        <span id="stat-total" class="text-3xl font-bold text-slate-800 block mt-1">0</span>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-100 p-5 rounded-xl">
+                        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Rata-Rata Nilai</span>
+                        <span id="stat-rata" class="text-3xl font-bold text-indigo-600 block mt-1">0</span>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-100 p-5 rounded-xl">
+                        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Nilai Tertinggi</span>
+                        <span id="stat-tinggi" class="text-3xl font-bold text-emerald-600 block mt-1">0</span>
+                    </div>
+                </div>
+
+                <!-- TABLE -->
+                <div class="overflow-x-auto border border-slate-100 rounded-xl shadow-sm bg-white">
+                    <table class="min-w-full divide-y divide-slate-100">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="py-3.5 px-6 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">No</th>
+                                <th class="py-3.5 px-6 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Nama Peserta</th>
+                                <th class="py-3.5 px-6 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Capaian Nilai</th>
+                                <th class="py-3.5 px-6 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Waktu Selesai</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-hasil" class="divide-y divide-slate-100 text-sm text-slate-600">
+                            <!-- JS Inserted Data -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- STATS BADGES -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                <div class="bg-slate-50 border border-slate-100 p-5 rounded-xl">
-                    <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Total Partisipan</span>
-                    <span id="stat-total" class="text-3xl font-bold text-slate-800 block mt-1">0</span>
-                </div>
-                <div class="bg-slate-50 border border-slate-100 p-5 rounded-xl">
-                    <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Rata-Rata Nilai</span>
-                    <span id="stat-rata" class="text-3xl font-bold text-indigo-600 block mt-1">0</span>
-                </div>
-                <div class="bg-slate-50 border border-slate-100 p-5 rounded-xl">
-                    <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Nilai Tertinggi</span>
-                    <span id="stat-tinggi" class="text-3xl font-bold text-emerald-600 block mt-1">0</span>
-                </div>
-            </div>
+            <!-- TAB CONTENT 2: KELOLA SOAL -->
+            <div id="tab-content-soal" class="hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- FORM TAMBAH SOAL (5 KOLOM) -->
+                    <div class="lg:col-span-5 bg-slate-50 p-6 rounded-xl border border-slate-100 shadow-sm">
+                        <h3 class="font-bold text-base text-slate-900 mb-4 flex items-center space-x-2">
+                            <span class="p-1 bg-indigo-50 text-indigo-600 rounded">➕</span>
+                            <span>Tambah Soal Baru</span>
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-slate-600 text-xs font-semibold mb-1">Butir Pertanyaan</label>
+                                <textarea id="input-tanya" rows="3" class="w-full border border-slate-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white resize-none" placeholder="Masukkan teks pertanyaan..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 text-xs font-semibold mb-1">Opsi Jawaban A</label>
+                                <input type="text" id="input-opsi-0" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Contoh: A. Surabaya">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 text-xs font-semibold mb-1">Opsi Jawaban B</label>
+                                <input type="text" id="input-opsi-1" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Contoh: B. Jakarta">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 text-xs font-semibold mb-1">Opsi Jawaban C</label>
+                                <input type="text" id="input-opsi-2" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Contoh: C. Bandung">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 text-xs font-semibold mb-1">Opsi Jawaban D</label>
+                                <input type="text" id="input-opsi-3" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Contoh: D. Medan">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 text-xs font-semibold mb-1">Kunci Jawaban yang Benar</label>
+                                <select id="input-kunci" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                    <option value="0">Opsi A</option>
+                                    <option value="1">Opsi B</option>
+                                    <option value="2">Opsi C</option>
+                                    <option value="3">Opsi D</option>
+                                </select>
+                            </div>
+                            <button onclick="tambahSoalProses()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl text-sm transition shadow">
+                                Simpan ke Bank Soal
+                            </button>
+                        </div>
+                    </div>
 
-            <!-- TABLE -->
-            <div class="overflow-x-auto border border-slate-100 rounded-xl shadow-sm">
-                <table class="min-w-full divide-y divide-slate-100 bg-white">
-                    <thead class="bg-slate-50">
-                        <tr>
-                            <th class="py-3.5 px-6 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">No</th>
-                            <th class="py-3.5 px-6 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Nama Peserta</th>
-                            <th class="py-3.5 px-6 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Capaian Nilai</th>
-                            <th class="py-3.5 px-6 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Waktu Selesai</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabel-hasil" class="divide-y divide-slate-100 text-sm text-slate-600">
-                        <!-- JS Inserted Data -->
-                    </tbody>
-                </table>
+                    <!-- DAFTAR SOAL YANG ADA (7 KOLOM) -->
+                    <div class="lg:col-span-7 border border-slate-100 rounded-xl p-6 bg-white shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="font-bold text-base text-slate-900">Daftar Soal Aktif (<span id="count-soal">0</span>)</h3>
+                                <p class="text-xs text-slate-400 mt-0.5">Soal-soal di bawah ini yang akan dikerjakan siswa.</p>
+                            </div>
+                            <button onclick="resetBankSoal()" class="text-xs text-rose-500 font-semibold hover:text-rose-600 border border-rose-100 px-3 py-1.5 rounded-lg hover:bg-rose-50 transition">
+                                Reset ke Default
+                            </button>
+                        </div>
+                        <div id="list-soal-guru" class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                            <!-- Loaded via JS -->
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
 
@@ -221,14 +294,20 @@
 
     <!-- JAVASCRIPT APP LOGIC -->
     <script>
-        // --- BANK DATA SOAL ---
-        const bankSoal = [
+        // --- BANK DATA SOAL BAWAAN (DEFAULT) ---
+        const defaultSoal = [
             { id: 1, tanya: "Apa ibu kota dari negara Indonesia?", opsi: ["A. Surabaya", "B. Jakarta", "C. Bandung", "D. Medan"], kunci: 1 },
             { id: 2, tanya: "Berapakah hasil dari operasi perhitungan matematika 5 + 7 x 2?", opsi: ["A. 24", "B. 19", "C. 17", "D. 29"], kunci: 1 },
             { id: 3, tanya: "Planet manakah yang dijuluki sebagai Planet Merah dalam tata surya kita?", opsi: ["A. Venus", "B. Jupiter", "C. Mars", "D. Saturnus"], kunci: 2 },
             { id: 4, tanya: "Siapakah pencipta lagu kebangsaan agung Indonesia Raya?", opsi: ["A. Ismail Marzuki", "B. W.R. Soepratman", "C. Kusbini", "D. Sudharnoto"], kunci: 1 },
             { id: 5, tanya: "Hewan apa yang dibekali kemampuan unik mengubah warna kulitnya (kamuflase) sesuai lingkungan?", opsi: ["A. Bunglon", "B. Cicak", "C. Katak", "D. Ular"], kunci: 0 }
         ];
+
+        // Memuat bank soal dari localStorage, jika tidak ada pakai defaultSoal
+        let bankSoal = JSON.parse(localStorage.getItem('bank_soal')) || defaultSoal;
+        if (!localStorage.getItem('bank_soal')) {
+            localStorage.setItem('bank_soal', JSON.stringify(defaultSoal));
+        }
 
         let waktuUjian = 30 * 60; 
         let intervalTimer;
@@ -249,7 +328,9 @@
                 document.getElementById('btn-home').classList.remove('hidden');
             }
 
-            if(idHalaman === 'view-guru-dashboard') muatDashboardGuru();
+            if(idHalaman === 'view-guru-dashboard') {
+                setTabGuru('hasil'); // default tab saat masuk dashboard
+            }
         }
 
         function kembaliKeMenuUtama() {
@@ -260,7 +341,7 @@
         // --- GURU AREA ENGINE ---
         function loginGuru() {
             const passInput = document.getElementById('input-pass-guru').value;
-            if(passInput === 'zayy123') {
+            if(passInput === 'guru123') {
                 document.getElementById('error-guru').classList.add('hidden');
                 document.getElementById('input-pass-guru').value = '';
                 gantiHalaman('view-guru-dashboard');
@@ -269,12 +350,33 @@
             }
         }
 
+        // --- TAB SWITCHER GURU ---
+        function setTabGuru(tab) {
+            const btnHasil = document.getElementById('tab-btn-hasil');
+            const btnSoal = document.getElementById('tab-btn-soal');
+            const contentHasil = document.getElementById('tab-content-hasil');
+            const contentSoal = document.getElementById('tab-content-soal');
+
+            if (tab === 'hasil') {
+                btnHasil.className = "py-3 px-6 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition focus:outline-none";
+                btnSoal.className = "py-3 px-6 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-indigo-600 hover:border-slate-300 transition focus:outline-none";
+                contentHasil.classList.remove('hidden');
+                contentSoal.classList.add('hidden');
+                muatDashboardGuru();
+            } else {
+                btnSoal.className = "py-3 px-6 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition focus:outline-none";
+                btnHasil.className = "py-3 px-6 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-indigo-600 hover:border-slate-300 transition focus:outline-none";
+                contentSoal.classList.remove('hidden');
+                contentHasil.classList.add('hidden');
+                muatDaftarSoalGuru();
+            }
+        }
+
         function muatDashboardGuru() {
             const tbody = document.getElementById('tabel-hasil');
             tbody.innerHTML = '';
             const dataHasil = JSON.parse(localStorage.getItem('hasil_ujian')) || [];
 
-            // Hitung Statistik Komprehensif
             const total = dataHasil.length;
             let rataRata = 0;
             let tertinggi = 0;
@@ -303,34 +405,120 @@
             document.getElementById('stat-tinggi').innerText = tertinggi;
         }
 
+        // --- SISTEM DINAMIS KELOLA BANK SOAL ---
+        function muatDaftarSoalGuru() {
+            const container = document.getElementById('list-soal-guru');
+            const countSpan = document.getElementById('count-soal');
+            container.innerHTML = '';
+            countSpan.innerText = bankSoal.length;
+
+            if (bankSoal.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 border border-dashed border-slate-200 rounded-xl">
+                        <p class="text-slate-400 italic text-sm">Belum ada butir pertanyaan yang aktif dalam bank soal.</p>
+                    </div>`;
+                return;
+            }
+
+            bankSoal.forEach((soal, index) => {
+                let opsiList = '';
+                soal.opsi.forEach((opsi, idx) => {
+                    const isCorrect = idx === soal.kunci ? 'text-emerald-600 font-bold' : 'text-slate-500';
+                    opsiList += `
+                        <p class="text-xs ${isCorrect} mt-1 flex items-center space-x-1">
+                            <span>${idx === soal.kunci ? '✔️' : '•'}</span>
+                            <span>${opsi}</span>
+                        </p>`;
+                });
+
+                container.innerHTML += `
+                    <div class="p-4 border border-slate-100 rounded-xl bg-slate-50/50 flex justify-between items-start gap-4 hover:border-indigo-100 transition shadow-sm">
+                        <div class="flex-grow">
+                            <span class="text-[10px] font-bold text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded">Soal No. ${index + 1}</span>
+                            <h4 class="font-semibold text-sm text-slate-800 mt-2 leading-relaxed">${soal.tanya}</h4>
+                            <div class="mt-2 pt-2 border-t border-slate-100">
+                                ${opsiList}
+                            </div>
+                        </div>
+                        <button onclick="hapusSoal(${soal.id})" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-2 rounded-lg transition" title="Hapus Soal">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>`;
+            });
+        }
+
+        function tambahSoalProses() {
+            const tanya = document.getElementById('input-tanya').value.trim();
+            const opsi0 = document.getElementById('input-opsi-0').value.trim();
+            const opsi1 = document.getElementById('input-opsi-1').value.trim();
+            const opsi2 = document.getElementById('input-opsi-2').value.trim();
+            const opsi3 = document.getElementById('input-opsi-3').value.trim();
+            const kunci = parseInt(document.getElementById('input-kunci').value);
+
+            if(!tanya || !opsi0 || !opsi1 || !opsi2 || !opsi3) {
+                alert("Harap isi seluruh kolom pertanyaan dan opsi jawaban ganda!");
+                return;
+            }
+
+            // Generate ID Baru secara unik
+            const newId = bankSoal.length > 0 ? Math.max(...bankSoal.map(s => s.id)) + 1 : 1;
+            const soalBaru = {
+                id: newId,
+                tanya: tanya,
+                opsi: [opsi0, opsi1, opsi2, opsi3],
+                kunci: kunci
+            };
+
+            bankSoal.push(soalBaru);
+            localStorage.setItem('bank_soal', JSON.stringify(bankSoal));
+
+            // Reset Form Tambah Soal
+            document.getElementById('input-tanya').value = '';
+            document.getElementById('input-opsi-0').value = '';
+            document.getElementById('input-opsi-1').value = '';
+            document.getElementById('input-opsi-2').value = '';
+            document.getElementById('input-opsi-3').value = '';
+            document.getElementById('input-kunci').value = '0';
+
+            muatDaftarSoalGuru();
+        }
+
+        function hapusSoal(id) {
+            tampilkanModal("Hapus Soal Ini?", "Langkah ini akan menghapus pertanyaan terkait dari sistem ujian. Siswa tidak akan mendapati soal ini pada sesi ujian berikutnya.", () => {
+                bankSoal = bankSoal.filter(soal => soal.id !== id);
+                localStorage.setItem('bank_soal', JSON.stringify(bankSoal));
+                muatDaftarSoalGuru();
+                tutupModal();
+            });
+        }
+
+        function resetBankSoal() {
+            tampilkanModal("Pulihkan ke Pengaturan Awal?", "Apakah Anda yakin ingin mengganti bank soal Anda saat ini dengan 5 butir soal default sistem bawaan?", () => {
+                bankSoal = [...defaultSoal];
+                localStorage.setItem('bank_soal', JSON.stringify(bankSoal));
+                muatDaftarSoalGuru();
+                tutupModal();
+            });
+        }
+
         function bukaModalReset() {
-            tampilkanModal("Hapus Basis Data?", "Tindakan ini akan memusnahkan seluruh riwayat hasil ujian siswa secara permanen dari penyimpanan lokal komputer.", () => {
+            tampilkanModal("Hapus Basis Data Hasil?", "Tindakan ini akan memusnahkan seluruh riwayat hasil pengerjaan siswa secara permanen dari penyimpanan lokal komputer.", () => {
                 localStorage.removeItem('hasil_ujian');
                 muatDashboardGuru();
                 tutupModal();
             });
         }
 
-        function eksporCSV() {
-            const dataHasil = JSON.parse(localStorage.getItem('hasil_ujian')) || [];
-            if(dataHasil.length === 0) return alert("Tidak ada data untuk diekspor!");
-            
-            let csvContent = "data:text/csv;charset=utf-8,No,Nama Siswa,Nilai,Waktu Selesai\n";
-            dataHasil.forEach((item, idx) => {
-                csvContent += `${idx+1},"${item.nama}",${item.nilai},${item.waktu}\n`;
-            });
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Hasil_Ujian_CBT_${new Date().toLocaleDateString()}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
         // --- SISWA AREA ENGINE ---
         function mulaiUjian() {
+            // Validasi apakah bank soal memiliki butir pertanyaan
+            if(bankSoal.length === 0) {
+                alert("Ujian tidak dapat dimulai karena bank soal kosong. Hubungi guru Anda untuk menambahkan materi soal!");
+                return;
+            }
+
             const inputNama = document.getElementById('nama-siswa').value.trim();
             if(inputNama === "") return alert("Harap isi nama lengkap sebelum masuk ruangan!");
             
@@ -486,7 +674,6 @@
 
             const nilaiAkhir = Math.round((jumlahBenar / bankSoal.length) * 100);
 
-            // Simpan ke Data Global LocalStorage
             const dataHasil = JSON.parse(localStorage.getItem('hasil_ujian')) || [];
             dataHasil.push({
                 nama: namaPesertaAktif,
