@@ -284,8 +284,10 @@
 </head>
 <body>
 
+    <!-- TOAST WARNING -->
     <div id="toast-warning"></div>
 
+    <!-- NAVBAR -->
     <nav class="navbar" id="mainNav">
         <div class="left">
             <div class="logo-artha">
@@ -310,8 +312,10 @@
         </div>
     </nav>
 
+    <!-- MAIN -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6">
 
+        <!-- MENU UTAMA -->
         <div id="view-menu" class="w-full max-w-3xl mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-5 sm:p-10 text-center">
             <div class="flex flex-col items-center gap-2 mb-3">
                 <div class="logo-artha bg-indigo-50 px-4 py-2 rounded-2xl border-2 border-indigo-200 shadow-md">
@@ -355,6 +359,7 @@
             </div>
         </div>
 
+        <!-- LOGIN SISWA -->
         <div id="view-siswa-login" class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden login-card">
             <span class="login-icon">🧑‍🎓</span>
             <div class="login-title">Masuk sebagai Siswa</div>
@@ -371,6 +376,7 @@
             </form>
         </div>
 
+        <!-- LOGIN GURU -->
         <div id="view-guru-login" class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden login-card">
             <span class="login-icon">👨‍🏫</span>
             <div class="login-title">Login Guru</div>
@@ -387,6 +393,7 @@
             </form>
         </div>
 
+        <!-- LOGIN ADMIN -->
         <div id="view-admin-login" class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden login-card">
             <span class="login-icon">🛡️</span>
             <div class="login-title">Login Admin</div>
@@ -403,6 +410,7 @@
             </form>
         </div>
 
+        <!-- DASHBOARD SISWA -->
         <div id="view-siswa-dashboard" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
             <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -420,7 +428,8 @@
             <p class="text-sm text-slate-500 mb-4">Silakan pilih mata pelajaran yang akan Anda ujikan. Mapel yang sudah selesai tidak dapat diulang.</p>
 
             <div id="siswa-daftar-mapel" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                </div>
+                <!-- Akan di-render oleh JS -->
+            </div>
 
             <div class="mt-6 border-t border-slate-100 pt-4">
                 <h3 class="font-bold text-sm mb-2">📋 Riwayat Ujian Selesai</h3>
@@ -428,6 +437,7 @@
             </div>
         </div>
 
+        <!-- DASHBOARD GURU -->
         <div id="view-guru-dashboard" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
             <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -461,6 +471,7 @@
             </div>
         </div>
 
+        <!-- DASHBOARD ADMIN -->
         <div id="view-admin-dashboard" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
             <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -491,10 +502,12 @@
             <div class="mt-4 border-t border-slate-100 pt-4">
                 <h3 class="font-bold text-sm mb-2">📚 Daftar Mata Pelajaran</h3>
                 <div id="admin-daftar-mapel" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                    </div>
+                    <!-- Akan di-render oleh JS -->
+                </div>
             </div>
         </div>
 
+        <!-- HALAMAN UJIAN -->
         <div id="view-ujian" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
             <div class="page-header">
                 <div>
@@ -528,6 +541,7 @@
             <button onclick="gantiHalaman('view-siswa-dashboard')" class="btn btn-outline btn-sm mt-4">← Kembali ke Pilihan Mapel</button>
         </div>
 
+        <!-- GURU: TAMBAH SOAL -->
         <div id="view-guru-tambah-soal" class="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
             <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -564,6 +578,7 @@
             </form>
         </div>
 
+        <!-- GURU: KELOLA SOAL -->
         <div id="view-guru-kelola-soal" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
             <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -589,6 +604,7 @@
             </div>
         </div>
 
+        <!-- ADMIN: KELOLA MAPEL -->
         <div id="view-admin-kelola-mapel" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
             <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -614,6 +630,7 @@
             <p class="text-xs text-slate-400 mt-2">⚠️ Menghapus mapel akan menghapus semua soal yang terkait dengan mapel tersebut.</p>
         </div>
 
+        <!-- ADMIN: TAMBAH USER -->
         <div id="view-admin-tambah-user" class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
             <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -643,6 +660,7 @@
             </form>
         </div>
 
+        <!-- ADMIN: KELOLA SISWA -->
         <div id="view-admin-kelola-siswa" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
             <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -672,6 +690,7 @@
             </div>
         </div>
 
+        <!-- MODAL DETAIL SISWA -->
         <div id="modal-detail-siswa" class="modal-edit hidden">
             <div class="modal-box">
                 <h3 id="modal-siswa-nama">Riwayat Ujian</h3>
@@ -685,6 +704,7 @@
 
     </main>
 
+    <!-- FOOTER -->
     <footer class="bg-white border-t border-slate-100 py-2 text-center text-[9px] sm:text-xs text-slate-400 font-medium shrink-0">
         <div class="flex flex-wrap items-center justify-center gap-1">
             <span class="logo-artha inline-flex flex-row items-center gap-1 px-2 py-0.5 rounded bg-slate-50">
@@ -693,10 +713,13 @@
             </span>
             <span>SMK Prama Artha · CBT</span>
             <span class="text-slate-300">|</span>
-            <span>Anti-Tab: Pengurangan Sisa Waktu 3 Menit (180 Detik)</span>
+            <span>Anti-Tab: -3 Menit | Anti-Reload: Nilai 0</span>
         </div>
     </footer>
 
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ============================================================ -->
     <script>
         // ================================================================
         // KONFIGURASI
@@ -1334,6 +1357,13 @@
             ujianSiswa.indeks = 0;
             ujianSiswa.timer = 30 * 60;
 
+            // ===== FITUR ANTI-RELOAD: Tandai ujian sedang aktif =====
+            localStorage.setItem('cbt_ujian_aktif', JSON.stringify({
+                nama: user.nama,
+                mapelId: mapelId,
+                mapelNama: mapel.nama
+            }));
+
             document.getElementById('ujian-nama').textContent = user.nama;
             document.getElementById('ujian-mapel').textContent = mapel.nama;
 
@@ -1380,6 +1410,9 @@
             const nilai = Math.round((benar / total) * 100);
 
             simpanHasilSiswa(ujianSiswa.nama, ujianSiswa.mapelId, nilai);
+
+            // ===== FITUR ANTI-RELOAD: Hapus penanda karena ujian selesai normal =====
+            localStorage.removeItem('cbt_ujian_aktif');
 
             alert(`📊 Ujian Selesai!\nMapel: ${ujianSiswa.mapelNama}\nBenar: ${benar}/${total}\nNilai: ${nilai}\n\n✅ Hasil telah disimpan.`);
 
@@ -1518,7 +1551,7 @@
                 renderKelolaSoal();
                 renderDaftarMapel();
             } else {
-                alert('❌ Gagal diperbarui soal.');
+                alert('❌ Gagal memperbarui soal.');
             }
         }
 
@@ -1777,6 +1810,18 @@
             loadUsersFromStorage();
             loadMapelFromStorage();
             loadSoalFromStorage();
+
+            // ===== FITUR ANTI-RELOAD: Cek ujian yang ditinggalkan / reload =====
+            const activeExam = localStorage.getItem('cbt_ujian_aktif');
+            if (activeExam) {
+                try {
+                    const examData = JSON.parse(activeExam);
+                    // Beri nilai 0 dan anggap selesai
+                    simpanHasilSiswa(examData.nama, examData.mapelId, 0);
+                    localStorage.removeItem('cbt_ujian_aktif');
+                    alert(`🚨 PELANGGARAN!\nAnda terdeteksi memuat ulang (reload) halaman atau keluar aplikasi saat ujian "${examData.mapelNama}" sedang berlangsung.\n\nUjian otomatis dihentikan dan dianggap selesai dengan nilai 0.`);
+                } catch(e) {}
+            }
 
             const user = getSession();
             if (user) {
