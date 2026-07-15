@@ -3,297 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SMK Prama Artha - CBT Anti-Cheat</title>
-    <script src="https://cdn.tailwindcss.com">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-    </script>
+    <title>SMK Prama Artha - CBT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        * {
-            -webkit-tap-highlight-color: transparent;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f1f5f9;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .hidden {
-            display: none !important;
-        }
-        .scrollbar-none::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-none {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        /* ===== ANTI-CHEAT: Non-seleksi di area ujian ===== */
-        .exam-container {
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
-        .exam-container input[type="radio"],
-        .exam-container input[type="text"],
-        .exam-container textarea {
-            user-select: text;
-            -webkit-user-select: text;
-        }
-
-        /* ===== TOAST WARNING ===== */
-        #toast-warning {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #dc2626;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            z-index: 9999;
-            box-shadow: 0 8px 30px rgba(220, 38, 38, 0.4);
-            border: 1px solid #fca5a5;
-            text-align: center;
-            max-width: 90%;
-            display: none;
-            animation: slideDown 0.3s ease;
-        }
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-
-        /* ===== CARD ===== */
-        .card {
-            background: white;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-            transition: all 0.2s;
-        }
-        .card-hover:active {
-            transform: scale(0.97);
-        }
-
-        .badge-role {
-            font-size: 9px;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            display: inline-block;
-        }
-        .badge-role.admin {
-            background: #ede9fe;
-            color: #6d28d9;
-        }
-        .badge-role.guru {
-            background: #dbeafe;
-            color: #1d4ed8;
-        }
-        .badge-role.siswa {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .mapel-badge {
-            background: #e0e7ff;
-            color: #3730a3;
-            font-size: 9px;
-            padding: 1px 8px;
-            border-radius: 12px;
-            font-weight: 600;
-            white-space: nowrap;
-            display: inline-block;
-        }
-        .mapel-badge.guru {
-            background: #dbeafe;
-            color: #1e3a8a;
-        }
-        .mapel-badge.admin {
-            background: #ede9fe;
-            color: #5b21b6;
-        }
-
-        .table-wrap {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin: 0 -4px;
-        }
-        .table-wrap table {
-            min-width: 480px;
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            font-size: 12px;
-        }
-        .table-wrap th {
-            background: #f8fafc;
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            color: #64748b;
-            padding: 8px 10px;
-            text-align: left;
-            border-bottom: 2px solid #e2e8f0;
-            white-space: nowrap;
-        }
-        .table-wrap td {
-            padding: 8px 10px;
-            border-bottom: 1px solid #f1f5f9;
-            color: #1e293b;
-            vertical-align: middle;
-        }
-        .table-wrap tr:active td {
-            background: #f8fafc;
-        }
-
+        * { -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
+        .hidden { display: none !important; }
+        .card-hover:active { transform: scale(0.97); }
         .logo-artha {
             display: inline-flex;
             flex-direction: column;
             align-items: center;
             line-height: 1.1;
-            flex-shrink: 0;
             background: #f8fafc;
-            padding: 2px 8px;
+            padding: 2px 10px;
             border-radius: 10px;
             border: 1px solid #e2e8f0;
         }
         .logo-artha .brand {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 900;
             letter-spacing: 1px;
             background: linear-gradient(135deg, #1e1b4b, #4f46e5);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
         .logo-artha .tagline {
-            font-size: 6px;
+            font-size: 7px;
             font-weight: 700;
             letter-spacing: 2px;
             color: #6d28d9;
             text-transform: uppercase;
             border-top: 1.5px solid #6d28d9;
-            padding-top: 0px;
-            margin-top: 0px;
         }
-        .school-name {
-            font-weight: 800;
-            font-size: 13px;
-            color: #1e1b4b;
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-        }
-        .school-name span {
-            color: #4f46e5;
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 10px 14px;
-            font-size: 14px;
-            background: white;
-            transition: all 0.15s;
-            font-family: inherit;
-        }
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            ring: 2px solid #4f46e5;
-            border-color: transparent;
-        }
-        textarea {
-            resize: vertical;
-            min-height: 70px;
-        }
-        label {
-            font-size: 11px;
-            font-weight: 600;
-            color: #475569;
-            display: block;
-            margin-bottom: 4px;
-            letter-spacing: 0.3px;
-        }
-
+        .school-name { font-weight: 800; font-size: 14px; color: #1e1b4b; }
+        .school-name span { color: #4f46e5; }
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
             font-weight: 600;
-            padding: 10px 18px;
+            padding: 10px 20px;
             border-radius: 12px;
             border: none;
             cursor: pointer;
             transition: all 0.15s;
             font-size: 13px;
-            text-align: center;
             width: 100%;
-            touch-action: manipulation;
         }
-        .btn:active {
-            transform: scale(0.96);
-        }
-        .btn-primary {
-            background: #4f46e5;
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #4338ca;
-        }
-        .btn-success {
-            background: #10b981;
-            color: white;
-        }
-        .btn-success:hover {
-            background: #059669;
-        }
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-        }
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-        .btn-outline {
-            background: transparent;
-            color: #4f46e5;
-            border: 2px solid #4f46e5;
-        }
-        .btn-outline:active {
-            background: #4f46e5;
-            color: white;
-        }
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 11px;
-            border-radius: 8px;
-            width: auto;
-        }
-
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: #4f46e5; color: white; }
+        .btn-primary:hover { background: #4338ca; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-outline { background: transparent; color: #4f46e5; border: 2px solid #4f46e5; }
+        .btn-sm { padding: 6px 12px; font-size: 11px; width: auto; }
         .stat-card {
             background: white;
             border-radius: 14px;
@@ -301,22 +69,17 @@
             border: 1px solid #e2e8f0;
             text-align: center;
         }
-        .stat-card .label {
-            font-size: 9px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: #94a3b8;
-            letter-spacing: 0.5px;
-            display: block;
-        }
-        .stat-card .value {
-            font-size: 22px;
-            font-weight: 800;
-            color: #0f172a;
-            line-height: 1.2;
-            margin-top: 2px;
-        }
-
+        .stat-card .label { font-size: 9px; font-weight: 600; text-transform: uppercase; color: #94a3b8; display: block; }
+        .stat-card .value { font-size: 22px; font-weight: 800; color: #0f172a; line-height: 1.2; margin-top: 2px; }
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-wrap table { min-width: 480px; width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; }
+        .table-wrap th { background: #f8fafc; font-size: 9px; font-weight: 700; text-transform: uppercase; color: #64748b; padding: 8px 10px; border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
+        .table-wrap td { padding: 8px 10px; border-bottom: 1px solid #f1f5f9; color: #1e293b; vertical-align: middle; }
+        .badge-role { font-size: 9px; padding: 2px 10px; border-radius: 20px; font-weight: 600; display: inline-block; }
+        .badge-role.admin { background: #ede9fe; color: #6d28d9; }
+        .badge-role.guru { background: #dbeafe; color: #1d4ed8; }
+        .badge-role.siswa { background: #d1fae5; color: #065f46; }
+        .mapel-badge { background: #e0e7ff; color: #3730a3; font-size: 9px; padding: 1px 8px; border-radius: 12px; font-weight: 600; white-space: nowrap; display: inline-block; }
         .navbar {
             background: white;
             border-bottom: 1px solid #e2e8f0;
@@ -325,156 +88,32 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
             position: sticky;
             top: 0;
             z-index: 40;
         }
-        .navbar .left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-width: 0;
-        }
-        .navbar .right {
-            flex-shrink: 0;
-        }
-
-        .modal-backdrop {
-            background: rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            position: fixed;
-            inset: 0;
-            z-index: 49;
-        }
-        .modal-box {
-            background: white;
-            border-radius: 20px;
-            max-width: 340px;
-            width: 90%;
-            padding: 20px 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-            position: relative;
-            z-index: 50;
-            transform: scale(0.95);
-            opacity: 0;
-            transition: all 0.2s ease;
-        }
-        .modal-box.open {
-            transform: scale(1);
-            opacity: 1;
-        }
-        .modal-box h3 {
-            font-size: 17px;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 4px;
-        }
-        .modal-box p {
-            font-size: 13px;
-            color: #64748b;
-            line-height: 1.5;
-        }
-
-        .gap-2 {
-            gap: 8px;
-        }
-        .gap-3 {
-            gap: 12px;
-        }
-        .gap-4 {
-            gap: 16px;
-        }
-        .text-xs {
-            font-size: 11px;
-        }
-        .text-sm {
-            font-size: 13px;
-        }
-        .text-base {
-            font-size: 15px;
-        }
-        .text-lg {
-            font-size: 17px;
-        }
-        .text-xl {
-            font-size: 20px;
-        }
-        .text-2xl {
-            font-size: 24px;
-        }
-
+        .navbar .left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+        .navbar .right { flex-shrink: 0; }
         @media (min-width: 640px) {
-            .navbar {
-                height: 64px;
-                padding: 0 24px;
-            }
-            .logo-artha .brand {
-                font-size: 20px;
-            }
-            .logo-artha .tagline {
-                font-size: 8px;
-                letter-spacing: 3px;
-            }
-            .school-name {
-                font-size: 18px;
-            }
-            .stat-card .value {
-                font-size: 28px;
-            }
-            .btn {
-                font-size: 14px;
-                padding: 12px 24px;
-                width: auto;
-            }
-            .modal-box {
-                max-width: 400px;
-                padding: 28px 32px;
-            }
+            .navbar { height: 64px; padding: 0 24px; }
+            .logo-artha .brand { font-size: 20px; }
+            .logo-artha .tagline { font-size: 8px; letter-spacing: 3px; }
+            .school-name { font-size: 18px; }
+            .stat-card .value { font-size: 28px; }
+            .btn { width: auto; padding: 12px 24px; font-size: 14px; }
         }
-
         @media (max-width: 480px) {
-            .logo-artha .brand {
-                font-size: 12px;
-            }
-            .school-name {
-                font-size: 11px;
-            }
-            .stat-card .value {
-                font-size: 18px;
-            }
-            .stat-card {
-                padding: 8px 6px;
-            }
-            .table-wrap table {
-                font-size: 10px;
-                min-width: 360px;
-            }
-            .table-wrap th,
-            .table-wrap td {
-                padding: 5px 6px;
-            }
-            .btn {
-                font-size: 12px;
-                padding: 8px 14px;
-            }
-            input,
-            select,
-            textarea {
-                font-size: 13px;
-                padding: 8px 12px;
-            }
-            .card {
-                border-radius: 12px;
-            }
+            .logo-artha .brand { font-size: 12px; }
+            .school-name { font-size: 11px; }
+            .stat-card .value { font-size: 18px; }
+            .stat-card { padding: 8px 6px; }
+            .table-wrap table { font-size: 10px; min-width: 360px; }
+            .table-wrap th, .table-wrap td { padding: 5px 6px; }
+            .btn { font-size: 12px; padding: 8px 14px; }
         }
     </style>
 </head>
 <body>
-
-    <!-- ========== TOAST WARNING (Anti-Cheat) ========== -->
-    <div id="toast-warning"></div>
 
     <!-- ========== NAVBAR ========== -->
     <nav class="navbar" id="mainNav">
@@ -484,7 +123,7 @@
                 <span class="tagline">BERKARYA</span>
             </div>
             <span class="school-name hidden sm:inline">SMK <span>Prama Artha</span></span>
-            <span id="db-status" class="text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-800 shrink-0">Menghubungkan...</span>
+            <span id="db-status" class="text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-800 shrink-0">Online</span>
         </div>
         <div class="right">
             <button onclick="kembaliKeMenuUtama()" id="btn-home" class="flex items-center space-x-1 text-xs font-medium text-slate-600 hover:text-indigo-600 transition border border-slate-200 px-2.5 py-1.5 rounded-lg bg-slate-50 active:scale-95">
@@ -502,7 +141,7 @@
         <!-- ============================================================ -->
         <!-- 1. MENU UTAMA -->
         <!-- ============================================================ -->
-        <div id="view-menu" class="w-full max-w-3xl bg-white rounded-2xl shadow-lg border border-slate-100 p-5 sm:p-10 text-center fade-in">
+        <div id="view-menu" class="w-full max-w-3xl bg-white rounded-2xl shadow-lg border border-slate-100 p-5 sm:p-10 text-center">
             <div class="flex flex-col items-center gap-2 mb-3">
                 <div class="logo-artha bg-indigo-50 px-4 py-2 rounded-2xl border-2 border-indigo-200 shadow-md">
                     <span class="brand text-2xl sm:text-4xl">ARTHA JAYA</span>
@@ -513,27 +152,30 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
-                <button onclick="gantiHalaman('view-siswa-login')" class="card-hover bg-white border-2 border-slate-100 hover:border-emerald-500 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 transition">
+                <!-- SISWA -->
+                <button onclick="gantiHalaman('view-siswa-dashboard')" class="card-hover bg-white border-2 border-slate-100 hover:border-emerald-500 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 transition">
                     <div class="bg-emerald-50 text-emerald-600 p-3 rounded-xl shrink-0">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                     </div>
                     <div>
                         <h3 class="font-bold text-base sm:text-lg text-slate-800">Siswa</h3>
-                        <p class="text-slate-400 text-xs">Kerjakan ujian</p>
+                        <p class="text-slate-400 text-xs">Dashboard &amp; ujian</p>
                     </div>
                 </button>
 
-                <button onclick="gantiHalaman('view-guru-login')" class="card-hover bg-white border-2 border-slate-100 hover:border-blue-500 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 transition">
+                <!-- GURU -->
+                <button onclick="gantiHalaman('view-guru-dashboard')" class="card-hover bg-white border-2 border-slate-100 hover:border-blue-500 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 transition">
                     <div class="bg-blue-50 text-blue-600 p-3 rounded-xl shrink-0">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                     </div>
                     <div>
                         <h3 class="font-bold text-base sm:text-lg text-slate-800">Guru</h3>
-                        <p class="text-slate-400 text-xs">Kelola soal & nilai</p>
+                        <p class="text-slate-400 text-xs">Kelola soal &amp; nilai</p>
                     </div>
                 </button>
 
-                <button onclick="gantiHalaman('view-admin-login')" class="card-hover bg-white border-2 border-slate-100 hover:border-purple-500 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 transition">
+                <!-- ADMIN -->
+                <button onclick="gantiHalaman('view-admin-dashboard')" class="card-hover bg-white border-2 border-slate-100 hover:border-purple-500 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 transition">
                     <div class="bg-purple-50 text-purple-600 p-3 rounded-xl shrink-0">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     </div>
@@ -546,297 +188,116 @@
         </div>
 
         <!-- ============================================================ -->
-        <!-- 2. LOGIN GURU -->
+        <!-- 2. DASHBOARD SISWA -->
         <!-- ============================================================ -->
-        <div id="view-guru-login" class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden fade-in">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="text-2xl">👨‍🏫</span>
-                <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Akses Guru</h2>
-            </div>
-            <p class="text-xs sm:text-sm text-slate-500 mb-5">Masukkan kunci akses untuk mengelola bank soal dan nilai.</p>
-            <div class="space-y-4">
-                <div>
-                    <label>Password Guru</label>
-                    <input type="password" id="input-pass-guru" placeholder="Default: Guru123">
-                </div>
-                <p id="error-guru" class="text-rose-500 text-xs hidden">⚠ Password salah.</p>
-                <button onclick="loginGuru()" class="btn btn-primary">Buka Dashboard Guru</button>
-            </div>
-        </div>
-
-        <!-- ============================================================ -->
-        <!-- 3. LOGIN ADMIN -->
-        <!-- ============================================================ -->
-        <div id="view-admin-login" class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden fade-in">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="text-2xl">🛡️</span>
-                <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Akses Admin</h2>
-            </div>
-            <p class="text-xs sm:text-sm text-slate-500 mb-5">Masukkan kunci master untuk mengelola seluruh sistem.</p>
-            <div class="space-y-4">
-                <div>
-                    <label>Password Admin</label>
-                    <input type="password" id="input-pass-admin" placeholder="Default: Admin123">
-                </div>
-                <p id="error-admin" class="text-rose-500 text-xs hidden">⚠ Password salah.</p>
-                <button onclick="loginAdmin()" class="btn btn-primary">Buka Dashboard Admin</button>
-            </div>
-        </div>
-
-        <!-- ============================================================ -->
-        <!-- 4. DASHBOARD GURU -->
-        <!-- ============================================================ -->
-        <div id="view-guru-dashboard" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden fade-in">
+        <div id="view-siswa-dashboard" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 mb-4 gap-2">
-                <div>
-                    <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                        <span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
-                        Panel Pengajar
-                    </h2>
-                    <p class="text-xs text-slate-400">Kelola soal &amp; hasil per mapel</p>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="bukaModalResetGuru()" class="btn btn-danger btn-sm">Reset Hasil</button>
-                </div>
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full">SISWA</span>
+                    Dashboard Peserta
+                </h2>
+                <button onclick="kembaliKeMenuUtama()" class="btn btn-outline btn-sm">Kembali ke Menu</button>
             </div>
 
-            <div class="flex border-b border-slate-200 mb-4 overflow-x-auto scrollbar-none">
-                <button onclick="setTabGuru('hasil')" id="guru-tab-hasil" class="py-2 px-3 sm:px-5 text-xs sm:text-sm font-bold border-b-2 border-blue-600 text-blue-600 transition whitespace-nowrap">📊 Hasil</button>
-                <button onclick="setTabGuru('soal')" id="guru-tab-soal" class="py-2 px-3 sm:px-5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-blue-600 transition whitespace-nowrap">📝 Bank Soal</button>
+            <!-- Info & Stat -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                <div class="stat-card"><span class="label">Nama</span><span class="value text-base">Andi Wijaya</span></div>
+                <div class="stat-card"><span class="label">Kelas</span><span class="value text-base">XII RPL 1</span></div>
+                <div class="stat-card"><span class="label">Rata-rata Nilai</span><span class="value">85</span></div>
             </div>
 
-            <div id="guru-content-hasil" class="space-y-3">
-                <div class="flex flex-wrap items-center gap-2">
-                    <select id="guru-filter-mapel" class="flex-1 min-w-[120px] text-xs py-1.5 px-3 rounded-lg border-slate-200">
-                        <option value="">Semua Mapel</option>
-                    </select>
-                    <button onclick="guruFilterMapel()" class="btn btn-primary btn-sm flex-1 sm:flex-none">Filter</button>
-                </div>
-                <div class="grid grid-cols-3 gap-2">
-                    <div class="stat-card"><span class="label">Total</span><span id="guru-stat-total" class="value">0</span></div>
-                    <div class="stat-card"><span class="label">Rata-rata</span><span id="guru-stat-rata" class="value">0</span></div>
-                    <div class="stat-card"><span class="label">Tertinggi</span><span id="guru-stat-tinggi" class="value">0</span></div>
-                </div>
-                <div class="table-wrap border border-slate-100 rounded-xl bg-white">
-                    <table>
-                        <thead><tr><th>No</th><th>Nama</th><th class="text-center">Mapel</th><th class="text-center">Nilai</th><th class="text-center">Waktu</th></tr></thead>
-                        <tbody id="guru-tabel-hasil"><tr><td colspan="5" class="empty-state text-center py-6 text-slate-400 text-xs">Belum ada data</td></tr></tbody>
-                    </table>
-                </div>
+            <!-- Daftar Ujian -->
+            <h3 class="font-bold text-sm mb-2">📋 Riwayat Ujian</h3>
+            <div class="table-wrap border border-slate-100 rounded-xl bg-white">
+                <table>
+                    <thead><tr><th>No</th><th>Mapel</th><th class="text-center">Nilai</th><th class="text-center">Tanggal</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>Matematika</td><td class="text-center">90</td><td class="text-center">12/04/2026</td></tr>
+                        <tr><td>2</td><td>Bahasa Indonesia</td><td class="text-center">85</td><td class="text-center">10/04/2026</td></tr>
+                        <tr><td>3</td><td>Bahasa Inggris</td><td class="text-center">78</td><td class="text-center">08/04/2026</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <button onclick="alert('Fitur ujian aktif segera hadir')" class="btn btn-success mt-4">Mulai Ujian Baru</button>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 3. DASHBOARD GURU -->
+        <!-- ============================================================ -->
+        <div id="view-guru-dashboard" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 mb-4 gap-2">
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
+                    Panel Pengajar
+                </h2>
+                <button onclick="kembaliKeMenuUtama()" class="btn btn-outline btn-sm">Kembali ke Menu</button>
             </div>
 
-            <div id="guru-content-soal" class="hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-                    <div class="lg:col-span-5 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <h3 class="font-bold text-sm mb-3">➕ Tambah Soal</h3>
-                        <div class="space-y-3">
-                            <div>
-                                <label>Mata Pelajaran</label>
-                                <select id="guru-input-mapel"><option value="">Pilih Mapel</option></select>
-                            </div>
-                            <div>
-                                <label>Pertanyaan</label>
-                                <textarea id="guru-input-tanya" rows="2" placeholder="Teks pertanyaan..."></textarea>
-                            </div>
-                            <div><label>Opsi A</label><input type="text" id="guru-input-opsi-0" placeholder="Opsi A"></div>
-                            <div><label>Opsi B</label><input type="text" id="guru-input-opsi-1" placeholder="Opsi B"></div>
-                            <div><label>Opsi C</label><input type="text" id="guru-input-opsi-2" placeholder="Opsi C"></div>
-                            <div><label>Opsi D</label><input type="text" id="guru-input-opsi-3" placeholder="Opsi D"></div>
-                            <div>
-                                <label>Kunci</label>
-                                <select id="guru-input-kunci"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select>
-                            </div>
-                            <button onclick="guruTambahSoal()" class="btn btn-primary">Simpan</button>
-                        </div>
-                    </div>
-                    <div class="lg:col-span-7 border border-slate-100 rounded-xl p-3 bg-white">
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="font-bold text-sm">Daftar Soal (<span id="guru-count-soal">0</span>)</h3>
-                            <button onclick="guruResetBankSoal()" class="text-xs text-rose-500 font-semibold border border-rose-100 px-2 py-1 rounded-lg">Reset Default</button>
-                        </div>
-                        <div id="guru-list-soal" class="space-y-2 max-h-[350px] overflow-y-auto pr-1"></div>
-                    </div>
-                </div>
+            <!-- Statistik -->
+            <div class="grid grid-cols-3 gap-2 mb-4">
+                <div class="stat-card"><span class="label">Total Siswa</span><span class="value">32</span></div>
+                <div class="stat-card"><span class="label">Rata-rata</span><span class="value">78.5</span></div>
+                <div class="stat-card"><span class="label">Tertinggi</span><span class="value">95</span></div>
+            </div>
+
+            <!-- Tabel Nilai per Mapel -->
+            <h3 class="font-bold text-sm mb-2">📊 Hasil Ujian Siswa</h3>
+            <div class="table-wrap border border-slate-100 rounded-xl bg-white">
+                <table>
+                    <thead><tr><th>No</th><th>Nama</th><th>Mapel</th><th class="text-center">Nilai</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>Andi Wijaya</td><td>Matematika</td><td class="text-center">90</td></tr>
+                        <tr><td>2</td><td>Budi Santoso</td><td>Matematika</td><td class="text-center">85</td></tr>
+                        <tr><td>3</td><td>Citra Lestari</td><td>Bahasa Indonesia</td><td class="text-center">88</td></tr>
+                        <tr><td>4</td><td>Dewi Anggraini</td><td>Bahasa Inggris</td><td class="text-center">79</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mt-4">
+                <button onclick="alert('Buka form tambah soal')" class="btn btn-primary btn-sm">➕ Tambah Soal</button>
+                <button onclick="alert('Buka daftar soal')" class="btn btn-outline btn-sm">📝 Kelola Soal</button>
             </div>
         </div>
 
         <!-- ============================================================ -->
-        <!-- 5. DASHBOARD ADMIN -->
+        <!-- 4. DASHBOARD ADMIN -->
         <!-- ============================================================ -->
-        <div id="view-admin-dashboard" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden fade-in">
+        <div id="view-admin-dashboard" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 mb-4 gap-2">
-                <div>
-                    <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                        <span class="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
-                        Pusat Kendali
-                    </h2>
-                    <p class="text-xs text-slate-400">Kelola mapel, user, soal, hasil, log</p>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="bukaModalResetAdmin()" class="btn btn-danger btn-sm">Reset Semua</button>
-                    <button onclick="bukaModalTambahUser()" class="btn btn-success btn-sm">+ User</button>
-                    <button onclick="bukaModalTambahMapel()" class="btn btn-primary btn-sm">+ Mapel</button>
-                </div>
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
+                    Pusat Kendali
+                </h2>
+                <button onclick="kembaliKeMenuUtama()" class="btn btn-outline btn-sm">Kembali ke Menu</button>
             </div>
 
+            <!-- Statistik -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-                <div class="stat-card"><span class="label">User</span><span id="admin-stat-users" class="value">0</span></div>
-                <div class="stat-card"><span class="label">Soal</span><span id="admin-stat-soal" class="value">0</span></div>
-                <div class="stat-card"><span class="label">Ujian</span><span id="admin-stat-ujian" class="value">0</span></div>
-                <div class="stat-card"><span class="label">Rata-rata</span><span id="admin-stat-rata" class="value">0</span></div>
+                <div class="stat-card"><span class="label">User</span><span class="value">15</span></div>
+                <div class="stat-card"><span class="label">Mapel</span><span class="value">5</span></div>
+                <div class="stat-card"><span class="label">Soal</span><span class="value">120</span></div>
+                <div class="stat-card"><span class="label">Ujian</span><span class="value">48</span></div>
             </div>
 
-            <div class="flex border-b border-slate-200 mb-4 overflow-x-auto scrollbar-none">
-                <button onclick="setTabAdmin('mapel')" id="admin-tab-mapel" class="py-2 px-3 sm:px-5 text-xs sm:text-sm font-bold border-b-2 border-purple-600 text-purple-600 transition whitespace-nowrap">📚 Mapel</button>
-                <button onclick="setTabAdmin('users')" id="admin-tab-users" class="py-2 px-3 sm:px-5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-purple-600 transition whitespace-nowrap">👤 User</button>
-                <button onclick="setTabAdmin('soal')" id="admin-tab-soal" class="py-2 px-3 sm:px-5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-purple-600 transition whitespace-nowrap">📝 Soal</button>
-                <button onclick="setTabAdmin('hasil')" id="admin-tab-hasil" class="py-2 px-3 sm:px-5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-purple-600 transition whitespace-nowrap">📊 Hasil</button>
-                <button onclick="setTabAdmin('logs')" id="admin-tab-logs" class="py-2 px-3 sm:px-5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-purple-600 transition whitespace-nowrap">📋 Logs</button>
+            <!-- Tabel User -->
+            <h3 class="font-bold text-sm mb-2">👥 Manajemen User</h3>
+            <div class="table-wrap border border-slate-100 rounded-xl bg-white">
+                <table>
+                    <thead><tr><th>ID</th><th>Nama</th><th>Role</th><th>Aksi</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>Admin Utama</td><td><span class="badge-role admin">Admin</span></td><td><button class="text-xs text-rose-500">Hapus</button></td></tr>
+                        <tr><td>2</td><td>Budi Santoso</td><td><span class="badge-role guru">Guru</span></td><td><button class="text-xs text-rose-500">Hapus</button></td></tr>
+                        <tr><td>3</td><td>Andi Wijaya</td><td><span class="badge-role siswa">Siswa</span></td><td><button class="text-xs text-rose-500">Hapus</button></td></tr>
+                    </tbody>
+                </table>
             </div>
 
-            <div id="admin-content-mapel" class="space-y-3">
-                <div class="table-wrap border border-slate-100 rounded-xl bg-white">
-                    <table>
-                        <thead><tr><th>ID</th><th>Nama</th><th>Kode</th><th class="text-center">Aksi</th></tr></thead>
-                        <tbody id="admin-tabel-mapel"><tr><td colspan="4" class="empty-state text-center py-6 text-slate-400 text-xs">Belum ada mapel</td></tr></tbody>
-                    </table>
-                </div>
+            <div class="flex flex-wrap gap-2 mt-4">
+                <button onclick="alert('Tambah user')" class="btn btn-success btn-sm">➕ Tambah User</button>
+                <button onclick="alert('Tambah mapel')" class="btn btn-primary btn-sm">📚 Tambah Mapel</button>
+                <button onclick="if(confirm('Reset semua data?')) alert('Data direset')" class="btn btn-danger btn-sm">🗑️ Reset Semua</button>
             </div>
-
-            <div id="admin-content-users" class="hidden space-y-3">
-                <div class="table-wrap border border-slate-100 rounded-xl bg-white">
-                    <table>
-                        <thead><tr><th>ID</th><th>Nama</th><th>Role</th><th>Dibuat</th><th class="text-center">Aksi</th></tr></thead>
-                        <tbody id="admin-tabel-users"><tr><td colspan="5" class="empty-state text-center py-6 text-slate-400 text-xs">Belum ada user</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="admin-content-soal" class="hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-                    <div class="lg:col-span-5 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <h3 class="font-bold text-sm mb-3">➕ Tambah Soal (Admin)</h3>
-                        <div class="space-y-3">
-                            <div>
-                                <label>Mata Pelajaran</label>
-                                <select id="admin-input-mapel"><option value="">Pilih Mapel</option></select>
-                            </div>
-                            <div>
-                                <label>Pertanyaan</label>
-                                <textarea id="admin-input-tanya" rows="2" placeholder="Teks pertanyaan..."></textarea>
-                            </div>
-                            <div><label>Opsi A</label><input type="text" id="admin-input-opsi-0" placeholder="Opsi A"></div>
-                            <div><label>Opsi B</label><input type="text" id="admin-input-opsi-1" placeholder="Opsi B"></div>
-                            <div><label>Opsi C</label><input type="text" id="admin-input-opsi-2" placeholder="Opsi C"></div>
-                            <div><label>Opsi D</label><input type="text" id="admin-input-opsi-3" placeholder="Opsi D"></div>
-                            <div>
-                                <label>Kunci</label>
-                                <select id="admin-input-kunci"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select>
-                            </div>
-                            <button onclick="adminTambahSoal()" class="btn btn-primary">Simpan</button>
-                        </div>
-                    </div>
-                    <div class="lg:col-span-7 border border-slate-100 rounded-xl p-3 bg-white">
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="font-bold text-sm">Semua Soal (<span id="admin-count-soal">0</span>)</h3>
-                            <button onclick="adminResetBankSoal()" class="text-xs text-rose-500 font-semibold border border-rose-100 px-2 py-1 rounded-lg">Reset Default</button>
-                        </div>
-                        <div id="admin-list-soal" class="space-y-2 max-h-[350px] overflow-y-auto pr-1"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="admin-content-hasil" class="hidden">
-                <div class="flex flex-wrap items-center gap-2 mb-3">
-                    <select id="admin-filter-mapel" class="flex-1 min-w-[100px] text-xs py-1.5 px-3 rounded-lg border-slate-200"><option value="">Semua Mapel</option></select>
-                    <input type="text" id="admin-filter-nama" placeholder="Cari nama..." class="flex-1 min-w-[100px] text-xs py-1.5 px-3 rounded-lg border-slate-200">
-                    <button onclick="adminFilterHasil()" class="btn btn-primary btn-sm">Cari</button>
-                    <button onclick="adminMuatHasil()" class="text-slate-400 text-xs hover:text-slate-600">↻</button>
-                </div>
-                <div class="table-wrap border border-slate-100 rounded-xl bg-white">
-                    <table>
-                        <thead><tr><th>No</th><th>Nama</th><th class="text-center">Mapel</th><th class="text-center">Nilai</th><th class="text-center">Waktu</th><th class="text-center">Aksi</th></tr></thead>
-                        <tbody id="admin-tabel-hasil"><tr><td colspan="6" class="empty-state text-center py-6 text-slate-400 text-xs">Belum ada data</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="admin-content-logs" class="hidden">
-                <div class="border border-slate-100 rounded-xl p-3 bg-slate-50 max-h-[250px] overflow-y-auto">
-                    <div id="admin-log-list" class="space-y-1 text-xs text-slate-600"></div>
-                </div>
-                <button onclick="adminClearLogs()" class="btn btn-danger btn-sm mt-3">Hapus Log</button>
-            </div>
-        </div>
-
-        <!-- ============================================================ -->
-        <!-- 6. SISWA LOGIN -->
-        <!-- ============================================================ -->
-        <div id="view-siswa-login" class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden fade-in">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="text-2xl">🧑‍🎓</span>
-                <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Identitas Siswa</h2>
-            </div>
-            <p class="text-xs sm:text-sm text-slate-500 mb-5">Masukkan nama dan pilih mapel.</p>
-            <div class="space-y-4">
-                <div>
-                    <label>Nama Lengkap</label>
-                    <input type="text" id="nama-siswa" placeholder="Nama Anda">
-                </div>
-                <div>
-                    <label>Mata Pelajaran</label>
-                    <select id="siswa-pilih-mapel"><option value="">-- Pilih Mapel --</option></select>
-                </div>
-                <button onclick="mulaiUjian()" class="btn btn-success">Mulai Ujian</button>
-            </div>
-        </div>
-
-        <!-- ============================================================ -->
-        <!-- 7. UJIAN (dengan proteksi anti-curang) -->
-        <!-- ============================================================ -->
-        <div id="view-ujian" class="w-full flex flex-col lg:grid lg:grid-cols-3 gap-4 items-start hidden exam-container">
-            <div class="w-full lg:col-span-2 bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-6 order-2 lg:order-1">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-3">
-                    <div class="min-w-0 pr-2">
-                        <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">Soal</span>
-                        <h3 id="display-nama-siswa" class="font-bold text-sm text-slate-900 truncate">-</h3>
-                        <span id="display-mapel-siswa" class="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded">Mapel: -</span>
-                    </div>
-                    <div class="bg-rose-50 border border-rose-100 px-3 py-1.5 rounded-xl text-center shrink-0">
-                        <span class="text-[8px] text-rose-400 font-bold uppercase">Sisa</span>
-                        <div id="timer" class="text-base font-mono font-bold text-rose-600">30:00</div>
-                    </div>
-                </div>
-                <div id="kontainer-soal-aktif" class="min-h-[160px]"></div>
-                <div class="flex justify-between items-center gap-2 mt-4 pt-3 border-t border-slate-100">
-                    <div class="flex space-x-2">
-                        <button onclick="soalSebelumnya()" id="btn-prev" class="px-3 py-2 border border-slate-200 rounded-xl text-xs font-medium bg-white active:bg-slate-100 disabled:opacity-40">Kembali</button>
-                        <button onclick="tandaiRagu()" id="btn-ragu" class="px-3 py-2 border border-amber-200 text-amber-700 bg-amber-50 rounded-xl text-xs font-medium active:bg-amber-100">Ragu</button>
-                    </div>
-                    <button onclick="soalBerikutnya()" id="btn-next" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-medium shadow-sm active:scale-95">Berikutnya</button>
-                </div>
-            </div>
-            <div class="w-full lg:col-span-1 bg-white rounded-2xl shadow-lg border border-slate-100 p-4 order-1 lg:order-2">
-                <h4 class="font-bold text-xs text-slate-400 uppercase tracking-wider mb-2 text-center lg:text-left">Navigasi</h4>
-                <div id="grid-nomor-soal" class="grid grid-cols-5 gap-1.5"></div>
-                <button onclick="bukaModalKumpul()" class="btn btn-danger mt-3">Kumpulkan</button>
-            </div>
-        </div>
-
-        <!-- ============================================================ -->
-        <!-- 8. SELESAI -->
-        <!-- ============================================================ -->
-        <div id="view-selesai" class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 text-center hidden fade-in">
-            <div class="inline-flex bg-emerald-50 text-emerald-600 p-3 rounded-full mb-3">
-                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-            </div>
-            <h2 class="text-xl font-bold text-slate-900">Ujian Selesai!</h2>
-            <p class="text-xs text-slate-500 mb-4">Jawaban berhasil diunggah.</p>
-            <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 mb-4">
-                <span class="text-xs text-slate-400 font-semibold uppercase">Skor</span>
-                <span id="display-nilai-siswa" class="text-3xl font-black text-indigo-600 block">0</span>
-            </div>
-            <button onclick="kembaliKeMenuUtama()" class="btn btn-outline">Keluar</button>
         </div>
 
     </main>
@@ -848,1283 +309,43 @@
                 <span class="brand text-xs font-extrabold text-indigo-800">ARTHA JAYA</span>
                 <span class="tagline-alt text-[6px] text-indigo-400 border-l border-indigo-200 pl-1">BERKARYA</span>
             </span>
-            <span>SMK Prama Artha · CBT Mobile</span>
+            <span>SMK Prama Artha · CBT</span>
         </div>
     </footer>
 
-    <!-- ========== MODAL ========== -->
-    <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
-        <div class="modal-backdrop" onclick="tutupModal()"></div>
-        <div class="modal-box" id="modal-content">
-            <h3 id="modal-title">Judul</h3>
-            <p id="modal-desc" class="mt-1">Deskripsi.</p>
-            <div class="flex gap-2 mt-4 justify-end">
-                <button onclick="tutupModal()" class="btn btn-sm btn-outline" style="width:auto;">Batal</button>
-                <button id="modal-confirm-btn" class="btn btn-sm btn-primary" style="width:auto;">OK</button>
-            </div>
-        </div>
-    </div>
-
     <!-- ============================================================ -->
-    <!-- JAVASCRIPT (dengan fitur Anti-Cheat) -->
+    <!-- JAVASCRIPT -->
     <!-- ============================================================ -->
     <script>
         // ================================================================
-        // KONFIGURASI SUPABASE
-        // ================================================================
-        const SUPABASE_URL = "https://rsfepmlqbcpnqnavhesw.supabase.co";
-        const SUPABASE_ANON_KEY =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZmVwbWxxYmNwbnFuYXZoZXN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDQzMDYsImV4cCI6MjA5OTYyMDMwNn0.jRbCyr19TBrQjtjD76kQQFIdqjh4isZ3clxCXQ6xK5g";
-
-        let bankSoal = [],
-            daftarMapel = [],
-            users = [],
-            logs = [];
-        let dbActive = false,
-            supabaseClient = null;
-        let waktuUjian = 30 * 60,
-            intervalTimer;
-        let namaPesertaAktif = "",
-            mapelPesertaAktif = null;
-        let jawabanSiswa = {},
-            raguRaguSiswa = {};
-
-        // ===== ANTI-CHEATING VARIABLES =====
-        let violationCount = 0;
-        const MAX_VIOLATIONS = 3;
-        let isExamActive = false;
-        let antiCheatListeners = [];
-
-        // ================================================================
-        // INISIALISASI
-        // ================================================================
-        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-            try {
-                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                dbActive = true;
-                document.getElementById('db-status').className =
-                    "text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-800 shrink-0";
-                document.getElementById('db-status').innerText = "Online";
-            } catch (e) { setOfflineMode(); }
-        } else { setOfflineMode(); }
-
-        function setOfflineMode() {
-            dbActive = false;
-            document.getElementById('db-status').className =
-                "text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-800 shrink-0";
-            document.getElementById('db-status').innerText = "Local";
-        }
-
-        window.onload = async () => {
-            await loadMapel();
-            await sinkronisasiSoal();
-            await loadUsers();
-            await loadLogs();
-            populateMapelDropdowns();
-            gantiHalaman('view-menu');
-        };
-
-        // ================================================================
-        // FUNGSI NAVIGASI
+        // NAVIGASI
         // ================================================================
         function gantiHalaman(id) {
-            // Jika keluar dari ujian, bersihkan anti-cheat
-            if (id !== 'view-ujian' && isExamActive) {
-                clearAntiCheating();
-            }
+            // Sembunyikan semua view
             document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
+            // Tampilkan yang dipilih
+            const target = document.getElementById(id);
+            if (target) target.classList.remove('hidden');
+
+            // Sembunyikan tombol home jika di halaman ujian (tidak ada di sini)
+            const btnHome = document.getElementById('btn-home');
             if (id === 'view-ujian') {
-                document.getElementById('btn-home').classList.add('hidden');
-                // Aktifkan anti-cheat saat masuk ujian
-                setupAntiCheating();
+                btnHome.classList.add('hidden');
             } else {
-                document.getElementById('btn-home').classList.remove('hidden');
+                btnHome.classList.remove('hidden');
             }
-            if (id === 'view-guru-dashboard') { setTabGuru('hasil');
-                populateMapelDropdowns(); }
-            if (id === 'view-admin-dashboard') { setTabAdmin('mapel');
-                adminMuatStats();
-                adminMuatMapel();
-                adminMuatUsers();
-                adminMuatSoal();
-                adminMuatHasil();
-                adminMuatLogs();
-                populateMapelDropdowns(); }
-            if (id === 'view-siswa-login') populateMapelDropdowns();
         }
 
         function kembaliKeMenuUtama() {
-            clearInterval(intervalTimer);
-            clearAntiCheating();
             gantiHalaman('view-menu');
         }
 
         // ================================================================
-        // ===== ANTI-CHEATING SYSTEM =====
+        // INISIALISASI (tampilkan menu utama)
         // ================================================================
-        function showToast(message, isWarning = true) {
-            const toast = document.getElementById('toast-warning');
-            toast.innerText = message;
-            toast.style.display = 'block';
-            toast.style.background = isWarning ? '#dc2626' : '#f59e0b';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 4000);
-        }
-
-        function handleViolation(type) {
-            if (!isExamActive) return;
-            violationCount++;
-            const remaining = MAX_VIOLATIONS - violationCount;
-            let message =
-                `⚠️ Peringatan! Deteksi pelanggaran: ${type}. Sisa kesempatan: ${remaining} kali. Jika mencapai ${MAX_VIOLATIONS} kali, ujian akan otomatis dikumpulkan.`;
-
-            // Log pelanggaran ke konsol dan database
-            console.warn(`[ANTI-CHEAT] Pelanggaran #${violationCount}: ${type}`);
-            tambahLog(`[ANTI-CHEAT] Siswa "${namaPesertaAktif}" melanggar: ${type} (${violationCount}/${MAX_VIOLATIONS})`);
-
-            showToast(message, true);
-
-            if (violationCount >= MAX_VIOLATIONS) {
-                showToast('🚨 Batas pelanggaran terlampaui! Ujian akan otomatis dikumpulkan.', true);
-                // Force submit after 1.5 seconds
-                setTimeout(() => {
-                    if (isExamActive) {
-                        alert('⚠️ Anda telah melakukan 3 kali pelanggaran. Ujian otomatis dikumpulkan.');
-                        kumpulkanHasilAkhirMapel();
-                    }
-                }, 1500);
-            }
-        }
-
-        function setupAntiCheating() {
-            if (isExamActive) return;
-            isExamActive = true;
-            violationCount = 0;
-
-            // 1. Fullscreen Lock
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen().catch(() => {
-                    // User might block fullscreen, but we try.
-                });
-            }
-
-            // 2. Visibility API (Tab Switch)
-            const visibilityHandler = () => {
-                if (document.hidden && isExamActive) {
-                    handleViolation('Pindah Tab / Keluar Aplikasi');
-                }
-            };
-            document.addEventListener('visibilitychange', visibilityHandler);
-            antiCheatListeners.push({ element: document, event: 'visibilitychange', handler: visibilityHandler });
-
-            // 3. Fullscreen Change
-            const fullscreenHandler = () => {
-                if (!document.fullscreenElement && isExamActive) {
-                    handleViolation('Keluar dari Layar Penuh');
-                    // Try to force fullscreen again
-                    if (document.documentElement.requestFullscreen) {
-                        document.documentElement.requestFullscreen().catch(() => {});
-                    }
-                }
-            };
-            document.addEventListener('fullscreenchange', fullscreenHandler);
-            antiCheatListeners.push({ element: document, event: 'fullscreenchange', handler: fullscreenHandler });
-
-            // 4. Block Right Click
-            const contextHandler = (e) => {
-                if (isExamActive) {
-                    e.preventDefault();
-                    handleViolation('Klik Kanan (Inspect)');
-                    return false;
-                }
-            };
-            document.addEventListener('contextmenu', contextHandler);
-            antiCheatListeners.push({ element: document, event: 'contextmenu', handler: contextHandler });
-
-            // 5. Block Keyboard Shortcuts (F12, Ctrl+Shift+I, Ctrl+U, Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+S)
-            const keyHandler = (e) => {
-                if (!isExamActive) return;
-                const ctrl = e.ctrlKey || e.metaKey;
-                const shift = e.shiftKey;
-                const key = e.key.toLowerCase();
-
-                // F12, Ctrl+Shift+I, Ctrl+U, Ctrl+Shift+J
-                if (e.key === 'F12' ||
-                    (ctrl && shift && (key === 'i' || key === 'j' || key === 'c')) ||
-                    (ctrl && key === 'u') ||
-                    (ctrl && key === 's') ||
-                    (ctrl && key === 'p') ||
-                    (ctrl && key === 'c') ||
-                    (ctrl && key === 'v') ||
-                    (ctrl && key === 'x') ||
-                    (ctrl && key === 'a')) {
-                    e.preventDefault();
-                    handleViolation('Shortcut Keyboard (Copy/Paste/Inspect)');
-                    return false;
-                }
-            };
-            document.addEventListener('keydown', keyHandler);
-            antiCheatListeners.push({ element: document, event: 'keydown', handler: keyHandler });
-
-            // 6. Block Text Selection (already handled by CSS, but double down with JS)
-            const selectHandler = (e) => {
-                if (isExamActive && e.target.closest('.exam-container')) {
-                    // Allow selection in inputs/textarea
-                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-                    e.preventDefault();
-                }
-            };
-            document.addEventListener('selectstart', selectHandler);
-            antiCheatListeners.push({ element: document, event: 'selectstart', handler: selectHandler });
-
-            // 7. Block Paste
-            const pasteHandler = (e) => {
-                if (isExamActive) {
-                    e.preventDefault();
-                    handleViolation('Mencoba Paste (Tempel)');
-                    return false;
-                }
-            };
-            document.addEventListener('paste', pasteHandler);
-            antiCheatListeners.push({ element: document, event: 'paste', handler: pasteHandler });
-
-            // 8. Block Copy
-            const copyHandler = (e) => {
-                if (isExamActive) {
-                    e.preventDefault();
-                    handleViolation('Mencoba Copy (Salin)');
-                    return false;
-                }
-            };
-            document.addEventListener('copy', copyHandler);
-            antiCheatListeners.push({ element: document, event: 'copy', handler: copyHandler });
-
-            console.log('[ANTI-CHEAT] Sistem proteksi aktif.');
-        }
-
-        function clearAntiCheating() {
-            isExamActive = false;
-            // Remove all listeners
-            antiCheatListeners.forEach(({ element, event, handler }) => {
-                element.removeEventListener(event, handler);
-            });
-            antiCheatListeners = [];
-
-            // Exit fullscreen if active
-            if (document.fullscreenElement) {
-                document.exitFullscreen().catch(() => {});
-            }
-            console.log('[ANTI-CHEAT] Sistem proteksi dinonaktifkan.');
-        }
-
-        // ================================================================
-        // LOAD DATA (disederhanakan untuk mobile)
-        // ================================================================
-        async function loadMapel() {
-            if (dbActive && supabaseClient) {
-                try {
-                    const { data, error } = await supabaseClient.from('mata_pelajaran').select('*').order('id');
-                    if (error) throw error;
-                    if (!data || data.length === 0) {
-                        for (let m of defaultMapel) await supabaseClient.from('mata_pelajaran').insert([m]);
-                        return loadMapel();
-                    }
-                    daftarMapel = data;
-                } catch (e) { loadMapelLocal(); }
-            } else { loadMapelLocal(); }
-        }
-
-        function loadMapelLocal() {
-            const stored = localStorage.getItem('local_mapel');
-            daftarMapel = stored ? JSON.parse(stored) : defaultMapel.map(m => ({ ...m }));
-            localStorage.setItem('local_mapel', JSON.stringify(daftarMapel));
-        }
-
-        async function sinkronisasiSoal() {
-            if (dbActive && supabaseClient) {
-                try {
-                    const { data, error } = await supabaseClient.from('bank_soal').select('*').order('id');
-                    if (error) throw error;
-                    if (!data || data.length === 0) {
-                        for (let s of defaultSoal) await supabaseClient.from('bank_soal').insert([{ mapel_id: s.mapel_id,
-                            tanya: s.tanya, opsi_a: s.opsi[0], opsi_b: s.opsi[1], opsi_c: s.opsi[2], opsi_d: s.opsi[3],
-                            kunci: s.kunci }]);
-                        return sinkronisasiSoal();
-                    }
-                    bankSoal = data.map(item => ({ id: item.id, mapel_id: item.mapel_id, tanya: item.tanya, opsi: [item
-                            .opsi_a, item.opsi_b, item.opsi_c, item.opsi_d], kunci: item.kunci }));
-                } catch (e) { fallbackLocalSoal(); }
-            } else { fallbackLocalSoal(); }
-        }
-
-        function fallbackLocalSoal() {
-            const stored = localStorage.getItem('local_bank_soal');
-            bankSoal = stored ? JSON.parse(stored) : defaultSoal.map(s => ({ ...s }));
-            localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
-        }
-
-        async function loadUsers() {
-            if (dbActive && supabaseClient) {
-                try {
-                    const { data, error } = await supabaseClient.from('users').select('*').order('id');
-                    if (error) throw error;
-                    if (!data || data.length === 0) {
-                        for (let u of defaultUsers) await supabaseClient.from('users').insert([u]);
-                        return loadUsers();
-                    }
-                    users = data;
-                } catch (e) { loadUsersLocal(); }
-            } else { loadUsersLocal(); }
-        }
-
-        function loadUsersLocal() {
-            const stored = localStorage.getItem('local_users');
-            users = stored ? JSON.parse(stored) : defaultUsers.map(u => ({ ...u }));
-            localStorage.setItem('local_users', JSON.stringify(users));
-        }
-
-        async function loadLogs() {
-            if (dbActive && supabaseClient) {
-                try {
-                    const { data, error } = await supabaseClient.from('logs').select('*').order('id', { ascending: false })
-                        .limit(30);
-                    if (error) throw error;
-                    logs = data || [];
-                } catch (e) { loadLogsLocal(); }
-            } else { loadLogsLocal(); }
-        }
-
-        function loadLogsLocal() {
-            const stored = localStorage.getItem('local_logs');
-            logs = stored ? JSON.parse(stored) : [];
-        }
-
-        function tambahLog(aktivitas) {
-            const entry = { id: Date.now(), waktu: new Date().toLocaleString('id-ID'), aktivitas };
-            logs.unshift(entry);
-            if (logs.length > 50) logs.pop();
-            if (dbActive && supabaseClient) {
-                supabaseClient.from('logs').insert([entry]).catch(() => {});
-            } else {
-                localStorage.setItem('local_logs', JSON.stringify(logs));
-            }
-        }
-
-        function getNamaMapel(id) {
-            const found = daftarMapel.find(m => m.id === id);
-            return found ? found.nama : 'Tidak Diketahui';
-        }
-
-        function populateMapelDropdowns() {
-            const selects = ['siswa-pilih-mapel', 'guru-input-mapel', 'admin-input-mapel', 'guru-filter-mapel',
-                'admin-filter-mapel'
-            ];
-            selects.forEach(id => {
-                const el = document.getElementById(id);
-                if (!el) return;
-                const current = el.value;
-                el.innerHTML = id.includes('filter') ? '<option value="">Semua Mapel</option>' :
-                    '<option value="">Pilih Mapel</option>';
-                daftarMapel.forEach(m => {
-                    el.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
-                });
-                el.value = current;
-            });
-        }
-
-        // ================================================================
-        // LOGIN
-        // ================================================================
-        function loginGuru() {
-            const pass = document.getElementById('input-pass-guru').value;
-            if (users.find(u => u.role === 'guru' && u.password === pass) || pass === 'Guru123') {
-                document.getElementById('error-guru').classList.add('hidden');
-                tambahLog('Guru login');
-                gantiHalaman('view-guru-dashboard');
-                muatDashboardGuru();
-                muatDaftarSoalGuru();
-            } else {
-                document.getElementById('error-guru').classList.remove('hidden');
-            }
-        }
-
-        function loginAdmin() {
-            const pass = document.getElementById('input-pass-admin').value;
-            if (users.find(u => u.role === 'admin' && u.password === pass) || pass === 'Admin123') {
-                document.getElementById('error-admin').classList.add('hidden');
-                tambahLog('Admin login');
-                gantiHalaman('view-admin-dashboard');
-                adminMuatStats();
-                adminMuatMapel();
-                adminMuatUsers();
-                adminMuatSoal();
-                adminMuatHasil();
-                adminMuatLogs();
-            } else {
-                document.getElementById('error-admin').classList.remove('hidden');
-            }
-        }
-
-        // ================================================================
-        // GURU: HASIL & SOAL
-        // ================================================================
-        function setTabGuru(tab) {
-            document.getElementById('guru-tab-hasil').className = tab === 'hasil' ?
-                "py-2 px-3 sm:px-5 text-xs sm:text-sm font-bold border-b-2 border-blue-600 text-blue-600 transition whitespace-nowrap" :
-                "py-2 px-3 sm:px-5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-blue-600 transition whitespace-nowrap";
-            document.getElementById('guru-tab-soal').className = tab === 'soal' ?
-                "py-2 px-3 sm:px-5 text-xs sm:text-sm font-bold border-b-2 border-blue-600 text-blue-600 transition whitespace-nowrap" :
-                "py-2 px-3 sm:px-5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-blue-600 transition whitespace-nowrap";
-            document.getElementById('guru-content-hasil').classList.toggle('hidden', tab !== 'hasil');
-            document.getElementById('guru-content-soal').classList.toggle('hidden', tab !== 'soal');
-            if (tab === 'hasil') muatDashboardGuru();
-            else muatDaftarSoalGuru();
-        }
-
-        function guruFilterMapel() { muatDashboardGuru(); }
-
-        async function muatDashboardGuru() {
-            const tbody = document.getElementById('guru-tabel-hasil');
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Memuat...</td></tr>';
-            const filter = document.getElementById('guru-filter-mapel').value;
-            let data = [];
-            if (dbActive && supabaseClient) {
-                try {
-                    let q = supabaseClient.from('hasil_ujian').select('*').order('id', { ascending: false });
-                    if (filter) q = q.eq('mapel_id', parseInt(filter));
-                    const { data: d, error } = await q;
-                    if (!error) data = d || [];
-                } catch (e) { data = JSON.parse(localStorage.getItem('local_hasil_ujian') || '[]'); }
-            } else {
-                data = JSON.parse(localStorage.getItem('local_hasil_ujian') || '[]');
-                if (filter) data = data.filter(item => item.mapel_id === parseInt(filter));
-            }
-            tbody.innerHTML = '';
-            if (data.length === 0) {
-                tbody.innerHTML =
-                    '<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Belum ada data</td></tr>';
-                document.getElementById('guru-stat-total').innerText = '0';
-                document.getElementById('guru-stat-rata').innerText = '0';
-                document.getElementById('guru-stat-tinggi').innerText = '0';
-                return;
-            }
-            let total = data.length,
-                sum = 0,
-                max = 0;
-            data.forEach((item, i) => {
-                sum += item.nilai;
-                if (item.nilai > max) max = item.nilai;
-                const mapel = getNamaMapel(item.mapel_id);
-                tbody.innerHTML += `<tr>
-                    <td>${i+1}</td>
-                    <td class="font-semibold">${item.nama}</td>
-                    <td class="text-center"><span class="mapel-badge guru">${mapel}</span></td>
-                    <td class="text-center"><span class="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded-full text-xs">${item.nilai}</span></td>
-                    <td class="text-center text-[10px] text-slate-400">${item.waktu}</td>
-                </tr>`;
-            });
-            document.getElementById('guru-stat-total').innerText = total;
-            document.getElementById('guru-stat-rata').innerText = Math.round(sum / total);
-            document.getElementById('guru-stat-tinggi').innerText = max;
-        }
-
-        function muatDaftarSoalGuru() {
-            const container = document.getElementById('guru-list-soal');
-            document.getElementById('guru-count-soal').innerText = bankSoal.length;
-            container.innerHTML = '';
-            if (bankSoal.length === 0) {
-                container.innerHTML =
-                    '<div class="text-center py-4 text-slate-400 text-xs border border-dashed rounded-lg">Bank soal kosong</div>';
-                return;
-            }
-            bankSoal.forEach((soal, idx) => {
-                let ops = '';
-                soal.opsi.forEach((o, i) => {
-                    const correct = i === soal.kunci ? 'text-emerald-600 font-bold' : 'text-slate-500';
-                    ops +=
-                        `<p class="text-xs ${correct}"><span>${i === soal.kunci ? '✔️' : '•'}</span> ${o}</p>`;
-                });
-                const mapel = getNamaMapel(soal.mapel_id);
-                container.innerHTML += `
-                    <div class="p-3 border border-slate-100 rounded-xl bg-slate-50/60 flex justify-between items-start gap-2">
-                        <div class="flex-1 min-w-0">
-                            <span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">#${idx+1}</span>
-                            <span class="mapel-badge guru ml-1">${mapel}</span>
-                            <h4 class="font-semibold text-sm text-slate-800 mt-1 break-words">${soal.tanya}</h4>
-                            <div class="mt-1">${ops}</div>
-                        </div>
-                        <button onclick="guruHapusSoal(${soal.id})" class="text-rose-500 text-lg leading-none p-1">🗑</button>
-                    </div>
-                `;
-            });
-        }
-
-        // ================================================================
-        // GURU: TAMBAH, HAPUS, RESET SOAL
-        // ================================================================
-        async function guruTambahSoal() {
-            const mapel_id = parseInt(document.getElementById('guru-input-mapel').value);
-            const tanya = document.getElementById('guru-input-tanya').value.trim();
-            const opsi = [
-                document.getElementById('guru-input-opsi-0').value.trim(),
-                document.getElementById('guru-input-opsi-1').value.trim(),
-                document.getElementById('guru-input-opsi-2').value.trim(),
-                document.getElementById('guru-input-opsi-3').value.trim()
-            ];
-            const kunci = parseInt(document.getElementById('guru-input-kunci').value);
-            if (!mapel_id || !tanya || opsi.some(o => !o)) { alert('Semua kolom wajib diisi!'); return; }
-            if (dbActive && supabaseClient) {
-                try {
-                    await supabaseClient.from('bank_soal').insert([{ mapel_id, tanya, opsi_a: opsi[0], opsi_b: opsi[1],
-                        opsi_c: opsi[2], opsi_d: opsi[3], kunci }]);
-                    await sinkronisasiSoal();
-                    tambahLog('Guru tambah soal');
-                } catch (e) { alert('Gagal simpan'); return; }
-            } else {
-                const newId = bankSoal.length ? Math.max(...bankSoal.map(s => s.id)) + 1 : 1;
-                bankSoal.push({ id: newId, mapel_id, tanya, opsi, kunci });
-                localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
-            }
-            ['guru-input-tanya', 'guru-input-opsi-0', 'guru-input-opsi-1', 'guru-input-opsi-2', 'guru-input-opsi-3']
-            .forEach(id => document.getElementById(id).value = '');
-            muatDaftarSoalGuru();
-        }
-
-        async function guruHapusSoal(id) {
-            if (!confirm('Hapus soal ini?')) return;
-            if (dbActive && supabaseClient) {
-                try {
-                    await supabaseClient.from('bank_soal').delete().eq('id', id);
-                    await sinkronisasiSoal();
-                    tambahLog('Guru hapus soal');
-                } catch (e) { alert('Gagal hapus'); return; }
-            } else {
-                bankSoal = bankSoal.filter(s => s.id !== id);
-                localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
-            }
-            muatDaftarSoalGuru();
-        }
-
-        async function guruResetBankSoal() {
-            if (!confirm('Reset ke soal default?')) return;
-            if (dbActive && supabaseClient) {
-                try {
-                    await supabaseClient.from('bank_soal').delete().neq('id', 0);
-                    for (let s of defaultSoal) {
-                        await supabaseClient.from('bank_soal').insert([{ mapel_id: s.mapel_id, tanya: s.tanya, opsi_a: s
-                                .opsi[0], opsi_b: s.opsi[1], opsi_c: s.opsi[2], opsi_d: s.opsi[3], kunci: s.kunci }]);
-                    }
-                    await sinkronisasiSoal();
-                } catch (e) { alert('Gagal reset'); return; }
-            } else {
-                bankSoal = defaultSoal.map(s => ({ ...s }));
-                localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
-            }
-            muatDaftarSoalGuru();
-        }
-
-        async function bukaModalResetGuru() {
-            if (confirm('Hapus semua hasil ujian?')) {
-                if (dbActive && supabaseClient) {
-                    try {
-                        await supabaseClient.from('hasil_ujian').delete().neq('id', 0);
-                        tambahLog('Guru reset hasil');
-                    } catch (e) { alert('Gagal reset'); return; }
-                } else {
-                    localStorage.removeItem('local_hasil_ujian');
-                }
-                muatDashboardGuru();
-            }
-        }
-
-        // ================================================================
-        // ADMIN: TAB
-        // ================================================================
-        function setTabAdmin(tab) {
-            const tabs = ['mapel', 'users', 'soal', 'hasil', 'logs'];
-            tabs.forEach(t => {
-                const btn = document.getElementById(`admin-tab-${t}`);
-                const content = document.getElementById(`admin-content-${t}`);
-                if (t === tab) {
-                    btn.className =
-                        "py-2 px-3 sm:px-5 text-xs sm:text-sm font-bold border-b-2 border-purple-600 text-purple-600 transition whitespace-nowrap";
-                    content.classList.remove('hidden');
-                } else {
-                    btn.className =
-                        "py-2 px-3 sm:px-5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-purple-600 transition whitespace-nowrap";
-                    content.classList.add('hidden');
-                }
-            });
-            if (tab === 'mapel') adminMuatMapel();
-            if (tab === 'users') adminMuatUsers();
-            if (tab === 'soal') adminMuatSoal();
-            if (tab === 'hasil') adminMuatHasil();
-            if (tab === 'logs') adminMuatLogs();
-        }
-
-        // ================================================================
-        // ADMIN: STATS
-        // ================================================================
-        function adminMuatStats() {
-            document.getElementById('admin-stat-users').innerText = users.length;
-            document.getElementById('admin-stat-soal').innerText = bankSoal.length;
-            let data = [];
-            if (dbActive && supabaseClient) {
-                supabaseClient.from('hasil_ujian').select('*').then(({ data: d }) => {
-                    if (d) {
-                        document.getElementById('admin-stat-ujian').innerText = d.length;
-                        if (d.length) {
-                            const total = d.reduce((s, i) => s + i.nilai, 0);
-                            document.getElementById('admin-stat-rata').innerText = Math.round(total / d.length);
-                        } else document.getElementById('admin-stat-rata').innerText = '0';
-                    }
-                });
-            } else {
-                data = JSON.parse(localStorage.getItem('local_hasil_ujian') || '[]');
-                document.getElementById('admin-stat-ujian').innerText = data.length;
-                if (data.length) {
-                    const total = data.reduce((s, i) => s + i.nilai, 0);
-                    document.getElementById('admin-stat-rata').innerText = Math.round(total / data.length);
-                } else document.getElementById('admin-stat-rata').innerText = '0';
-            }
-        }
-
-        // ================================================================
-        // ADMIN: MAPEL
-        // ================================================================
-        function adminMuatMapel() {
-            const tbody = document.getElementById('admin-tabel-mapel');
-            tbody.innerHTML = '';
-            if (daftarMapel.length === 0) {
-                tbody.innerHTML =
-                    '<tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">Belum ada mapel</td></tr>';
-                return;
-            }
-            daftarMapel.forEach((m, idx) => {
-                tbody.innerHTML += `<tr>
-                    <td>${m.id}</td>
-                    <td class="font-semibold">${m.nama}</td>
-                    <td><span class="mapel-badge admin">${m.kode||'-'}</span></td>
-                    <td class="text-center flex flex-wrap gap-1 justify-center">
-                        <button onclick="adminEditMapel(${m.id})" class="text-blue-500 text-xs font-medium px-2 py-1 rounded border border-blue-100">Edit</button>
-                        <button onclick="adminHapusMapel(${m.id})" class="text-rose-500 text-xs font-medium px-2 py-1 rounded border border-rose-100">Hapus</button>
-                    </td>
-                </tr>`;
-            });
-        }
-
-        async function adminHapusMapel(id) {
-            const m = daftarMapel.find(x => x.id === id);
-            if (!m || !confirm(`Hapus mapel "${m.nama}"?`)) return;
-            if (bankSoal.some(s => s.mapel_id === id)) { alert('Masih ada soal di mapel ini!'); return; }
-            daftarMapel = daftarMapel.filter(x => x.id !== id);
-            if (dbActive && supabaseClient) {
-                try {
-                    await supabaseClient.from('mata_pelajaran').delete().eq('id', id);
-                } catch (e) { localStorage.setItem('local_mapel', JSON.stringify(daftarMapel)); }
-            } else {
-                localStorage.setItem('local_mapel', JSON.stringify(daftarMapel));
-            }
-            tambahLog('Admin hapus mapel');
-            adminMuatMapel();
-            populateMapelDropdowns();
-            adminMuatStats();
-        }
-
-        function adminEditMapel(id) {
-            const m = daftarMapel.find(x => x.id === id);
-            if (!m) return;
-            const nama = prompt('Edit nama mapel:', m.nama);
-            if (nama && nama.trim()) {
-                m.nama = nama.trim();
-                const kode = prompt('Edit kode mapel:', m.kode || '');
-                if (kode !== null) m.kode = kode.trim() || '';
-                if (dbActive && supabaseClient) {
-                    supabaseClient.from('mata_pelajaran').update({ nama: m.nama, kode: m.kode }).eq('id', id).catch(() => {});
-                } else {
-                    localStorage.setItem('local_mapel', JSON.stringify(daftarMapel));
-                }
-                tambahLog('Admin edit mapel');
-                adminMuatMapel();
-                populateMapelDropdowns();
-            }
-        }
-
-        function bukaModalTambahMapel() {
-            const nama = prompt('Nama mata pelajaran:');
-            if (!nama || !nama.trim()) return;
-            const kode = prompt('Kode mapel (opsional):', '');
-            const newId = daftarMapel.length ? Math.max(...daftarMapel.map(m => m.id)) + 1 : 1;
-            daftarMapel.push({ id: newId, nama: nama.trim(), kode: kode.trim() || '' });
-            if (dbActive && supabaseClient) {
-                supabaseClient.from('mata_pelajaran').insert([{ id: newId, nama: nama.trim(), kode: kode.trim() || '' }])
-                    .catch(() => {});
-            } else {
-                localStorage.setItem('local_mapel', JSON.stringify(daftarMapel));
-            }
-            tambahLog('Admin tambah mapel');
-            adminMuatMapel();
-            populateMapelDropdowns();
-            adminMuatStats();
-        }
-
-        // ================================================================
-        // ADMIN: USER
-        // ================================================================
-        function adminMuatUsers() {
-            const tbody = document.getElementById('admin-tabel-users');
-            tbody.innerHTML = '';
-            if (users.length === 0) {
-                tbody.innerHTML =
-                    '<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Belum ada user</td></tr>';
-                return;
-            }
-            const roleLabels = { admin: '<span class="badge-role admin">Admin</span>', guru: '<span class="badge-role guru">Guru</span>',
-                siswa: '<span class="badge-role siswa">Siswa</span>' };
-            users.forEach((u, idx) => {
-                tbody.innerHTML += `<tr>
-                    <td>${u.id}</td>
-                    <td class="font-semibold">${u.nama}</td>
-                    <td>${roleLabels[u.role]||u.role}</td>
-                    <td class="text-[10px] text-slate-400">${u.created||'-'}</td>
-                    <td class="text-center">${u.role!=='admin'?`<button onclick="adminHapusUser(${u.id})" class="text-rose-500 text-xs font-medium px-2 py-1 rounded border border-rose-100">Hapus</button>`:'<span class="text-[10px] text-slate-400">—</span>'}</td>
-                </tr>`;
-            });
-        }
-
-        async function adminHapusUser(id) {
-            const u = users.find(x => x.id === id);
-            if (!u || !confirm(`Hapus user "${u.nama}"?`)) return;
-            users = users.filter(x => x.id !== id);
-            if (dbActive && supabaseClient) {
-                try {
-                    await supabaseClient.from('users').delete().eq('id', id);
-                } catch (e) { localStorage.setItem('local_users', JSON.stringify(users)); }
-            } else {
-                localStorage.setItem('local_users', JSON.stringify(users));
-            }
-            tambahLog('Admin hapus user');
-            adminMuatUsers();
-            adminMuatStats();
-        }
-
-        function bukaModalTambahUser() {
-            const nama = prompt('Nama user:');
-            if (!nama || !nama.trim()) return;
-            const role = prompt('Role (admin/guru/siswa):', 'siswa');
-            if (!role || !['admin', 'guru', 'siswa'].includes(role)) { alert('Role tidak valid!'); return; }
-            const pass = prompt('Password (kosong jika siswa):', '');
-            const newId = users.length ? Math.max(...users.map(u => u.id)) + 1 : 1;
-            users.push({ id: newId, nama: nama.trim(), role, password: pass || '', created: new Date().toLocaleString(
-                    'id-ID') });
-            if (dbActive && supabaseClient) {
-                supabaseClient.from('users').insert([{ id: newId, nama: nama.trim(), role, password: pass || '',
-                    created: new Date().toLocaleString('id-ID') }]).catch(() => {});
-            } else {
-                localStorage.setItem('local_users', JSON.stringify(users));
-            }
-            tambahLog('Admin tambah user');
-            adminMuatUsers();
-            adminMuatStats();
-        }
-
-        // ================================================================
-        // ADMIN: SOAL
-        // ================================================================
-        function adminMuatSoal() {
-            const container = document.getElementById('admin-list-soal');
-            document.getElementById('admin-count-soal').innerText = bankSoal.length;
-            container.innerHTML = '';
-            if (bankSoal.length === 0) {
-                container.innerHTML =
-                    '<div class="text-center py-4 text-slate-400 text-xs border border-dashed rounded-lg">Bank soal kosong</div>';
-                return;
-            }
-            bankSoal.forEach((soal, idx) => {
-                let ops = '';
-                soal.opsi.forEach((o, i) => {
-                    const correct = i === soal.kunci ? 'text-emerald-600 font-bold' : 'text-slate-500';
-                    ops +=
-                        `<p class="text-xs ${correct}"><span>${i === soal.kunci ? '✔️' : '•'}</span> ${o}</p>`;
-                });
-                const mapel = getNamaMapel(soal.mapel_id);
-                container.innerHTML += `
-                    <div class="p-3 border border-slate-100 rounded-xl bg-slate-50/60 flex justify-between items-start gap-2">
-                        <div class="flex-1 min-w-0">
-                            <span class="text-[9px] font-bold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">#${idx+1}</span>
-                            <span class="mapel-badge admin ml-1">${mapel}</span>
-                            <h4 class="font-semibold text-sm text-slate-800 mt-1 break-words">${soal.tanya}</h4>
-                            <div class="mt-1">${ops}</div>
-                        </div>
-                        <button onclick="adminHapusSoal(${soal.id})" class="text-rose-500 text-lg leading-none p-1">🗑</button>
-                    </div>
-                `;
-            });
-        }
-
-        async function adminTambahSoal() {
-            const mapel_id = parseInt(document.getElementById('admin-input-mapel').value);
-            const tanya = document.getElementById('admin-input-tanya').value.trim();
-            const opsi = [
-                document.getElementById('admin-input-opsi-0').value.trim(),
-                document.getElementById('admin-input-opsi-1').value.trim(),
-                document.getElementById('admin-input-opsi-2').value.trim(),
-                document.getElementById('admin-input-opsi-3').value.trim()
-            ];
-            const kunci = parseInt(document.getElementById('admin-input-kunci').value);
-            if (!mapel_id || !tanya || opsi.some(o => !o)) { alert('Semua kolom wajib diisi!'); return; }
-            if (dbActive && supabaseClient) {
-                try {
-                    await supabaseClient.from('bank_soal').insert([{ mapel_id, tanya, opsi_a: opsi[0], opsi_b: opsi[1],
-                        opsi_c: opsi[2], opsi_d: opsi[3], kunci }]);
-                    await sinkronisasiSoal();
-                    tambahLog('Admin tambah soal');
-                } catch (e) { alert('Gagal simpan'); return; }
-            } else {
-                const newId = bankSoal.length ? Math.max(...bankSoal.map(s => s.id)) + 1 : 1;
-                bankSoal.push({ id: newId, mapel_id, tanya, opsi, kunci });
-                localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
-            }
-            ['admin-input-tanya', 'admin-input-opsi-0', 'admin-input-opsi-1', 'admin-input-opsi-2', 'admin-input-opsi-3']
-            .forEach(id => document.getElementById(id).value = '');
-            adminMuatSoal();
-            adminMuatStats();
-        }
-
-        async function adminHapusSoal(id) {
-            if (!confirm('Hapus soal ini?')) return;
-            if (dbActive && supabaseClient) {
-                try {
-                    await supabaseClient.from('bank_soal').delete().eq('id', id);
-                    await sinkronisasiSoal();
-                    tambahLog('Admin hapus soal');
-                } catch (e) { alert('Gagal hapus'); return; }
-            } else {
-                bankSoal = bankSoal.filter(s => s.id !== id);
-                localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
-            }
-            adminMuatSoal();
-            adminMuatStats();
-        }
-
-        async function adminResetBankSoal() {
-            if (!confirm('Reset ke soal default?')) return;
-            if (dbActive && supabaseClient) {
-                try {
-                    await supabaseClient.from('bank_soal').delete().neq('id', 0);
-                    for (let s of defaultSoal) {
-                        await supabaseClient.from('bank_soal').insert([{ mapel_id: s.mapel_id, tanya: s.tanya, opsi_a: s
-                                .opsi[0], opsi_b: s.opsi[1], opsi_c: s.opsi[2], opsi_d: s.opsi[3], kunci: s.kunci }]);
-                    }
-                    await sinkronisasiSoal();
-                } catch (e) { alert('Gagal reset'); return; }
-            } else {
-                bankSoal = defaultSoal.map(s => ({ ...s }));
-                localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
-            }
-            adminMuatSoal();
-            adminMuatStats();
-        }
-
-        // ================================================================
-        // ADMIN: HASIL
-        // ================================================================
-        async function adminMuatHasil(filterNama = '', filterMapel = '') {
-            const tbody = document.getElementById('admin-tabel-hasil');
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-slate-400 text-xs">Memuat...</td></tr>';
-            let data = [];
-            if (dbActive && supabaseClient) {
-                try {
-                    let q = supabaseClient.from('hasil_ujian').select('*').order('id', { ascending: false });
-                    if (filterMapel) q = q.eq('mapel_id', parseInt(filterMapel));
-                    if (filterNama) q = q.ilike('nama', `%${filterNama}%`);
-                    const { data: d, error } = await q;
-                    if (!error) data = d || [];
-                } catch (e) { data = JSON.parse(localStorage.getItem('local_hasil_ujian') || '[]'); }
-            } else {
-                data = JSON.parse(localStorage.getItem('local_hasil_ujian') || '[]');
-                if (filterMapel) data = data.filter(item => item.mapel_id === parseInt(filterMapel));
-                if (filterNama) data = data.filter(item => item.nama.toLowerCase().includes(filterNama.toLowerCase()));
-            }
-            tbody.innerHTML = '';
-            if (data.length === 0) {
-                tbody.innerHTML =
-                    '<tr><td colspan="6" class="text-center py-4 text-slate-400 text-xs">Belum ada data</td></tr>';
-                return;
-            }
-            data.forEach((item, i) => {
-                const mapel = getNamaMapel(item.mapel_id);
-                tbody.innerHTML += `<tr>
-                    <td>${i+1}</td>
-                    <td class="font-semibold">${item.nama}</td>
-                    <td class="text-center"><span class="mapel-badge admin">${mapel}</span></td>
-                    <td class="text-center"><span class="bg-purple-50 text-purple-700 font-bold px-2 py-0.5 rounded-full text-xs">${item.nilai}</span></td>
-                    <td class="text-center text-[10px] text-slate-400">${item.waktu}</td>
-                    <td class="text-center"><button onclick="adminHapusHasil(${i})" class="text-rose-500 text-xs font-medium px-2 py-1 rounded border border-rose-100">Hapus</button></td>
-                </tr>`;
-            });
-        }
-
-        function adminFilterHasil() {
-            const mapel = document.getElementById('admin-filter-mapel').value;
-            const nama = document.getElementById('admin-filter-nama').value.trim();
-            adminMuatHasil(nama, mapel);
-        }
-
-        async function adminHapusHasil(index) {
-            if (!confirm('Hapus data hasil ini?')) return;
-            let data = [];
-            if (dbActive && supabaseClient) {
-                try {
-                    const { data: d, error } = await supabaseClient.from('hasil_ujian').select('*').order('id', { ascending: false });
-                    if (!error && d && d.length > index) {
-                        const id = d[index].id;
-                        await supabaseClient.from('hasil_ujian').delete().eq('id', id);
-                        tambahLog('Admin hapus hasil');
-                        adminMuatHasil();
-                        adminMuatStats();
-                        return;
-                    }
-                } catch (e) {}
-            }
-            data = JSON.parse(localStorage.getItem('local_hasil_ujian') || '[]');
-            if (data.length > index) {
-                data.splice(index, 1);
-                localStorage.setItem('local_hasil_ujian', JSON.stringify(data));
-                adminMuatHasil();
-                adminMuatStats();
-            }
-        }
-
-        // ================================================================
-        // ADMIN: LOGS
-        // ================================================================
-        function adminMuatLogs() {
-            const container = document.getElementById('admin-log-list');
-            container.innerHTML = '';
-            if (logs.length === 0) {
-                container.innerHTML = '<div class="text-xs text-slate-400 italic">Belum ada log</div>';
-                return;
-            }
-            logs.forEach(log => {
-                container.innerHTML +=
-                    `<div class="flex justify-between items-start py-1 border-b border-slate-100 last:border-0"><span class="text-xs text-slate-700">${log.aktivitas}</span><span class="text-[9px] text-slate-400 shrink-0 ml-2">${log.waktu}</span></div>`;
-            });
-        }
-
-        function adminClearLogs() {
-            if (!confirm('Hapus semua log?')) return;
-            logs = [];
-            if (dbActive && supabaseClient) {
-                supabaseClient.from('logs').delete().neq('id', 0).catch(() => {});
-            } else {
-                localStorage.setItem('local_logs', JSON.stringify(logs));
-            }
-            adminMuatLogs();
-        }
-
-        // ================================================================
-        // ADMIN: RESET SEMUA
-        // ================================================================
-        function bukaModalResetAdmin() {
-            if (!confirm('⚠️ Reset total sistem? Semua data akan hilang!')) return;
-            if (dbActive && supabaseClient) {
-                Promise.all([
-                    supabaseClient.from('bank_soal').delete().neq('id', 0),
-                    supabaseClient.from('hasil_ujian').delete().neq('id', 0),
-                    supabaseClient.from('users').delete().neq('id', 0),
-                    supabaseClient.from('logs').delete().neq('id', 0),
-                    supabaseClient.from('mata_pelajaran').delete().neq('id', 0)
-                ]).then(() => {
-                    defaultMapel.forEach(m => supabaseClient.from('mata_pelajaran').insert([m]));
-                    defaultSoal.forEach(s => supabaseClient.from('bank_soal').insert([{ mapel_id: s.mapel_id, tanya: s
-                            .tanya, opsi_a: s.opsi[0], opsi_b: s.opsi[1], opsi_c: s.opsi[2], opsi_d: s.opsi[3],
-                            kunci: s.kunci }]));
-                    defaultUsers.forEach(u => supabaseClient.from('users').insert([u]));
-                    logs = [];
-                    loadMapel();
-                    sinkronisasiSoal();
-                    loadUsers();
-                    populateMapelDropdowns();
-                    adminMuatStats();
-                    adminMuatMapel();
-                    adminMuatUsers();
-                    adminMuatSoal();
-                    adminMuatHasil();
-                    adminMuatLogs();
-                    tambahLog('Admin reset total sistem');
-                });
-            } else {
-                localStorage.removeItem('local_mapel');
-                localStorage.removeItem('local_bank_soal');
-                localStorage.removeItem('local_hasil_ujian');
-                localStorage.removeItem('local_users');
-                localStorage.removeItem('local_logs');
-                daftarMapel = defaultMapel.map(m => ({ ...m }));
-                bankSoal = defaultSoal.map(s => ({ ...s }));
-                users = defaultUsers.map(u => ({ ...u }));
-                logs = [];
-                localStorage.setItem('local_mapel', JSON.stringify(daftarMapel));
-                localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
-                localStorage.setItem('local_users', JSON.stringify(users));
-                populateMapelDropdowns();
-                adminMuatStats();
-                adminMuatMapel();
-                adminMuatUsers();
-                adminMuatSoal();
-                adminMuatHasil();
-                adminMuatLogs();
-                tambahLog('Admin reset total sistem (local)');
-            }
-        }
-
-        // ================================================================
-        // UJIAN SISWA (dengan anti-cheat)
-        // ================================================================
-        async function mulaiUjian() {
-            await sinkronisasiSoal();
-            const mapelId = parseInt(document.getElementById('siswa-pilih-mapel').value);
-            const nama = document.getElementById('nama-siswa').value.trim();
-            if (!mapelId) { alert('Pilih mapel!'); return; }
-            if (!nama) { alert('Isi nama!'); return; }
-            const soalMapel = bankSoal.filter(s => s.mapel_id === mapelId);
-            if (soalMapel.length === 0) { alert('Belum ada soal untuk mapel ini.'); return; }
-
-            namaPesertaAktif = nama;
-            mapelPesertaAktif = mapelId;
-            document.getElementById('display-nama-siswa').innerText = nama;
-            document.getElementById('display-mapel-siswa').innerText = `Mapel: ${getNamaMapel(mapelId)}`;
-            document.getElementById('nama-siswa').value = '';
-
-            window.soalUjian = soalMapel;
-            window.indeksSoalUjian = 0;
-            jawabanSiswa = {};
-            raguRaguSiswa = {};
-
-            // Reset violation counter sebelum ujian baru
-            violationCount = 0;
-
-            renderUjianMapel();
-            waktuUjian = 30 * 60;
-            clearInterval(intervalTimer);
-            jalankanTimer();
-            gantiHalaman('view-ujian');
-        }
-
-        function renderUjianMapel() {
-            const soal = window.soalUjian[window.indeksSoalUjian];
-            if (!soal) return;
-            const kontainer = document.getElementById('kontainer-soal-aktif');
-            let opsiHtml = '';
-            soal.opsi.forEach((o, idx) => {
-                const checked = jawabanSiswa[soal.id] === idx ? 'checked' : '';
-                const style = jawabanSiswa[soal.id] === idx ? 'border-indigo-600 bg-indigo-50/60 font-semibold' :
-                    'border-slate-200 bg-white';
-                opsiHtml += `
-                    <label class="flex items-center p-3 my-2 border rounded-xl cursor-pointer transition ${style}">
-                        <input type="radio" name="opsi-soal" value="${idx}" ${checked} onchange="pilihJawabanMapel(${soal.id}, ${idx})" class="h-4 w-4 text-indigo-600">
-                        <span class="ml-3 text-xs sm:text-sm text-slate-700">${o}</span>
-                    </label>
-                `;
-            });
-
-            kontainer.innerHTML = `
-                <div class="mt-1">
-                    <span class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-500 rounded">Soal ${window.indeksSoalUjian+1}/${window.soalUjian.length}</span>
-                    <p class="font-semibold text-sm sm:text-base text-slate-800 mt-2 leading-relaxed">${soal.tanya}</p>
-                    <div class="mt-3">${opsiHtml}</div>
-                </div>
-            `;
-
-            const grid = document.getElementById('grid-nomor-soal');
-            grid.innerHTML = '';
-            window.soalUjian.forEach((s, idx) => {
-                let cls = "bg-slate-50 text-slate-600 border border-slate-200";
-                if (idx === window.indeksSoalUjian) cls =
-                    "bg-indigo-600 text-white ring-2 ring-indigo-100 border-indigo-600 font-bold";
-                else if (raguRaguSiswa[s.id]) cls = "bg-amber-500 text-white border-amber-500";
-                else if (jawabanSiswa[s.id] !== undefined) cls = "bg-emerald-500 text-white border-emerald-500";
-                grid.innerHTML +=
-                    `<button onclick="lompatKeSoalMapel(${idx})" class="w-full aspect-square flex items-center justify-center rounded-lg text-xs font-semibold transition active:scale-90 ${cls}">${idx+1}</button>`;
-            });
-
-            document.getElementById('btn-prev').disabled = window.indeksSoalUjian === 0;
-            document.getElementById('btn-next').innerText = window.indeksSoalUjian === window.soalUjian.length - 1 ?
-                'Selesai' : 'Berikutnya';
-
-            const btnRagu = document.getElementById('btn-ragu');
-            if (raguRaguSiswa[soal.id]) {
-                btnRagu.className =
-                    "px-3 py-2 border border-amber-500 text-white bg-amber-500 rounded-xl text-xs font-semibold transition";
-            } else {
-                btnRagu.className =
-                    "px-3 py-2 border border-amber-200 text-amber-700 bg-amber-50 rounded-xl text-xs font-medium transition";
-            }
-        }
-
-        function pilihJawabanMapel(id, idx) {
-            jawabanSiswa[id] = idx;
-            renderUjianMapel();
-        }
-
-        function lompatKeSoalMapel(idx) {
-            window.indeksSoalUjian = idx;
-            renderUjianMapel();
-        }
-
-        function soalSebelumnya() {
-            if (window.indeksSoalUjian > 0) { window.indeksSoalUjian--;
-                renderUjianMapel(); }
-        }
-
-        function soalBerikutnya() {
-            if (window.indeksSoalUjian < window.soalUjian.length - 1) { window.indeksSoalUjian++;
-                renderUjianMapel(); } else { bukaModalKumpul(); }
-        }
-
-        function tandaiRagu() {
-            const id = window.soalUjian[window.indeksSoalUjian].id;
-            raguRaguSiswa[id] = !raguRaguSiswa[id];
-            renderUjianMapel();
-        }
-
-        // ================================================================
-        // KUMPULKAN UJIAN
-        // ================================================================
-        function bukaModalKumpul() {
-            if (confirm('Kumpulkan ujian? Jawaban akan dinilai.')) {
-                kumpulkanHasilAkhirMapel();
-            }
-        }
-
-        async function kumpulkanHasilAkhirMapel() {
-            // Matikan anti-cheat agar tidak mengganggu proses submit
-            clearAntiCheating();
-            clearInterval(intervalTimer);
-
-            const soal = window.soalUjian || [];
-            let benar = 0;
-            soal.forEach(s => {
-                if (jawabanSiswa[s.id] !== undefined && jawabanSiswa[s.id] === s.kunci) benar++;
-            });
-            const nilai = soal.length > 0 ? Math.round((benar / soal.length) * 100) : 0;
-            const waktu = new Date().toLocaleString('id-ID');
-
-            if (dbActive && supabaseClient) {
-                try {
-                    await supabaseClient.from('hasil_ujian').insert([{ nama: namaPesertaAktif, mapel_id: mapelPesertaAktif,
-                        nilai, waktu }]);
-                    tambahLog(
-                        `Siswa "${namaPesertaAktif}" selesai mapel ${getNamaMapel(mapelPesertaAktif)}, nilai ${nilai}`);
-                } catch (e) {
-                    simpanHasilLokalMapel(namaPesertaAktif, mapelPesertaAktif, nilai, waktu);
-                }
-            } else {
-                simpanHasilLokalMapel(namaPesertaAktif, mapelPesertaAktif, nilai, waktu);
-            }
-            document.getElementById('display-nilai-siswa').innerText = nilai;
-            gantiHalaman('view-selesai');
-        }
-
-        function simpanHasilLokalMapel(nama, mapel_id, nilai, waktu) {
-            const data = JSON.parse(localStorage.getItem('local_hasil_ujian') || '[]');
-            data.push({ nama, mapel_id, nilai, waktu });
-            localStorage.setItem('local_hasil_ujian', JSON.stringify(data));
-            tambahLog(
-                `Siswa "${nama}" selesai (local) mapel ${getNamaMapel(mapel_id)}, nilai ${nilai}`);
-        }
-
-        // ================================================================
-        // TIMER
-        // ================================================================
-        function jalankanTimer() {
-            const el = document.getElementById('timer');
-            intervalTimer = setInterval(() => {
-                let m = Math.floor(waktuUjian / 60),
-                    s = waktuUjian % 60;
-                m = m < 10 ? '0' + m : m;
-                s = s < 10 ? '0' + s : s;
-                el.innerText = `${m}:${s}`;
-                if (waktuUjian <= 0) {
-                    clearInterval(intervalTimer);
-                    if (isExamActive) {
-                        alert('⏰ Waktu habis! Ujian otomatis dikumpulkan.');
-                        kumpulkanHasilAkhirMapel();
-                    }
-                }
-                waktuUjian--;
-            }, 1000);
-        }
-
-        // ================================================================
-        // MODAL
-        // ================================================================
-        function tampilkanModal(judul, deskripsi, aksiKonfirmasi) {
-            document.getElementById('modal-title').innerText = judul;
-            document.getElementById('modal-desc').innerText = deskripsi;
-            document.getElementById('modal-confirm-btn').onclick = aksiKonfirmasi;
-            const modal = document.getElementById('custom-modal');
-            const content = document.getElementById('modal-content');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                content.classList.add('open');
-            }, 50);
-        }
-
-        function tutupModal() {
-            const modal = document.getElementById('custom-modal');
-            const content = document.getElementById('modal-content');
-            content.classList.remove('open');
-            setTimeout(() => modal.classList.add('hidden'), 200);
-        }
-
-        // ================================================================
-        // DEFAULT DATA
-        // ================================================================
-        const defaultMapel = [
-            { id: 1, nama: "Matematika", kode: "MTK" },
-            { id: 2, nama: "Bahasa Indonesia", kode: "BIN" },
-            { id: 3, nama: "Bahasa Inggris", kode: "BIG" },
-            { id: 4, nama: "IPA", kode: "IPA" },
-            { id: 5, nama: "IPS", kode: "IPS" }
-        ];
-
-        const defaultSoal = [
-            { id: 1, mapel_id: 1, tanya: "Hasil dari 2 + 3 adalah?", opsi: ["A. 4", "B. 5", "C. 6", "D. 7"], kunci: 1 },
-            { id: 2, mapel_id: 1, tanya: "Akar kuadrat dari 81 adalah?", opsi: ["A. 7", "B. 8", "C. 9", "D. 10"], kunci: 2 },
-            { id: 3, mapel_id: 2, tanya: "Sinonim dari 'cepat' adalah?", opsi: ["A. Lambat", "B. Kilat", "C. Pelan", "D. Lama"],
-                kunci: 1 },
-            { id: 4, mapel_id: 2, tanya: "Kalimat baku adalah kalimat yang ...", opsi: ["A. Mengandung slang", "B. Sesuai EYD",
-                    "C. Tidak logis", "D. Bertele-tele"
-                ], kunci: 1 },
-            { id: 5, mapel_id: 3, tanya: "What is the meaning of 'book'?", opsi: ["A. Pensil", "B. Buku", "C. Meja",
-                    "D. Kursi"
-                ], kunci: 1 },
-            { id: 6, mapel_id: 3, tanya: "She ... to school every day.", opsi: ["A. go", "B. goes", "C. going", "D. gone"],
-                kunci: 1 },
-            { id: 7, mapel_id: 4, tanya: "Planet terbesar di tata surya adalah?", opsi: ["A. Bumi", "B. Jupiter", "C. Saturnus",
-                    "D. Mars"
-                ], kunci: 1 },
-            { id: 8, mapel_id: 4, tanya: "Bagian sel yang berfungsi sebagai pusat kendali adalah?", opsi: ["A. Membran sel",
-                    "B. Sitoplasma", "C. Nukleus", "D. Mitokondria"
-                ], kunci: 2 },
-            { id: 9, mapel_id: 5, tanya: "Ibu kota Indonesia adalah?", opsi: ["A. Jakarta", "B. Surabaya", "C. Bandung",
-                    "D. Medan"
-                ], kunci: 0 },
-            { id: 10, mapel_id: 5, tanya: "Gunung tertinggi di Indonesia adalah?", opsi: ["A. Krakatau", "B. Merapi",
-                    "C. Semeru", "D. Rinjani"
-                ], kunci: 2 }
-        ];
-
-        const defaultUsers = [
-            { id: 1, nama: "Admin Utama", role: "admin", password: "Admin123", created: "2026-01-01 08:00" },
-            { id: 2, nama: "Budi Santoso", role: "guru", password: "Guru123", created: "2026-01-02 09:00" },
-            { id: 3, nama: "Siti Rahayu", role: "guru", password: "Guru123", created: "2026-01-03 10:00" },
-            { id: 4, nama: "Andi Wijaya", role: "siswa", password: "", created: "2026-01-04 11:00" },
-            { id: 5, nama: "Dewi Lestari", role: "siswa", password: "", created: "2026-01-05 12:00" },
-        ];
+        window.onload = function() {
+            gantiHalaman('view-menu');
+        };
     </script>
 </body>
 </html>
