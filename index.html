@@ -22,7 +22,6 @@
             transform: scale(0.97);
         }
 
-        /* LOGO */
         .logo-artha {
             display: inline-flex;
             flex-direction: column;
@@ -58,7 +57,6 @@
             color: #4f46e5;
         }
 
-        /* BUTTONS */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -121,8 +119,14 @@
         .btn-admin:hover {
             background: #6d28d9;
         }
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #d97706;
+        }
 
-        /* STAT CARD */
         .stat-card {
             background: white;
             border-radius: 14px;
@@ -145,7 +149,6 @@
             margin-top: 2px;
         }
 
-        /* TABLE */
         .table-wrap {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -174,7 +177,6 @@
             vertical-align: middle;
         }
 
-        /* BADGE */
         .badge-role {
             font-size: 9px;
             padding: 2px 10px;
@@ -195,7 +197,6 @@
             color: #065f46;
         }
 
-        /* NAVBAR */
         .navbar {
             background: white;
             border-bottom: 1px solid #e2e8f0;
@@ -317,35 +318,36 @@
             }
         }
 
-        /* FORM LOGIN */
         .login-card {
             max-width: 380px;
             margin: 0 auto;
         }
-        .login-card input {
+        .login-card input,
+        .login-card select,
+        .login-card textarea {
             width: 100%;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
-            padding: 12px 16px;
-            font-size: 16px;
+            padding: 10px 14px;
+            font-size: 14px;
             background: white;
             transition: all 0.15s;
             font-family: inherit;
-            text-align: center;
         }
-        .login-card input:focus {
+        .login-card input:focus,
+        .login-card select:focus,
+        .login-card textarea:focus {
             outline: none;
             ring: 2px solid #4f46e5;
             border-color: transparent;
         }
         .login-card label {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: #475569;
             display: block;
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
-            text-align: center;
+            margin-bottom: 4px;
+            letter-spacing: 0.3px;
         }
         .login-card .error-msg {
             color: #ef4444;
@@ -381,6 +383,135 @@
             text-align: center;
             margin-bottom: 20px;
         }
+
+        .page-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+        @media (min-width: 640px) {
+            .page-header {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        /* Timer Ujian */
+        .timer-box {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            padding: 8px 16px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 80px;
+        }
+        .timer-box .label {
+            font-size: 8px;
+            text-transform: uppercase;
+            color: #ef4444;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: block;
+        }
+        .timer-box .time {
+            font-size: 20px;
+            font-weight: 800;
+            color: #dc2626;
+            font-family: monospace;
+        }
+
+        /* Soal */
+        .soal-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .soal-item .nomor {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4f46e5;
+            background: #eef2ff;
+            padding: 2px 10px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        .soal-item .pertanyaan {
+            font-weight: 600;
+            font-size: 14px;
+            margin: 8px 0;
+            color: #0f172a;
+        }
+        .soal-item .opsi {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .soal-item .opsi:active {
+            transform: scale(0.98);
+        }
+        .soal-item .opsi.selected {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+        .soal-item .opsi input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #4f46e5;
+            flex-shrink: 0;
+        }
+        .soal-item .opsi .teks {
+            font-size: 13px;
+            color: #1e293b;
+        }
+
+        .nav-soal {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+        }
+        .nav-soal button {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+            background: white;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .nav-soal button:active {
+            transform: scale(0.92);
+        }
+        .nav-soal button.aktif {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+        .nav-soal button.dijawab {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+        .nav-soal button.ragu {
+            background: #f59e0b;
+            color: white;
+            border-color: #f59e0b;
+        }
     </style>
 </head>
 <body>
@@ -396,7 +527,6 @@
             <span id="db-status" class="text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-800 shrink-0">Online</span>
         </div>
         <div class="right">
-            <!-- User Badge (muncul saat login) -->
             <div id="user-badge" class="user-badge hidden">
                 <span id="user-name">User</span>
                 <span id="user-role" class="role">role</span>
@@ -412,12 +542,12 @@
     </nav>
 
     <!-- ========== MAIN ========== -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex items-center justify-center">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6">
 
         <!-- ============================================================ -->
-        <!-- 1. MENU UTAMA (Halaman Awal) -->
+        <!-- 1. MENU UTAMA -->
         <!-- ============================================================ -->
-        <div id="view-menu" class="w-full max-w-3xl bg-white rounded-2xl shadow-lg border border-slate-100 p-5 sm:p-10 text-center">
+        <div id="view-menu" class="w-full max-w-3xl mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-5 sm:p-10 text-center">
             <div class="flex flex-col items-center gap-2 mb-3">
                 <div class="logo-artha bg-indigo-50 px-4 py-2 rounded-2xl border-2 border-indigo-200 shadow-md">
                     <span class="brand text-2xl sm:text-4xl">ARTHA JAYA</span>
@@ -428,7 +558,6 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
-                <!-- SISWA (tanpa password) -->
                 <button onclick="gantiHalaman('view-siswa-login')" class="card-hover bg-white border-2 border-slate-100 hover:border-emerald-500 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 transition">
                     <div class="bg-emerald-50 text-emerald-600 p-3 rounded-xl shrink-0">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
@@ -439,7 +568,6 @@
                     </div>
                 </button>
 
-                <!-- GURU (password) -->
                 <button onclick="gantiHalaman('view-guru-login')" class="card-hover bg-white border-2 border-slate-100 hover:border-blue-500 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 transition">
                     <div class="bg-blue-50 text-blue-600 p-3 rounded-xl shrink-0">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
@@ -450,7 +578,6 @@
                     </div>
                 </button>
 
-                <!-- ADMIN (password) -->
                 <button onclick="gantiHalaman('view-admin-login')" class="card-hover bg-white border-2 border-slate-100 hover:border-purple-500 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 transition">
                     <div class="bg-purple-50 text-purple-600 p-3 rounded-xl shrink-0">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -464,9 +591,9 @@
         </div>
 
         <!-- ============================================================ -->
-        <!-- 2. LOGIN SISWA (HANYA NAMA, TANPA PASSWORD) -->
+        <!-- 2. LOGIN SISWA (NAMA SAJA) -->
         <!-- ============================================================ -->
-        <div id="view-siswa-login" class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden login-card">
+        <div id="view-siswa-login" class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden login-card">
             <span class="login-icon">🧑‍🎓</span>
             <div class="login-title">Masuk sebagai Siswa</div>
             <div class="login-sub">Cukup masukkan nama lengkap Anda</div>
@@ -483,9 +610,9 @@
         </div>
 
         <!-- ============================================================ -->
-        <!-- 3. LOGIN GURU (password) -->
+        <!-- 3. LOGIN GURU -->
         <!-- ============================================================ -->
-        <div id="view-guru-login" class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden login-card">
+        <div id="view-guru-login" class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden login-card">
             <span class="login-icon">👨‍🏫</span>
             <div class="login-title">Login Guru</div>
             <div class="login-sub">Masukkan password untuk masuk</div>
@@ -502,9 +629,9 @@
         </div>
 
         <!-- ============================================================ -->
-        <!-- 4. LOGIN ADMIN (password) -->
+        <!-- 4. LOGIN ADMIN -->
         <!-- ============================================================ -->
-        <div id="view-admin-login" class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden login-card">
+        <div id="view-admin-login" class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden login-card">
             <span class="login-icon">🛡️</span>
             <div class="login-title">Login Admin</div>
             <div class="login-sub">Masukkan password untuk masuk</div>
@@ -524,12 +651,12 @@
         <!-- 5. DASHBOARD SISWA -->
         <!-- ============================================================ -->
         <div id="view-siswa-dashboard" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 mb-4 gap-2">
+            <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
                     <span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full">SISWA</span>
                     Dashboard Peserta
                 </h2>
-                <div class="flex gap-2">
+                <div class="flex gap-2 flex-wrap">
                     <span class="text-xs text-slate-500 bg-slate-100 px-3 py-1 rounded-full flex items-center gap-1">
                         👤 <span id="siswa-nama-display">-</span>
                     </span>
@@ -555,19 +682,19 @@
                     </tbody>
                 </table>
             </div>
-            <button onclick="alert('Fitur ujian akan segera hadir')" class="btn btn-success mt-4">🚀 Mulai Ujian Baru</button>
+            <button onclick="gantiHalaman('view-ujian')" class="btn btn-success mt-4">🚀 Mulai Ujian Baru</button>
         </div>
 
         <!-- ============================================================ -->
         <!-- 6. DASHBOARD GURU -->
         <!-- ============================================================ -->
         <div id="view-guru-dashboard" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 mb-4 gap-2">
+            <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
                     <span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
                     Panel Pengajar
                 </h2>
-                <div class="flex gap-2">
+                <div class="flex gap-2 flex-wrap">
                     <span class="text-xs text-slate-500 bg-slate-100 px-3 py-1 rounded-full flex items-center gap-1">
                         👤 <span id="guru-nama">Budi Santoso</span>
                     </span>
@@ -596,9 +723,9 @@
                 </table>
             </div>
             <div class="flex flex-wrap gap-2 mt-4">
-                <button onclick="alert('Buka form tambah soal')" class="btn btn-primary btn-sm">➕ Tambah Soal</button>
-                <button onclick="alert('Buka daftar soal')" class="btn btn-outline btn-sm">📝 Kelola Soal</button>
-                <button onclick="alert('Export data nilai')" class="btn btn-success btn-sm">📊 Export Nilai</button>
+                <button onclick="gantiHalaman('view-guru-tambah-soal')" class="btn btn-primary btn-sm">➕ Tambah Soal</button>
+                <button onclick="gantiHalaman('view-guru-kelola-soal')" class="btn btn-outline btn-sm">📝 Kelola Soal</button>
+                <button onclick="alert('📊 Export data nilai ke Excel')" class="btn btn-success btn-sm">📊 Export Nilai</button>
             </div>
         </div>
 
@@ -606,12 +733,12 @@
         <!-- 7. DASHBOARD ADMIN -->
         <!-- ============================================================ -->
         <div id="view-admin-dashboard" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 mb-4 gap-2">
+            <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
                     <span class="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
                     Pusat Kendali Sistem
                 </h2>
-                <div class="flex gap-2">
+                <div class="flex gap-2 flex-wrap">
                     <span class="text-xs text-slate-500 bg-slate-100 px-3 py-1 rounded-full flex items-center gap-1">
                         👤 <span id="admin-nama">Admin Utama</span>
                     </span>
@@ -641,10 +768,261 @@
             </div>
 
             <div class="flex flex-wrap gap-2 mt-4">
-                <button onclick="alert('Tambah user baru')" class="btn btn-success btn-sm">➕ Tambah User</button>
-                <button onclick="alert('Tambah mata pelajaran')" class="btn btn-primary btn-sm">📚 Tambah Mapel</button>
-                <button onclick="alert('Tambah soal baru')" class="btn btn-guru btn-sm">📝 Tambah Soal</button>
-                <button onclick="if(confirm('⚠️ Reset semua data sistem? Ini tidak bisa dibatalkan!')) alert('Data berhasil direset')" class="btn btn-danger btn-sm">🗑️ Reset Semua</button>
+                <button onclick="gantiHalaman('view-admin-tambah-user')" class="btn btn-success btn-sm">➕ Tambah User</button>
+                <button onclick="gantiHalaman('view-admin-tambah-mapel')" class="btn btn-primary btn-sm">📚 Tambah Mapel</button>
+                <button onclick="gantiHalaman('view-admin-tambah-soal')" class="btn btn-guru btn-sm">📝 Tambah Soal</button>
+                <button onclick="gantiHalaman('view-admin-reset')" class="btn btn-danger btn-sm">🗑️ Reset Semua</button>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 8. HALAMAN UJIAN (SISWA) -->
+        <!-- ============================================================ -->
+        <div id="view-ujian" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
+            <div class="page-header">
+                <div>
+                    <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                        <span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full">UJIAN</span>
+                        <span id="ujian-mapel">Matematika</span>
+                    </h2>
+                    <p class="text-xs text-slate-500">Peserta: <span id="ujian-nama">-</span></p>
+                </div>
+                <div class="timer-box">
+                    <span class="label">Sisa Waktu</span>
+                    <span class="time" id="ujian-timer">30:00</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col lg:grid lg:grid-cols-4 gap-4">
+                <!-- Daftar Soal -->
+                <div class="lg:col-span-3">
+                    <div id="ujian-soal-container">
+                        <!-- Soal akan dirender oleh JS -->
+                    </div>
+                    <div class="flex justify-between items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                        <button onclick="soalPrev()" id="btn-soal-prev" class="btn btn-outline btn-sm">⬅ Sebelumnya</button>
+                        <button onclick="soalNext()" id="btn-soal-next" class="btn btn-primary btn-sm">Berikutnya ➡</button>
+                    </div>
+                </div>
+
+                <!-- Navigasi Soal -->
+                <div class="lg:col-span-1 bg-slate-50 rounded-xl p-4">
+                    <h4 class="font-bold text-xs text-slate-400 uppercase tracking-wider mb-3 text-center">Navigasi Soal</h4>
+                    <div id="ujian-nav-soal" class="nav-soal">
+                        <!-- JS akan render -->
+                    </div>
+                    <button onclick="kumpulkanUjian()" class="btn btn-danger mt-4">📤 Kumpulkan Ujian</button>
+                </div>
+            </div>
+            <button onclick="gantiHalaman('view-siswa-dashboard')" class="btn btn-outline btn-sm mt-4">← Kembali ke Dashboard</button>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 9. GURU: TAMBAH SOAL -->
+        <!-- ============================================================ -->
+        <div id="view-guru-tambah-soal" class="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
+            <div class="page-header">
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
+                    Tambah Soal
+                </h2>
+                <button onclick="gantiHalaman('view-guru-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
+            </div>
+
+            <form onsubmit="event.preventDefault(); alert('Soal berhasil ditambahkan!');" class="space-y-4">
+                <div>
+                    <label>Mata Pelajaran</label>
+                    <select class="border border-slate-200 rounded-lg p-2 w-full">
+                        <option>Matematika</option>
+                        <option>Bahasa Indonesia</option>
+                        <option>Bahasa Inggris</option>
+                        <option>IPA</option>
+                        <option>IPS</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Pertanyaan</label>
+                    <textarea rows="3" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Tulis pertanyaan di sini..."></textarea>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div><label>Opsi A</label><input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Opsi A"></div>
+                    <div><label>Opsi B</label><input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Opsi B"></div>
+                    <div><label>Opsi C</label><input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Opsi C"></div>
+                    <div><label>Opsi D</label><input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Opsi D"></div>
+                </div>
+                <div>
+                    <label>Kunci Jawaban</label>
+                    <select class="border border-slate-200 rounded-lg p-2 w-full">
+                        <option value="0">A</option>
+                        <option value="1">B</option>
+                        <option value="2">C</option>
+                        <option value="3">D</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">💾 Simpan Soal</button>
+            </form>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 10. GURU: KELOLA SOAL -->
+        <!-- ============================================================ -->
+        <div id="view-guru-kelola-soal" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
+            <div class="page-header">
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
+                    Kelola Soal
+                </h2>
+                <button onclick="gantiHalaman('view-guru-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mb-4">
+                <select class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm">
+                    <option>Semua Mapel</option>
+                    <option>Matematika</option>
+                    <option>Bahasa Indonesia</option>
+                    <option>Bahasa Inggris</option>
+                </select>
+                <button class="btn btn-primary btn-sm">Filter</button>
+                <button class="btn btn-success btn-sm">+ Tambah Soal</button>
+            </div>
+
+            <div class="table-wrap border border-slate-100 rounded-xl bg-white">
+                <table>
+                    <thead><tr><th>ID</th><th>Mapel</th><th>Pertanyaan</th><th class="text-center">Kunci</th><th class="text-center">Aksi</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>Matematika</td><td>Hasil dari 2 + 3 adalah?</td><td class="text-center">B</td><td class="text-center"><button class="text-blue-500 text-xs">Edit</button> <button class="text-rose-500 text-xs">Hapus</button></td></tr>
+                        <tr><td>2</td><td>Matematika</td><td>Akar kuadrat dari 81 adalah?</td><td class="text-center">C</td><td class="text-center"><button class="text-blue-500 text-xs">Edit</button> <button class="text-rose-500 text-xs">Hapus</button></td></tr>
+                        <tr><td>3</td><td>Bahasa Indonesia</td><td>Sinonim dari 'cepat' adalah?</td><td class="text-center">B</td><td class="text-center"><button class="text-blue-500 text-xs">Edit</button> <button class="text-rose-500 text-xs">Hapus</button></td></tr>
+                        <tr><td>4</td><td>Bahasa Inggris</td><td>What is the meaning of 'book'?</td><td class="text-center">B</td><td class="text-center"><button class="text-blue-500 text-xs">Edit</button> <button class="text-rose-500 text-xs">Hapus</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 11. ADMIN: TAMBAH USER -->
+        <!-- ============================================================ -->
+        <div id="view-admin-tambah-user" class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
+            <div class="page-header">
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
+                    Tambah User
+                </h2>
+                <button onclick="gantiHalaman('view-admin-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
+            </div>
+
+            <form onsubmit="event.preventDefault(); alert('User berhasil ditambahkan!');" class="space-y-4">
+                <div>
+                    <label>Nama Lengkap</label>
+                    <input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Nama user">
+                </div>
+                <div>
+                    <label>Role</label>
+                    <select class="border border-slate-200 rounded-lg p-2 w-full">
+                        <option value="siswa">Siswa</option>
+                        <option value="guru">Guru</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Password</label>
+                    <input type="password" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Password (kosongkan jika siswa)">
+                    <div class="hint text-left text-xs text-slate-400">Kosongkan jika untuk siswa</div>
+                </div>
+                <button type="submit" class="btn btn-success">➕ Tambah User</button>
+            </form>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 12. ADMIN: TAMBAH MAPEL -->
+        <!-- ============================================================ -->
+        <div id="view-admin-tambah-mapel" class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
+            <div class="page-header">
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
+                    Tambah Mapel
+                </h2>
+                <button onclick="gantiHalaman('view-admin-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
+            </div>
+
+            <form onsubmit="event.preventDefault(); alert('Mata pelajaran berhasil ditambahkan!');" class="space-y-4">
+                <div>
+                    <label>Nama Mata Pelajaran</label>
+                    <input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Contoh: Pemrograman Web">
+                </div>
+                <div>
+                    <label>Kode Mapel</label>
+                    <input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Contoh: PW">
+                    <div class="hint text-left text-xs text-slate-400">Kode singkatan untuk identifikasi</div>
+                </div>
+                <button type="submit" class="btn btn-primary">📚 Tambah Mapel</button>
+            </form>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 13. ADMIN: TAMBAH SOAL -->
+        <!-- ============================================================ -->
+        <div id="view-admin-tambah-soal" class="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
+            <div class="page-header">
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
+                    Tambah Soal
+                </h2>
+                <button onclick="gantiHalaman('view-admin-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
+            </div>
+
+            <form onsubmit="event.preventDefault(); alert('Soal berhasil ditambahkan!');" class="space-y-4">
+                <div>
+                    <label>Mata Pelajaran</label>
+                    <select class="border border-slate-200 rounded-lg p-2 w-full">
+                        <option>Matematika</option>
+                        <option>Bahasa Indonesia</option>
+                        <option>Bahasa Inggris</option>
+                        <option>IPA</option>
+                        <option>IPS</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Pertanyaan</label>
+                    <textarea rows="3" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Tulis pertanyaan di sini..."></textarea>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div><label>Opsi A</label><input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Opsi A"></div>
+                    <div><label>Opsi B</label><input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Opsi B"></div>
+                    <div><label>Opsi C</label><input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Opsi C"></div>
+                    <div><label>Opsi D</label><input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Opsi D"></div>
+                </div>
+                <div>
+                    <label>Kunci Jawaban</label>
+                    <select class="border border-slate-200 rounded-lg p-2 w-full">
+                        <option value="0">A</option>
+                        <option value="1">B</option>
+                        <option value="2">C</option>
+                        <option value="3">D</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-admin">💾 Simpan Soal</button>
+            </form>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 14. ADMIN: RESET KONFIRMASI -->
+        <!-- ============================================================ -->
+        <div id="view-admin-reset" class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden text-center">
+            <div class="text-5xl mb-4">⚠️</div>
+            <h2 class="text-xl font-bold text-slate-900">Reset Semua Data?</h2>
+            <p class="text-sm text-slate-500 mt-2">Tindakan ini akan menghapus <strong>semua data</strong> sistem secara permanen, termasuk:</p>
+            <ul class="text-left text-sm text-slate-600 bg-slate-50 rounded-xl p-4 my-4 space-y-1">
+                <li>• Semua soal</li>
+                <li>• Hasil ujian siswa</li>
+                <li>• Data user (siswa, guru, admin)</li>
+                <li>• Mata pelajaran</li>
+                <li>• Log aktivitas</li>
+            </ul>
+            <p class="text-sm text-rose-500 font-semibold">⚠️ Tindakan ini TIDAK bisa dibatalkan!</p>
+            <div class="flex gap-3 mt-4">
+                <button onclick="gantiHalaman('view-admin-dashboard')" class="btn btn-outline">Batal</button>
+                <button onclick="if(confirm('Yakin ingin mereset semua data?')){alert('Semua data berhasil direset!');gantiHalaman('view-admin-dashboard');}" class="btn btn-danger">Reset Sekarang</button>
             </div>
         </div>
 
@@ -675,11 +1053,32 @@
             admin: 'admin123'
         };
 
-        // Data dummy
         const DATA = {
             guru: { nama: 'Budi Santoso' },
             admin: { nama: 'Admin Utama' }
         };
+
+        // Data soal dummy untuk ujian
+        const SOAL_UJIAN = [
+            { id: 1, mapel: 'Matematika', tanya: 'Hasil dari 2 + 3 adalah?', opsi: ['A. 4', 'B. 5', 'C. 6', 'D. 7'],
+            kunci: 1 },
+            { id: 2, mapel: 'Matematika', tanya: 'Akar kuadrat dari 81 adalah?', opsi: ['A. 7', 'B. 8', 'C. 9', 'D. 10'],
+                kunci: 2 },
+            { id: 3, mapel: 'Matematika', tanya: 'Berapakah 10 x 10?', opsi: ['A. 50', 'B. 100', 'C. 150', 'D. 200'],
+                kunci: 1 },
+            { id: 4, mapel: 'Matematika', tanya: 'Hasil dari 15 : 3 adalah?', opsi: ['A. 3', 'B. 4', 'C. 5', 'D. 6'],
+                kunci: 2 },
+            { id: 5, mapel: 'Matematika', tanya: 'Berapakah 7 x 8?', opsi: ['A. 48', 'B. 54', 'C. 56', 'D. 62'], kunci: 2 },
+        ];
+
+        let ujianSiswa = {
+            nama: '',
+            jawaban: {},
+            ragu: {},
+            indeks: 0,
+            timer: 30 * 60
+        };
+        let ujianTimerInterval = null;
 
         // ================================================================
         // SESSION MANAGEMENT
@@ -733,7 +1132,12 @@
         // NAVIGASI
         // ================================================================
         function gantiHalaman(id) {
-            const protectedPages = ['view-siswa-dashboard', 'view-guru-dashboard', 'view-admin-dashboard'];
+            const protectedPages = [
+                'view-siswa-dashboard', 'view-guru-dashboard', 'view-admin-dashboard',
+                'view-ujian', 'view-guru-tambah-soal', 'view-guru-kelola-soal',
+                'view-admin-tambah-user', 'view-admin-tambah-mapel',
+                'view-admin-tambah-soal', 'view-admin-reset'
+            ];
             const user = getSession();
 
             if (protectedPages.includes(id)) {
@@ -742,18 +1146,24 @@
                     kembaliKeMenuUtama();
                     return;
                 }
-                if (id === 'view-siswa-dashboard' && user.role !== 'siswa') {
-                    alert('Akses ditolak! Hanya untuk Siswa.');
-                    kembaliKeMenuUtama();
-                    return;
-                }
-                if (id === 'view-guru-dashboard' && user.role !== 'guru') {
+                // Cek role untuk halaman tertentu
+                if (id.startsWith('view-guru-') && user.role !== 'guru') {
                     alert('Akses ditolak! Hanya untuk Guru.');
                     kembaliKeMenuUtama();
                     return;
                 }
-                if (id === 'view-admin-dashboard' && user.role !== 'admin') {
+                if (id.startsWith('view-admin-') && user.role !== 'admin') {
                     alert('Akses ditolak! Hanya untuk Admin.');
+                    kembaliKeMenuUtama();
+                    return;
+                }
+                if (id === 'view-ujian' && user.role !== 'siswa') {
+                    alert('Akses ditolak! Hanya untuk Siswa.');
+                    kembaliKeMenuUtama();
+                    return;
+                }
+                if (id === 'view-siswa-dashboard' && user.role !== 'siswa') {
+                    alert('Akses ditolak! Hanya untuk Siswa.');
                     kembaliKeMenuUtama();
                     return;
                 }
@@ -763,22 +1173,36 @@
             const target = document.getElementById(id);
             if (target) target.classList.remove('hidden');
 
+            // Jika masuk ke ujian, inisialisasi
+            if (id === 'view-ujian') {
+                initUjian();
+            }
+
             updateUI();
         }
 
         function kembaliKeMenuUtama() {
+            // Hentikan timer ujian jika sedang berjalan
+            if (ujianTimerInterval) {
+                clearInterval(ujianTimerInterval);
+                ujianTimerInterval = null;
+            }
             gantiHalaman('view-menu');
         }
 
         function logout() {
             if (confirm('Yakin ingin logout?')) {
+                if (ujianTimerInterval) {
+                    clearInterval(ujianTimerInterval);
+                    ujianTimerInterval = null;
+                }
                 clearSession();
                 gantiHalaman('view-menu');
             }
         }
 
         // ================================================================
-        // LOGIN SISWA (HANYA NAMA)
+        // LOGIN
         // ================================================================
         function loginSiswa() {
             const nama = document.getElementById('siswa-nama-input').value.trim();
@@ -792,17 +1216,11 @@
 
             errorEl.style.display = 'none';
             setSession('siswa', nama);
-
-            // Update dashboard dengan nama siswa
             document.getElementById('siswa-nama-display').textContent = nama;
             document.getElementById('siswa-nama-card').textContent = nama;
-
             gantiHalaman('view-siswa-dashboard');
         }
 
-        // ================================================================
-        // LOGIN GURU (password)
-        // ================================================================
         function loginGuru() {
             const pass = document.getElementById('guru-password').value.trim();
             const errorEl = document.getElementById('guru-error');
@@ -819,9 +1237,6 @@
             }
         }
 
-        // ================================================================
-        // LOGIN ADMIN (password)
-        // ================================================================
         function loginAdmin() {
             const pass = document.getElementById('admin-password').value.trim();
             const errorEl = document.getElementById('admin-error');
@@ -836,6 +1251,138 @@
                 document.getElementById('admin-password').value = '';
                 document.getElementById('admin-password').focus();
             }
+        }
+
+        // ================================================================
+        // UJIAN
+        // ================================================================
+        function initUjian() {
+            const user = getSession();
+            if (!user) return;
+
+            ujianSiswa.nama = user.nama;
+            ujianSiswa.jawaban = {};
+            ujianSiswa.ragu = {};
+            ujianSiswa.indeks = 0;
+            ujianSiswa.timer = 30 * 60;
+
+            document.getElementById('ujian-nama').textContent = user.nama;
+            document.getElementById('ujian-mapel').textContent = 'Matematika';
+
+            renderSoal();
+            renderNavSoal();
+            startTimer();
+        }
+
+        function renderSoal() {
+            const idx = ujianSiswa.indeks;
+            const soal = SOAL_UJIAN[idx];
+            if (!soal) return;
+
+            const container = document.getElementById('ujian-soal-container');
+            let opsiHtml = '';
+            soal.opsi.forEach((o, i) => {
+                const selected = ujianSiswa.jawaban[soal.id] === i ? 'selected' : '';
+                opsiHtml += `
+                    <div class="opsi ${selected}" onclick="pilihJawaban(${soal.id}, ${i})">
+                        <input type="radio" name="jawaban" value="${i}" ${ujianSiswa.jawaban[soal.id] === i ? 'checked' : ''}>
+                        <span class="teks">${o}</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="soal-item">
+                    <span class="nomor">Soal ${idx + 1} dari ${SOAL_UJIAN.length}</span>
+                    <div class="pertanyaan">${soal.tanya}</div>
+                    ${opsiHtml}
+                </div>
+            `;
+
+            document.getElementById('btn-soal-prev').disabled = idx === 0;
+            document.getElementById('btn-soal-next').textContent = idx === SOAL_UJIAN.length - 1 ? 'Selesai ➡' : 'Berikutnya ➡';
+        }
+
+        function renderNavSoal() {
+            const container = document.getElementById('ujian-nav-soal');
+            container.innerHTML = '';
+            SOAL_UJIAN.forEach((soal, idx) => {
+                const btn = document.createElement('button');
+                btn.textContent = idx + 1;
+                if (idx === ujianSiswa.indeks) btn.classList.add('aktif');
+                else if (ujianSiswa.jawaban[soal.id] !== undefined) btn.classList.add('dijawab');
+                else if (ujianSiswa.ragu[soal.id]) btn.classList.add('ragu');
+                btn.onclick = () => lompatSoal(idx);
+                container.appendChild(btn);
+            });
+        }
+
+        function pilihJawaban(id, idx) {
+            ujianSiswa.jawaban[id] = idx;
+            renderSoal();
+            renderNavSoal();
+        }
+
+        function lompatSoal(idx) {
+            ujianSiswa.indeks = idx;
+            renderSoal();
+            renderNavSoal();
+        }
+
+        function soalPrev() {
+            if (ujianSiswa.indeks > 0) {
+                ujianSiswa.indeks--;
+                renderSoal();
+                renderNavSoal();
+            }
+        }
+
+        function soalNext() {
+            if (ujianSiswa.indeks < SOAL_UJIAN.length - 1) {
+                ujianSiswa.indeks++;
+                renderSoal();
+                renderNavSoal();
+            } else {
+                kumpulkanUjian();
+            }
+        }
+
+        function startTimer() {
+            if (ujianTimerInterval) clearInterval(ujianTimerInterval);
+            const timerEl = document.getElementById('ujian-timer');
+
+            ujianTimerInterval = setInterval(() => {
+                let m = Math.floor(ujianSiswa.timer / 60);
+                let s = ujianSiswa.timer % 60;
+                m = m < 10 ? '0' + m : m;
+                s = s < 10 ? '0' + s : s;
+                timerEl.textContent = `${m}:${s}`;
+
+                if (ujianSiswa.timer <= 0) {
+                    clearInterval(ujianTimerInterval);
+                    ujianTimerInterval = null;
+                    alert('⏰ Waktu habis! Ujian otomatis dikumpulkan.');
+                    kumpulkanUjian();
+                }
+                ujianSiswa.timer--;
+            }, 1000);
+        }
+
+        function kumpulkanUjian() {
+            if (ujianTimerInterval) {
+                clearInterval(ujianTimerInterval);
+                ujianTimerInterval = null;
+            }
+
+            let benar = 0;
+            SOAL_UJIAN.forEach(soal => {
+                if (ujianSiswa.jawaban[soal.id] === soal.kunci) benar++;
+            });
+            const total = SOAL_UJIAN.length;
+            const nilai = Math.round((benar / total) * 100);
+
+            alert(`📊 Ujian Selesai!\nBenar: ${benar}/${total}\nNilai: ${nilai}`);
+            gantiHalaman('view-siswa-dashboard');
         }
 
         // ================================================================
