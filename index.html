@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        /* [STYLE TIDAK BERUBAH - SAMA SEPERTI SEBELUMNYA] */
         * { -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
         .hidden { display: none !important; }
@@ -713,7 +714,7 @@
             </span>
             <span>SMK Prama Artha · CBT</span>
             <span class="text-slate-300">|</span>
-            <span>Anti-Tab: -3 Menit | Anti-Reload: Nilai 0</span>
+            <span>Anti-Tab: -3 Menit | Anti-Reload: 5 Menit</span>
         </div>
     </footer>
 
@@ -1012,7 +1013,10 @@
         function kembaliKeMenuUtama() {
             if (ujianTimerInterval) { clearInterval(ujianTimerInterval);
                 ujianTimerInterval = null; }
+            if (stateSaveInterval) { clearInterval(stateSaveInterval);
+                stateSaveInterval = null; }
             clearAntiTab();
+            localStorage.removeItem('cbt_ujian_aktif');
             gantiHalaman('view-menu');
         }
 
@@ -1020,7 +1024,10 @@
             if (confirm('Yakin ingin logout?')) {
                 if (ujianTimerInterval) { clearInterval(ujianTimerInterval);
                     ujianTimerInterval = null; }
+                if (stateSaveInterval) { clearInterval(stateSaveInterval);
+                    stateSaveInterval = null; }
                 clearAntiTab();
+                localStorage.removeItem('cbt_ujian_aktif');
                 clearSession();
                 gantiHalaman('view-menu');
             }
@@ -1197,10 +1204,9 @@
             timer: 30 * 60
         };
         let ujianTimerInterval = null;
+        let stateSaveInterval = null;
 
-        // ===== ANTI-TAB: WAKTU BERKURANG 3 MENIT (180 DETIK) TIAP PELANGGARAN =====
-        const PENALTY_SECONDS = 180; // Waktu penalti 3 menit
-
+        const PENALTY_SECONDS = 180;
         let isTabVisible = true;
 
         function showToast(message, type = 'danger') {
@@ -1223,12 +1229,11 @@
                     document.getElementById('tab-warning').classList.remove('hidden');
                     document.getElementById('tab-warning').textContent = '⚠️ Anda meninggalkan tab ujian!';
                     
-                    // Berikan penalti pengurangan waktu (3 menit / 180 detik)
                     if (ujianSiswa.timer > PENALTY_SECONDS) {
                         ujianSiswa.timer -= PENALTY_SECONDS;
                         showToast(`🚨 Pelanggaran! Anda membuka tab lain. Sisa waktu dikurangi 3 menit!`, 'danger');
                     } else {
-                        ujianSiswa.timer = 0; // Habiskan sisa waktu
+                        ujianSiswa.timer = 0;
                         showToast(`🚨 Pelanggaran! Waktu Anda habis karena dikurangi akibat membuka tab lain!`, 'danger');
                     }
                 } else {
@@ -1250,9 +1255,22 @@
             document.getElementById('tab-warning').classList.add('hidden');
         }
 
-        // ================================================================
-        // RENDER SOAL & NAVIGASI
-        // ================================================================
+        function simpanStateUjian() {
+            if (!ujianSiswa.mapelId) return;
+            const state = {
+                nama: ujianSiswa.nama,
+                mapelId: ujianSiswa.mapelId,
+                mapelNama: ujianSiswa.mapelNama,
+                soal: ujianSiswa.soal,
+                jawaban: ujianSiswa.jawaban,
+                ragu: ujianSiswa.ragu,
+                indeks: ujianSiswa.indeks,
+                timer: ujianSiswa.timer,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('cbt_ujian_aktif', JSON.stringify(state));
+        }
+
         function renderSoal() {
             const idx = ujianSiswa.indeks;
             const soal = ujianSiswa.soal[idx];
@@ -1300,12 +1318,14 @@
             ujianSiswa.jawaban[id] = idx;
             renderSoal();
             renderNavSoal();
+            simpanStateUjian();
         }
 
         function lompatSoal(idx) {
             ujianSiswa.indeks = idx;
             renderSoal();
             renderNavSoal();
+            simpanStateUjian();
         }
 
         function soalPrev() {
@@ -1313,6 +1333,7 @@
                 ujianSiswa.indeks--;
                 renderSoal();
                 renderNavSoal();
+                simpanStateUjian();
             }
         }
 
@@ -1321,6 +1342,7 @@
                 ujianSiswa.indeks++;
                 renderSoal();
                 renderNavSoal();
+                simpanStateUjian();
             } else {
                 kumpulkanUjian();
             }
@@ -1356,13 +1378,9 @@
             ujianSiswa.ragu = {};
             ujianSiswa.indeks = 0;
             ujianSiswa.timer = 30 * 60;
+            ujianSiswa.timestamp = Date.now();
 
-            // ===== FITUR ANTI-RELOAD: Tandai ujian sedang aktif =====
-            localStorage.setItem('cbt_ujian_aktif', JSON.stringify({
-                nama: user.nama,
-                mapelId: mapelId,
-                mapelNama: mapel.nama
-            }));
+            simpanStateUjian();
 
             document.getElementById('ujian-nama').textContent = user.nama;
             document.getElementById('ujian-mapel').textContent = mapel.nama;
@@ -1376,6 +1394,8 @@
 
         function startTimer() {
             if (ujianTimerInterval) clearInterval(ujianTimerInterval);
+            if (stateSaveInterval) clearInterval(stateSaveInterval);
+
             const timerEl = document.getElementById('ujian-timer');
 
             ujianTimerInterval = setInterval(() => {
@@ -1390,15 +1410,24 @@
                     ujianTimerInterval = null;
                     alert('⏰ Waktu habis! Ujian otomatis dikumpulkan.');
                     kumpulkanUjian();
+                    return;
                 }
                 ujianSiswa.timer--;
             }, 1000);
+
+            stateSaveInterval = setInterval(() => {
+                if (ujianSiswa.mapelId) simpanStateUjian();
+            }, 5000);
         }
 
         function kumpulkanUjian() {
             if (ujianTimerInterval) {
                 clearInterval(ujianTimerInterval);
                 ujianTimerInterval = null;
+            }
+            if (stateSaveInterval) {
+                clearInterval(stateSaveInterval);
+                stateSaveInterval = null;
             }
             clearAntiTab();
 
@@ -1411,7 +1440,6 @@
 
             simpanHasilSiswa(ujianSiswa.nama, ujianSiswa.mapelId, nilai);
 
-            // ===== FITUR ANTI-RELOAD: Hapus penanda karena ujian selesai normal =====
             localStorage.removeItem('cbt_ujian_aktif');
 
             alert(`📊 Ujian Selesai!\nMapel: ${ujianSiswa.mapelNama}\nBenar: ${benar}/${total}\nNilai: ${nilai}\n\n✅ Hasil telah disimpan.`);
@@ -1811,35 +1839,73 @@
             loadMapelFromStorage();
             loadSoalFromStorage();
 
-            // ===== FITUR ANTI-RELOAD: Cek ujian yang ditinggalkan / reload =====
             const activeExam = localStorage.getItem('cbt_ujian_aktif');
             if (activeExam) {
                 try {
-                    const examData = JSON.parse(activeExam);
-                    // Beri nilai 0 dan anggap selesai
-                    simpanHasilSiswa(examData.nama, examData.mapelId, 0);
-                    localStorage.removeItem('cbt_ujian_aktif');
-                    alert(`🚨 PELANGGARAN!\nAnda terdeteksi memuat ulang (reload) halaman atau keluar aplikasi saat ujian "${examData.mapelNama}" sedang berlangsung.\n\nUjian otomatis dihentikan dan dianggap selesai dengan nilai 0.`);
-                } catch(e) {}
-            }
+                    const state = JSON.parse(activeExam);
+                    const elapsed = Date.now() - state.timestamp;
+                    const maxToleransi = 5 * 60 * 1000; // 5 menit
 
-            const user = getSession();
-            if (user) {
-                if (user.role === 'siswa') {
-                    document.getElementById('siswa-nama-display').textContent = user.nama;
-                    gantiHalaman('view-siswa-dashboard');
-                    return;
-                } else if (user.role === 'guru') {
-                    document.getElementById('guru-nama').textContent = user.nama || 'Budi Santoso';
-                    gantiHalaman('view-guru-dashboard');
-                    return;
-                } else if (user.role === 'admin') {
-                    document.getElementById('admin-nama').textContent = user.nama || 'Admin Utama';
-                    gantiHalaman('view-admin-dashboard');
-                    return;
+                    if (elapsed < maxToleransi) {
+                        ujianSiswa.nama = state.nama;
+                        ujianSiswa.mapelId = state.mapelId;
+                        ujianSiswa.mapelNama = state.mapelNama;
+                        ujianSiswa.soal = state.soal;
+                        ujianSiswa.jawaban = state.jawaban || {};
+                        ujianSiswa.ragu = state.ragu || {};
+                        ujianSiswa.indeks = state.indeks || 0;
+                        const sisa = state.timer - Math.floor(elapsed / 1000);
+                        ujianSiswa.timer = Math.max(0, sisa);
+                        ujianSiswa.timestamp = Date.now();
+
+                        const user = getSession();
+                        if (!user || user.nama !== ujianSiswa.nama) {
+                            setSession('siswa', ujianSiswa.nama);
+                        }
+
+                        document.getElementById('ujian-nama').textContent = ujianSiswa.nama;
+                        document.getElementById('ujian-mapel').textContent = ujianSiswa.mapelNama;
+
+                        clearAntiTab();
+                        renderSoal();
+                        renderNavSoal();
+                        startTimer();
+                        gantiHalaman('view-ujian');
+
+                        alert(`⏳ Ujian dilanjutkan. Sisa waktu: ${Math.floor(ujianSiswa.timer/60)} menit ${ujianSiswa.timer%60} detik.`);
+                    } else {
+                        simpanHasilSiswa(state.nama, state.mapelId, 0);
+                        localStorage.removeItem('cbt_ujian_aktif');
+                        alert('🚨 PELANGGARAN!\nAnda meninggalkan ujian lebih dari 5 menit. Ujian dianggap selesai dengan nilai 0.');
+                        const user = getSession();
+                        if (user && user.role === 'siswa') {
+                            gantiHalaman('view-siswa-dashboard');
+                        } else {
+                            gantiHalaman('view-menu');
+                        }
+                    }
+                } catch(e) {
+                    localStorage.removeItem('cbt_ujian_aktif');
                 }
+            } else {
+                const user = getSession();
+                if (user) {
+                    if (user.role === 'siswa') {
+                        document.getElementById('siswa-nama-display').textContent = user.nama;
+                        gantiHalaman('view-siswa-dashboard');
+                        return;
+                    } else if (user.role === 'guru') {
+                        document.getElementById('guru-nama').textContent = user.nama || 'Budi Santoso';
+                        gantiHalaman('view-guru-dashboard');
+                        return;
+                    } else if (user.role === 'admin') {
+                        document.getElementById('admin-nama').textContent = user.nama || 'Admin Utama';
+                        gantiHalaman('view-admin-dashboard');
+                        return;
+                    }
+                }
+                gantiHalaman('view-menu');
             }
-            gantiHalaman('view-menu');
         };
     </script>
 </body>
