@@ -539,7 +539,7 @@
                     <button onclick="kumpulkanUjian()" class="btn btn-danger mt-4">📤 Kumpulkan</button>
                 </div>
             </div>
-            <button onclick="gantiHalaman('view-siswa-dashboard')" class="btn btn-outline btn-sm mt-4">← Kembali ke Pilihan Mapel</button>
+            <button onclick="kembaliKeDashboardSiswa()" class="btn btn-outline btn-sm mt-4">← Kembali ke Pilihan Mapel</button>
         </div>
 
         <!-- GURU: TAMBAH SOAL -->
@@ -1010,27 +1010,50 @@
             updateUI();
         }
 
+        // ================================================================
+        // FUNGSI KHUSUS UNTUK KEMBALI KE MENU / DASHBOARD DENGAN AKHIR UJIAN
+        // ================================================================
         function kembaliKeMenuUtama() {
-            if (ujianTimerInterval) { clearInterval(ujianTimerInterval);
-                ujianTimerInterval = null; }
-            if (stateSaveInterval) { clearInterval(stateSaveInterval);
-                stateSaveInterval = null; }
+            // Cek apakah ujian sedang aktif (mapelId tidak null dan halaman ujian terlihat)
+            if (ujianSiswa.mapelId !== null && document.getElementById('view-ujian') && !document.getElementById('view-ujian').classList.contains('hidden')) {
+                if (confirm('Anda akan keluar dari ujian. Jawaban yang sudah diisi akan dikumpulkan. Lanjutkan?')) {
+                    kumpulkanUjian('view-menu', true);
+                }
+                return;
+            }
+            // Jika tidak ada ujian aktif, langsung ke menu
+            if (ujianTimerInterval) { clearInterval(ujianTimerInterval); ujianTimerInterval = null; }
+            if (stateSaveInterval) { clearInterval(stateSaveInterval); stateSaveInterval = null; }
             clearAntiTab();
             localStorage.removeItem('cbt_ujian_aktif');
             gantiHalaman('view-menu');
         }
 
-        function logout() {
-            if (confirm('Yakin ingin logout?')) {
-                if (ujianTimerInterval) { clearInterval(ujianTimerInterval);
-                    ujianTimerInterval = null; }
-                if (stateSaveInterval) { clearInterval(stateSaveInterval);
-                    stateSaveInterval = null; }
-                clearAntiTab();
-                localStorage.removeItem('cbt_ujian_aktif');
-                clearSession();
-                gantiHalaman('view-menu');
+        function kembaliKeDashboardSiswa() {
+            if (ujianSiswa.mapelId !== null && document.getElementById('view-ujian') && !document.getElementById('view-ujian').classList.contains('hidden')) {
+                if (confirm('Anda akan keluar dari ujian. Jawaban yang sudah diisi akan dikumpulkan. Lanjutkan?')) {
+                    kumpulkanUjian('view-siswa-dashboard', true);
+                }
+                return;
             }
+            gantiHalaman('view-siswa-dashboard');
+        }
+
+        function logout() {
+            if (ujianSiswa.mapelId !== null && document.getElementById('view-ujian') && !document.getElementById('view-ujian').classList.contains('hidden')) {
+                if (confirm('Anda akan logout dari ujian. Jawaban yang sudah diisi akan dikumpulkan. Lanjutkan?')) {
+                    kumpulkanUjian('view-menu', true);
+                    clearSession();
+                }
+                return;
+            }
+            // Jika tidak ada ujian aktif, logout langsung
+            if (ujianTimerInterval) { clearInterval(ujianTimerInterval); ujianTimerInterval = null; }
+            if (stateSaveInterval) { clearInterval(stateSaveInterval); stateSaveInterval = null; }
+            clearAntiTab();
+            localStorage.removeItem('cbt_ujian_aktif');
+            clearSession();
+            gantiHalaman('view-menu');
         }
 
         // ================================================================
@@ -1271,6 +1294,59 @@
             localStorage.setItem('cbt_ujian_aktif', JSON.stringify(state));
         }
 
+        // ================================================================
+        // KUMPULKAN UJIAN (DENGAN PARAMETER REDIRECT DAN ALERT)
+        // ================================================================
+        function kumpulkanUjian(redirectTo = 'view-siswa-dashboard', showAlert = true) {
+            if (ujianTimerInterval) {
+                clearInterval(ujianTimerInterval);
+                ujianTimerInterval = null;
+            }
+            if (stateSaveInterval) {
+                clearInterval(stateSaveInterval);
+                stateSaveInterval = null;
+            }
+            clearAntiTab();
+
+            let benar = 0;
+            const total = ujianSiswa.soal.length;
+            const mapelNama = ujianSiswa.mapelNama || 'Tidak diketahui';
+            const namaSiswa = ujianSiswa.nama;
+            const mapelId = ujianSiswa.mapelId;
+
+            ujianSiswa.soal.forEach(soal => {
+                if (ujianSiswa.jawaban[soal.id] === soal.kunci) benar++;
+            });
+            const nilai = total > 0 ? Math.round((benar / total) * 100) : 0;
+
+            if (namaSiswa && mapelId) {
+                simpanHasilSiswa(namaSiswa, mapelId, nilai);
+            }
+
+            localStorage.removeItem('cbt_ujian_aktif');
+
+            // Reset state ujian
+            ujianSiswa = {
+                nama: '',
+                mapelId: null,
+                mapelNama: '',
+                soal: [],
+                jawaban: {},
+                ragu: {},
+                indeks: 0,
+                timer: 30 * 60
+            };
+
+            if (showAlert) {
+                alert(`📊 Ujian Selesai!\nMapel: ${mapelNama}\nBenar: ${benar}/${total}\nNilai: ${nilai}\n\n✅ Hasil telah disimpan.`);
+            }
+
+            gantiHalaman(redirectTo);
+        }
+
+        // ================================================================
+        // RENDER SOAL & NAVIGASI
+        // ================================================================
         function renderSoal() {
             const idx = ujianSiswa.indeks;
             const soal = ujianSiswa.soal[idx];
@@ -1418,33 +1494,6 @@
             stateSaveInterval = setInterval(() => {
                 if (ujianSiswa.mapelId) simpanStateUjian();
             }, 5000);
-        }
-
-        function kumpulkanUjian() {
-            if (ujianTimerInterval) {
-                clearInterval(ujianTimerInterval);
-                ujianTimerInterval = null;
-            }
-            if (stateSaveInterval) {
-                clearInterval(stateSaveInterval);
-                stateSaveInterval = null;
-            }
-            clearAntiTab();
-
-            let benar = 0;
-            ujianSiswa.soal.forEach(soal => {
-                if (ujianSiswa.jawaban[soal.id] === soal.kunci) benar++;
-            });
-            const total = ujianSiswa.soal.length;
-            const nilai = Math.round((benar / total) * 100);
-
-            simpanHasilSiswa(ujianSiswa.nama, ujianSiswa.mapelId, nilai);
-
-            localStorage.removeItem('cbt_ujian_aktif');
-
-            alert(`📊 Ujian Selesai!\nMapel: ${ujianSiswa.mapelNama}\nBenar: ${benar}/${total}\nNilai: ${nilai}\n\n✅ Hasil telah disimpan.`);
-
-            gantiHalaman('view-siswa-dashboard');
         }
 
         // ================================================================
