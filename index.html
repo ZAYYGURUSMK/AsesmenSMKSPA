@@ -227,7 +227,6 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
-        /* Modal */
         .modal-edit {
             position: fixed;
             inset: 0;
@@ -459,7 +458,7 @@
             </div>
         </div>
 
-        <!-- DASHBOARD ADMIN -->
+        <!-- DASHBOARD ADMIN (tanpa Tambah Soal) -->
         <div id="view-admin-dashboard" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
             <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -483,7 +482,6 @@
             <div class="flex flex-wrap gap-2 mt-4">
                 <button onclick="gantiHalaman('view-admin-tambah-user')" class="btn btn-success btn-sm">➕ Tambah User</button>
                 <button onclick="gantiHalaman('view-admin-kelola-mapel')" class="btn btn-primary btn-sm">📚 Kelola Mapel</button>
-                <button onclick="gantiHalaman('view-admin-tambah-soal')" class="btn btn-guru btn-sm">📝 Tambah Soal</button>
                 <button onclick="if(confirm('⚠️ Reset semua data sistem?')) alert('Data berhasil direset')" class="btn btn-danger btn-sm">🗑️ Reset Semua</button>
             </div>
 
@@ -597,9 +595,7 @@
             </div>
         </div>
 
-        <!-- ============================================================ -->
         <!-- ADMIN: KELOLA MAPEL -->
-        <!-- ============================================================ -->
         <div id="view-admin-kelola-mapel" class="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
             <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -627,7 +623,7 @@
             <p class="text-xs text-slate-400 mt-2">⚠️ Menghapus mapel akan menghapus semua soal yang terkait dengan mapel tersebut.</p>
         </div>
 
-        <!-- ADMIN: TAMBAH USER (placeholder) -->
+        <!-- ADMIN: TAMBAH USER -->
         <div id="view-admin-tambah-user" class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
             <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -644,55 +640,6 @@
             </form>
         </div>
 
-        <!-- ADMIN: TAMBAH SOAL (placeholder) -->
-        <div id="view-admin-tambah-soal" class="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-4 sm:p-8 hidden">
-            <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                    <span class="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
-                    Tambah Soal
-                </h2>
-                <button onclick="gantiHalaman('view-admin-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
-            </div>
-            <form onsubmit="event.preventDefault(); alert('Soal berhasil ditambahkan!');" class="space-y-4">
-                <div><label>Mata Pelajaran</label><select id="admin-input-mapel" class="border border-slate-200 rounded-lg p-2 w-full"></select></div>
-                <div><label>Pertanyaan</label><textarea rows="3" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Tulis pertanyaan..."></textarea></div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div><label>Opsi A</label><input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Opsi A"></div>
-                    <div><label>Opsi B</label><input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Opsi B"></div>
-                    <div><label>Opsi C</label><input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Opsi C"></div>
-                    <div><label>Opsi D</label><input type="text" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Opsi D"></div>
-                </div>
-                <div><label>Kunci Jawaban</label><select class="border border-slate-200 rounded-lg p-2 w-full"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></div>
-                <button type="submit" class="btn btn-admin">💾 Simpan Soal</button>
-            </form>
-        </div>
-
-        <!-- MODAL EDIT MAPEL -->
-        <div id="modal-edit-mapel" class="modal-edit hidden">
-            <div class="modal-box">
-                <h3>✏️ Edit Mata Pelajaran</h3>
-                <form id="form-edit-mapel" onsubmit="event.preventDefault(); simpanEditMapel();">
-                    <input type="hidden" id="edit-mapel-id" value="">
-                    <div>
-                        <label>Nama Mapel</label>
-                        <input type="text" id="edit-mapel-nama" class="border border-slate-200 rounded-lg p-2 w-full" required>
-                    </div>
-                    <div>
-                        <label>Kode Mapel</label>
-                        <input type="text" id="edit-mapel-kode" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Contoh: MTK">
-                    </div>
-                    <div>
-                        <label>Icon (emoji)</label>
-                        <input type="text" id="edit-mapel-icon" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Contoh: 📐" value="📚">
-                    </div>
-                    <div class="btn-group">
-                        <button type="button" onclick="tutupModalEditMapel()" class="btn btn-outline btn-sm">Batal</button>
-                        <button type="submit" class="btn btn-primary btn-sm">💾 Simpan Perubahan</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
     </main>
 
     <!-- FOOTER -->
@@ -704,7 +651,7 @@
             </span>
             <span>SMK Prama Artha · CBT</span>
             <span class="text-slate-300">|</span>
-            <span>Admin Kelola Mapel</span>
+            <span>Admin: Mapel & User | Guru: Soal</span>
         </div>
     </footer>
 
@@ -719,7 +666,7 @@
         const DATA = { guru: { nama: 'Budi Santoso' }, admin: { nama: 'Admin Utama' } };
 
         // ================================================================
-        // DEFAULT DATA MAPEL (akan digunakan jika belum ada di localStorage)
+        // DEFAULT DATA MAPEL
         // ================================================================
         const DEFAULT_MAPEL = [
             { id: 1, nama: 'Matematika', kode: 'MTK', icon: '📐' },
@@ -763,7 +710,6 @@
             const newId = getNextMapelId();
             DATA_MAPEL.push({ id: newId, nama: nama.trim(), kode: kode.trim(), icon: icon || '📚' });
             saveMapelToStorage();
-            // Inisialisasi data soal untuk mapel baru
             if (!DATA_SOAL[newId]) DATA_SOAL[newId] = [];
             saveSoalToStorage();
         }
@@ -781,7 +727,6 @@
         function hapusMapel(id) {
             const mapel = getMapelById(id);
             if (!mapel) return false;
-            // Hapus semua soal yang terkait dengan mapel ini
             if (DATA_SOAL[id]) {
                 delete DATA_SOAL[id];
                 saveSoalToStorage();
@@ -792,7 +737,7 @@
         }
 
         // ================================================================
-        // DATA SOAL - disimpan di localStorage
+        // DATA SOAL
         // ================================================================
         const DEFAULT_SOAL = {
             1: [
@@ -842,7 +787,6 @@
             if (stored) {
                 try {
                     DATA_SOAL = JSON.parse(stored);
-                    // Pastikan semua mapel punya data
                     DATA_MAPEL.forEach(m => {
                         if (!DATA_SOAL[m.id]) DATA_SOAL[m.id] = [];
                     });
@@ -942,7 +886,7 @@
             const protectedPages = [
                 'view-siswa-dashboard', 'view-guru-dashboard', 'view-admin-dashboard',
                 'view-ujian', 'view-guru-tambah-soal', 'view-guru-kelola-soal',
-                'view-admin-kelola-mapel', 'view-admin-tambah-user', 'view-admin-tambah-soal'
+                'view-admin-kelola-mapel', 'view-admin-tambah-user'
             ];
             const user = getSession();
 
@@ -982,9 +926,6 @@
             }
             if (id === 'view-admin-kelola-mapel') {
                 renderKelolaMapel();
-            }
-            if (id === 'view-admin-tambah-soal') {
-                populateMapelDropdownsAdmin();
             }
             if (id === 'view-ujian') {
                 initAntiTab();
@@ -1057,7 +998,7 @@
         }
 
         // ================================================================
-        // SISWA: HASIL UJIAN (localStorage)
+        // SISWA: HASIL UJIAN
         // ================================================================
         function getHasilSiswa(nama) {
             const key = 'cbt_hasil_' + nama;
@@ -1155,7 +1096,7 @@
         }
 
         // ================================================================
-        // SISWA: PILIH MAPEL → MULAI UJIAN
+        // SISWA: PILIH MAPEL → UJIAN
         // ================================================================
         let ujianSiswa = {
             nama: '',
@@ -1365,7 +1306,7 @@
         }
 
         // ================================================================
-        // UJIAN: TIMER
+        // UJIAN: TIMER & KUMPULKAN
         // ================================================================
         function startTimer() {
             if (ujianTimerInterval) clearInterval(ujianTimerInterval);
@@ -1388,9 +1329,6 @@
             }, 1000);
         }
 
-        // ================================================================
-        // UJIAN: KUMPULKAN
-        // ================================================================
         function kumpulkanUjian() {
             if (ujianTimerInterval) {
                 clearInterval(ujianTimerInterval);
@@ -1477,7 +1415,6 @@
             const tbody = document.getElementById('guru-tabel-kelola');
             tbody.innerHTML = '';
 
-            // Populate filter dropdown with mapel
             const filterSelect = document.getElementById('guru-filter-kelola');
             filterSelect.innerHTML = '<option value="">Semua Mapel</option>';
             DATA_MAPEL.forEach(m => {
@@ -1528,10 +1465,6 @@
                 return;
             }
 
-            // Gunakan modal yang sudah ada untuk edit soal (kita reuse modal edit mapel?)
-            // Karena kita sudah punya modal untuk mapel, kita buat modal khusus untuk soal
-            // Lebih praktis: buat prompt sederhana atau kita reuse modal dengan cara override
-            // Untuk kemudahan, kita gunakan prompt untuk edit soal
             const tanyaBaru = prompt('Edit Pertanyaan:', soal.tanya);
             if (tanyaBaru === null) return;
             const opsiBaru = [
@@ -1584,8 +1517,6 @@
                 totalSoal += getSoalByMapel(m.id).length;
             });
             document.getElementById('admin-stat-soal').innerText = totalSoal;
-
-            // Ujian selesai (dummy)
             document.getElementById('admin-stat-ujian').innerText = '48';
         }
 
@@ -1649,16 +1580,13 @@
             renderKelolaMapel();
             renderAdminMapelPreview();
             adminMuatStats();
-            // Update dropdown di halaman guru
             populateMapelDropdowns();
-            populateMapelDropdownsAdmin();
         }
 
         function bukaEditMapel(id) {
             const mapel = getMapelById(id);
             if (!mapel) { alert('Mapel tidak ditemukan!'); return; }
 
-            // Gunakan prompt sederhana untuk edit
             const nama = prompt('Edit nama mapel:', mapel.nama);
             if (nama === null) return;
             const kode = prompt('Edit kode mapel:', mapel.kode || '');
@@ -1672,7 +1600,6 @@
                 renderAdminMapelPreview();
                 adminMuatStats();
                 populateMapelDropdowns();
-                populateMapelDropdownsAdmin();
             } else {
                 alert('❌ Gagal memperbarui mapel.');
             }
@@ -1690,8 +1617,6 @@
                 renderAdminMapelPreview();
                 adminMuatStats();
                 populateMapelDropdowns();
-                populateMapelDropdownsAdmin();
-                // Refresh daftar mapel di siswa
                 renderDaftarMapel();
             } else {
                 alert('❌ Gagal menghapus mapel.');
@@ -1699,19 +1624,10 @@
         }
 
         // ================================================================
-        // DROPDOWN MAPEL (Guru & Admin)
+        // DROPDOWN MAPEL (Guru)
         // ================================================================
         function populateMapelDropdowns() {
             const select = document.getElementById('guru-input-mapel');
-            if (!select) return;
-            select.innerHTML = '';
-            DATA_MAPEL.forEach(m => {
-                select.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
-            });
-        }
-
-        function populateMapelDropdownsAdmin() {
-            const select = document.getElementById('admin-input-mapel');
             if (!select) return;
             select.innerHTML = '';
             DATA_MAPEL.forEach(m => {
@@ -1728,9 +1644,6 @@
                 if (active && active.id === 'siswa-nama-input') loginSiswa();
                 if (active && active.id === 'guru-password') loginGuru();
                 if (active && active.id === 'admin-password') loginAdmin();
-            }
-            if (e.key === 'Escape') {
-                // Tutup modal jika ada
             }
         });
 
