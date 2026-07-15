@@ -426,6 +426,13 @@
                 </div>
             </div>
 
+            <!-- LOCK CONTAINER -->
+            <div id="lock-container" class="hidden bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                <p class="text-yellow-800 font-bold">⏳ Anda telah me-reload halaman.</p>
+                <p class="text-yellow-700">Harap tunggu <span id="lock-countdown">5:00</span> sebelum dapat melanjutkan ujian.</p>
+                <p class="text-sm text-yellow-600 mt-2">Waktu ujian tetap berjalan selama masa tunggu.</p>
+            </div>
+
             <p class="text-sm text-slate-500 mb-4">Silakan pilih mata pelajaran yang akan Anda ujikan. Mapel yang sudah selesai tidak dapat diulang.</p>
 
             <div id="siswa-daftar-mapel" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -714,7 +721,7 @@
             </span>
             <span>SMK Prama Artha · CBT</span>
             <span class="text-slate-300">|</span>
-            <span>Anti-Tab: -3 Menit | Anti-Reload: 5 Menit</span>
+            <span>Anti-Tab: -3 Menit | Anti-Reload: Harus Tunggu 5 Menit</span>
         </div>
     </footer>
 
@@ -1026,6 +1033,7 @@
             if (stateSaveInterval) { clearInterval(stateSaveInterval); stateSaveInterval = null; }
             clearAntiTab();
             localStorage.removeItem('cbt_ujian_aktif');
+            localStorage.removeItem('cbt_reload_lock'); // hapus lock
             gantiHalaman('view-menu');
         }
 
@@ -1052,6 +1060,7 @@
             if (stateSaveInterval) { clearInterval(stateSaveInterval); stateSaveInterval = null; }
             clearAntiTab();
             localStorage.removeItem('cbt_ujian_aktif');
+            localStorage.removeItem('cbt_reload_lock');
             clearSession();
             gantiHalaman('view-menu');
         }
@@ -1228,6 +1237,7 @@
         };
         let ujianTimerInterval = null;
         let stateSaveInterval = null;
+        let lockCheckInterval = null; // untuk countdown
 
         const PENALTY_SECONDS = 180;
         let isTabVisible = true;
@@ -1306,6 +1316,10 @@
                 clearInterval(stateSaveInterval);
                 stateSaveInterval = null;
             }
+            if (lockCheckInterval) {
+                clearInterval(lockCheckInterval);
+                lockCheckInterval = null;
+            }
             clearAntiTab();
 
             let benar = 0;
@@ -1324,6 +1338,7 @@
             }
 
             localStorage.removeItem('cbt_ujian_aktif');
+            localStorage.removeItem('cbt_reload_lock');
 
             // Reset state ujian
             ujianSiswa = {
@@ -1457,6 +1472,8 @@
             ujianSiswa.timestamp = Date.now();
 
             simpanStateUjian();
+            // Hapus lock jika ada (saat memulai ujian baru)
+            localStorage.removeItem('cbt_reload_lock');
 
             document.getElementById('ujian-nama').textContent = user.nama;
             document.getElementById('ujian-mapel').textContent = mapel.nama;
@@ -1494,6 +1511,136 @@
             stateSaveInterval = setInterval(() => {
                 if (ujianSiswa.mapelId) simpanStateUjian();
             }, 5000);
+        }
+
+        // ================================================================
+        // FUNGSI UNTUK MENANGANI RELOAD LOCK (PENALTI 5 MENIT)
+        // ================================================================
+        function handleReloadLock() {
+            const lock = localStorage.getItem('cbt_reload_lock');
+            const state = localStorage.getItem('cbt_ujian_aktif');
+            const now = Date.now();
+
+            // Jika tidak ada ujian aktif, hapus lock dan return
+            if (!state) {
+                localStorage.removeItem('cbt_reload_lock');
+                return false;
+            }
+
+            // Jika ada lock
+            if (lock) {
+                const elapsed = now - parseInt(lock);
+                const maxLock = 5 * 60 * 1000; // 5 menit
+
+                if (elapsed < maxLock) {
+                    // Masih dalam masa lock → tampilkan countdown, jangan lanjutkan
+                    const sisaLock = Math.ceil((maxLock - elapsed) / 1000);
+                    tampilkanLockCountdown(sisaLock);
+                    return true; // lock aktif
+                } else {
+                    // Lock sudah lewat 5 menit → hapus lock dan lanjutkan
+                    localStorage.removeItem('cbt_reload_lock');
+                    // Lanjutkan dengan sisa waktu yang dihitung dari state
+                    return false; // tidak ada lock, bisa lanjut
+                }
+            } else {
+                // Tidak ada lock → buat lock baru (karena reload)
+                localStorage.setItem('cbt_reload_lock', String(now));
+                // Tampilkan lock countdown
+                tampilkanLockCountdown(300); // 5 menit
+                return true;
+            }
+        }
+
+        function tampilkanLockCountdown(sisaDetik) {
+            const lockContainer = document.getElementById('lock-container');
+            const countdownEl = document.getElementById('lock-countdown');
+            const mapelContainer = document.getElementById('siswa-daftar-mapel');
+
+            lockContainer.classList.remove('hidden');
+            mapelContainer.style.display = 'none';
+
+            // Hapus interval sebelumnya
+            if (lockCheckInterval) clearInterval(lockCheckInterval);
+
+            let remaining = sisaDetik;
+
+            function updateCountdown() {
+                if (remaining <= 0) {
+                    clearInterval(lockCheckInterval);
+                    lockCheckInterval = null;
+                    // Lock selesai, lanjutkan ujian otomatis
+                    lockContainer.classList.add('hidden');
+                    mapelContainer.style.display = 'grid';
+                    localStorage.removeItem('cbt_reload_lock');
+                    // Lanjutkan ujian
+                    lanjutkanUjianSetelahLock();
+                    return;
+                }
+                const menit = Math.floor(remaining / 60);
+                const detik = remaining % 60;
+                countdownEl.textContent = `${menit}:${detik < 10 ? '0' + detik : detik}`;
+                remaining--;
+            }
+
+            updateCountdown();
+            lockCheckInterval = setInterval(updateCountdown, 1000);
+        }
+
+        function lanjutkanUjianSetelahLock() {
+            const stateStr = localStorage.getItem('cbt_ujian_aktif');
+            if (!stateStr) {
+                // Tidak ada state, kembali ke dashboard
+                gantiHalaman('view-siswa-dashboard');
+                return;
+            }
+
+            try {
+                const state = JSON.parse(stateStr);
+                const now = Date.now();
+                const elapsed = now - state.timestamp;
+                const sisaWaktu = Math.max(0, state.timer - Math.floor(elapsed / 1000));
+
+                if (sisaWaktu <= 0) {
+                    // Waktu habis, nilai 0
+                    simpanHasilSiswa(state.nama, state.mapelId, 0);
+                    localStorage.removeItem('cbt_ujian_aktif');
+                    alert('⏰ Waktu ujian telah habis selama masa tunggu. Ujian dianggap selesai dengan nilai 0.');
+                    gantiHalaman('view-siswa-dashboard');
+                    return;
+                }
+
+                // Lanjutkan ujian
+                ujianSiswa.nama = state.nama;
+                ujianSiswa.mapelId = state.mapelId;
+                ujianSiswa.mapelNama = state.mapelNama;
+                ujianSiswa.soal = state.soal;
+                ujianSiswa.jawaban = state.jawaban || {};
+                ujianSiswa.ragu = state.ragu || {};
+                ujianSiswa.indeks = state.indeks || 0;
+                ujianSiswa.timer = sisaWaktu;
+                ujianSiswa.timestamp = Date.now();
+
+                // Update session
+                const user = getSession();
+                if (!user || user.nama !== ujianSiswa.nama) {
+                    setSession('siswa', ujianSiswa.nama);
+                }
+
+                document.getElementById('ujian-nama').textContent = ujianSiswa.nama;
+                document.getElementById('ujian-mapel').textContent = ujianSiswa.mapelNama;
+
+                clearAntiTab();
+                renderSoal();
+                renderNavSoal();
+                startTimer();
+                gantiHalaman('view-ujian');
+
+                alert(`⏳ Masa tunggu selesai! Ujian dilanjutkan. Sisa waktu: ${Math.floor(sisaWaktu/60)} menit ${sisaWaktu%60} detik.`);
+            } catch(e) {
+                localStorage.removeItem('cbt_ujian_aktif');
+                gantiHalaman('view-siswa-dashboard');
+            }
         }
 
         // ================================================================
@@ -1888,55 +2035,58 @@
             loadMapelFromStorage();
             loadSoalFromStorage();
 
-            const activeExam = localStorage.getItem('cbt_ujian_aktif');
-            if (activeExam) {
-                try {
-                    const state = JSON.parse(activeExam);
-                    const elapsed = Date.now() - state.timestamp;
-                    const maxToleransi = 5 * 60 * 1000; // 5 menit
-
-                    if (elapsed < maxToleransi) {
-                        ujianSiswa.nama = state.nama;
-                        ujianSiswa.mapelId = state.mapelId;
-                        ujianSiswa.mapelNama = state.mapelNama;
-                        ujianSiswa.soal = state.soal;
-                        ujianSiswa.jawaban = state.jawaban || {};
-                        ujianSiswa.ragu = state.ragu || {};
-                        ujianSiswa.indeks = state.indeks || 0;
-                        const sisa = state.timer - Math.floor(elapsed / 1000);
-                        ujianSiswa.timer = Math.max(0, sisa);
-                        ujianSiswa.timestamp = Date.now();
-
+            // Cek apakah ada ujian aktif dan lock
+            const stateStr = localStorage.getItem('cbt_ujian_aktif');
+            if (stateStr) {
+                // Ada ujian aktif, cek lock
+                const lock = localStorage.getItem('cbt_reload_lock');
+                if (lock) {
+                    const now = Date.now();
+                    const elapsed = now - parseInt(lock);
+                    const maxLock = 5 * 60 * 1000;
+                    if (elapsed < maxLock) {
+                        // Masih dalam lock
+                        const sisa = Math.ceil((maxLock - elapsed) / 1000);
+                        // Pastikan user adalah siswa
                         const user = getSession();
-                        if (!user || user.nama !== ujianSiswa.nama) {
-                            setSession('siswa', ujianSiswa.nama);
+                        if (!user || user.role !== 'siswa') {
+                            // Set session sebagai siswa
+                            try {
+                                const state = JSON.parse(stateStr);
+                                setSession('siswa', state.nama);
+                            } catch(e) {}
                         }
-
-                        document.getElementById('ujian-nama').textContent = ujianSiswa.nama;
-                        document.getElementById('ujian-mapel').textContent = ujianSiswa.mapelNama;
-
-                        clearAntiTab();
-                        renderSoal();
-                        renderNavSoal();
-                        startTimer();
-                        gantiHalaman('view-ujian');
-
-                        alert(`⏳ Ujian dilanjutkan. Sisa waktu: ${Math.floor(ujianSiswa.timer/60)} menit ${ujianSiswa.timer%60} detik.`);
+                        document.getElementById('siswa-nama-display').textContent = getSession()?.nama || '';
+                        // Tampilkan lock countdown
+                        tampilkanLockCountdown(sisa);
+                        gantiHalaman('view-siswa-dashboard');
+                        return;
                     } else {
-                        simpanHasilSiswa(state.nama, state.mapelId, 0);
-                        localStorage.removeItem('cbt_ujian_aktif');
-                        alert('🚨 PELANGGARAN!\nAnda meninggalkan ujian lebih dari 5 menit. Ujian dianggap selesai dengan nilai 0.');
-                        const user = getSession();
-                        if (user && user.role === 'siswa') {
-                            gantiHalaman('view-siswa-dashboard');
-                        } else {
-                            gantiHalaman('view-menu');
-                        }
+                        // Lock sudah lewat, hapus lock dan lanjutkan
+                        localStorage.removeItem('cbt_reload_lock');
+                        // Lanjutkan ujian
+                        lanjutkanUjianSetelahLock();
+                        return;
                     }
-                } catch(e) {
-                    localStorage.removeItem('cbt_ujian_aktif');
+                } else {
+                    // Tidak ada lock, artinya ini pertama kali reload setelah state dibuat
+                    // Buat lock baru
+                    localStorage.setItem('cbt_reload_lock', String(Date.now()));
+                    // Pastikan user adalah siswa
+                    try {
+                        const state = JSON.parse(stateStr);
+                        setSession('siswa', state.nama);
+                    } catch(e) {}
+                    document.getElementById('siswa-nama-display').textContent = getSession()?.nama || '';
+                    // Tampilkan lock countdown
+                    tampilkanLockCountdown(300);
+                    gantiHalaman('view-siswa-dashboard');
+                    return;
                 }
             } else {
+                // Tidak ada ujian aktif, hapus lock jika ada
+                localStorage.removeItem('cbt_reload_lock');
+                // Lanjutkan login normal
                 const user = getSession();
                 if (user) {
                     if (user.role === 'siswa') {
