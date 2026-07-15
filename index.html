@@ -199,7 +199,6 @@
         .mapel-card .nilai-badge { position: absolute; top: 8px; right: 8px; background: #4f46e5; color: white; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 20px; }
         .mapel-card .nilai-badge.skor { background: #10b981; }
 
-        /* Toast Warning */
         #toast-warning {
             position: fixed;
             top: 20px;
@@ -572,7 +571,7 @@
             </span>
             <span>SMK Prama Artha · CBT</span>
             <span class="text-slate-300">|</span>
-            <span>Anti-Tab Switching</span>
+            <span>Anti-Tab: -3 menit</span>
         </div>
     </footer>
 
@@ -887,13 +886,10 @@
         let ujianTimerInterval = null;
 
         // ================================================================
-        // ANTI-TAB SWITCHING
+        // ANTI-TAB SWITCHING: KURANGI TIMER 3 MENIT
         // ================================================================
-        let tabViolationStart = null;
-        let tabViolationCount = 0;
-        let tabViolationInterval = null;
         let isTabVisible = true;
-        const VIOLATION_LIMITS = [60, 120, 180, 240, 300]; // detik: 1,2,3,4,5 menit
+        const TAB_PENALTY_SECONDS = 180; // 3 menit
 
         function showToast(message, type = 'danger') {
             const toast = document.getElementById('toast-warning');
@@ -904,46 +900,44 @@
             toast._hide = setTimeout(() => { toast.style.display = 'none'; }, 5000);
         }
 
+        function applyTabPenalty() {
+            if (ujianSiswa.timer <= 0) return; // timer sudah habis
+
+            // Kurangi timer 3 menit (180 detik)
+            ujianSiswa.timer = Math.max(0, ujianSiswa.timer - TAB_PENALTY_SECONDS);
+            const menit = Math.floor(ujianSiswa.timer / 60);
+            const detik = ujianSiswa.timer % 60;
+            const timeStr = `${String(menit).padStart(2,'0')}:${String(detik).padStart(2,'0')}`;
+            document.getElementById('ujian-timer').textContent = timeStr;
+
+            showToast(`⚠️ Anda meninggalkan tab! Timer dikurangi 3 menit. Sisa waktu: ${timeStr}`, 'danger');
+
+            // Jika timer habis, langsung kumpulkan
+            if (ujianSiswa.timer <= 0) {
+                alert('⏰ Timer habis karena pelanggaran! Ujian otomatis dikumpulkan.');
+                kumpulkanUjian();
+            }
+        }
+
         function initAntiTab() {
             clearAntiTab();
             isTabVisible = true;
-            tabViolationStart = null;
-            tabViolationCount = 0;
             document.getElementById('tab-warning').classList.add('hidden');
 
             const visibilityHandler = () => {
                 if (document.hidden) {
                     // Tab disembunyikan
                     isTabVisible = false;
-                    tabViolationStart = Date.now();
                     document.getElementById('tab-warning').classList.remove('hidden');
                     document.getElementById('tab-warning').textContent = '⚠️ Anda meninggalkan tab ujian!';
-                    showToast('⚠️ Anda meninggalkan tab ujian! Timer pelanggaran dimulai.', 'warning');
+                    // Langsung terapkan hukuman
+                    applyTabPenalty();
                 } else {
                     // Tab kembali terlihat
                     isTabVisible = true;
-                    if (tabViolationStart !== null) {
-                        const elapsed = Math.floor((Date.now() - tabViolationStart) / 1000);
-                        tabViolationStart = null;
-                        // Catat pelanggaran
-                        tabViolationCount++;
-                        const limit = getViolationLimit(tabViolationCount);
-                        const isViolation = elapsed >= limit;
-                        if (isViolation) {
-                            showToast(
-                                `🚨 Pelanggaran #${tabViolationCount}! Anda meninggalkan tab selama ${elapsed} detik (batas ${limit} detik). Ujian akan dikumpulkan!`,
-                                'danger');
-                            // Langsung kumpulkan ujian
-                            kumpulkanUjian();
-                            return;
-                        } else {
-                            showToast(
-                                `✅ Anda kembali. Pelanggaran #${tabViolationCount} tidak mencapai batas (${elapsed}/${limit} detik).`,
-                                'warning');
-                            document.getElementById('tab-warning').classList.add('hidden');
-                        }
-                    }
                     document.getElementById('tab-warning').classList.add('hidden');
+                    // Beri tahu bahwa tidak ada hukuman tambahan
+                    showToast('✅ Anda kembali ke tab ujian.', 'warning');
                 }
             };
 
@@ -951,25 +945,12 @@
             window._antiTabHandler = visibilityHandler;
         }
 
-        function getViolationLimit(count) {
-            if (count <= 0) return VIOLATION_LIMITS[0];
-            if (count <= VIOLATION_LIMITS.length) {
-                return VIOLATION_LIMITS[count - 1];
-            }
-            return VIOLATION_LIMITS[VIOLATION_LIMITS.length - 1];
-        }
-
         function clearAntiTab() {
             if (window._antiTabHandler) {
                 document.removeEventListener('visibilitychange', window._antiTabHandler);
                 window._antiTabHandler = null;
             }
-            if (tabViolationInterval) {
-                clearInterval(tabViolationInterval);
-                tabViolationInterval = null;
-            }
             isTabVisible = true;
-            tabViolationStart = null;
             document.getElementById('tab-warning').classList.add('hidden');
         }
 
@@ -1080,9 +1061,7 @@
             document.getElementById('ujian-nama').textContent = user.nama;
             document.getElementById('ujian-mapel').textContent = mapel.nama;
 
-            // Reset anti-tab
             clearAntiTab();
-
             renderSoal();
             renderNavSoal();
             startTimer();
