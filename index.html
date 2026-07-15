@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CBT Premium - Guru & Admin Terpisah</title>
+    <title>CBT Multi-Mapel - Guru & Admin</title>
     <script src="https://cdn.tailwindcss.com">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
@@ -256,6 +256,23 @@
                 font-size: 11px;
             }
         }
+        .mapel-badge {
+            background: #e0e7ff;
+            color: #3730a3;
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .mapel-badge.guru {
+            background: #dbeafe;
+            color: #1e3a8a;
+        }
+        .mapel-badge.admin {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
     </style>
 </head>
 <body>
@@ -269,7 +286,7 @@
                 </div>
                 <span class="font-bold text-sm sm:text-lg text-slate-900 tracking-tight truncate">
                     <span class="inline sm:hidden">Ujian</span>
-                    <span class="hidden sm:inline">Computer Based Test</span>
+                    <span class="hidden sm:inline">Multi-Mapel</span>
                 </span>
                 <span id="db-status" class="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-800 shrink-0 truncate">Menghubungkan...</span>
             </div>
@@ -291,7 +308,7 @@
         <div id="view-menu" class="w-full max-w-3xl bg-white rounded-2xl shadow-xl border border-slate-100 p-5 sm:p-10 text-center transition-all duration-300 fade-in">
             <div class="flex items-center justify-center gap-2 mb-2">
                 <span class="text-3xl">🎓</span>
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Portal Asesmen</h2>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Portal Asesmen Multi-Mapel</h2>
             </div>
             <p class="text-slate-500 text-xs sm:text-sm mb-6 sm:mb-8 max-w-md mx-auto">Pilih peran Anda untuk masuk ke lingkungan ujian atau kelola sistem.</p>
 
@@ -303,7 +320,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-base sm:text-lg text-slate-800">Ruang Siswa</h3>
-                        <p class="text-slate-400 text-xs mt-0.5">Kerjakan ujian online.</p>
+                        <p class="text-slate-400 text-xs mt-0.5">Pilih mapel & kerjakan ujian.</p>
                     </div>
                 </button>
 
@@ -314,7 +331,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-base sm:text-lg text-slate-800">Panel Guru</h3>
-                        <p class="text-slate-400 text-xs mt-0.5">Kelola soal &amp; nilai siswa.</p>
+                        <p class="text-slate-400 text-xs mt-0.5">Kelola soal & nilai per mapel.</p>
                     </div>
                 </button>
 
@@ -325,7 +342,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-base sm:text-lg text-slate-800">Administrator</h3>
-                        <p class="text-slate-400 text-xs mt-0.5">Kendali penuh sistem &amp; user.</p>
+                        <p class="text-slate-400 text-xs mt-0.5">Kendali penuh sistem & mapel.</p>
                     </div>
                 </button>
             </div>
@@ -384,11 +401,17 @@
                         <span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">GURU</span>
                         Panel Pengajar
                     </h2>
-                    <p class="text-slate-400 text-xs mt-0.5">Kelola bank soal &amp; pantau hasil ujian siswa.</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Kelola bank soal &amp; pantau hasil ujian siswa per mata pelajaran.</p>
                 </div>
-                <button onclick="bukaModalResetGuru()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold py-2 px-3 rounded-lg border border-rose-100 transition self-start md:self-auto active:scale-95">
-                    Reset Semua Hasil
-                </button>
+                <div class="flex flex-wrap gap-2">
+                    <select id="guru-filter-mapel" class="border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="">Semua Mapel</option>
+                    </select>
+                    <button onclick="guruFilterMapel()" class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-blue-200 transition">Filter</button>
+                    <button onclick="bukaModalResetGuru()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold py-2 px-3 rounded-lg border border-rose-100 transition self-start md:self-auto active:scale-95">
+                        Reset Hasil
+                    </button>
+                </div>
             </div>
 
             <!-- TABS GURU -->
@@ -424,12 +447,13 @@
                             <tr>
                                 <th>No</th>
                                 <th>Nama Peserta</th>
+                                <th class="text-center">Mapel</th>
                                 <th class="text-center">Nilai</th>
                                 <th class="text-center">Waktu Selesai</th>
                             </tr>
                         </thead>
                         <tbody id="guru-tabel-hasil">
-                            <tr><td colspan="4" class="empty-state"><span class="icon">📭</span><br>Belum ada data nilai.</td></tr>
+                            <tr><td colspan="5" class="empty-state"><span class="icon">📭</span><br>Belum ada data nilai.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -444,6 +468,12 @@
                             <span>➕</span> <span>Tambah Soal</span>
                         </h3>
                         <div class="space-y-3">
+                            <div>
+                                <label class="block text-slate-600 text-xs font-semibold mb-1">Mata Pelajaran</label>
+                                <select id="guru-input-mapel" class="w-full border border-slate-200 rounded-lg p-2 text-base focus:ring-2 focus:ring-blue-500 bg-white">
+                                    <option value="">Pilih Mapel</option>
+                                </select>
+                            </div>
                             <div>
                                 <label class="block text-slate-600 text-xs font-semibold mb-1">Pertanyaan</label>
                                 <textarea id="guru-input-tanya" rows="3" class="w-full border border-slate-200 rounded-lg p-2.5 text-base focus:ring-2 focus:ring-blue-500 bg-white resize-none" placeholder="Teks pertanyaan..."></textarea>
@@ -506,9 +536,9 @@
                 <div>
                     <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
                         <span class="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full">ADMIN</span>
-                        Pusat Kendali Sistem
+                        Pusat Kendali Multi-Mapel
                     </h2>
-                    <p class="text-slate-400 text-xs mt-0.5">Kelola pengguna, soal, hasil, dan konfigurasi sistem secara penuh.</p>
+                    <p class="text-slate-400 text-xs mt-0.5">Kelola pengguna, mapel, soal, hasil, dan log aktivitas.</p>
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <button onclick="bukaModalResetAdmin()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold py-2 px-3 rounded-lg border border-rose-100 transition active:scale-95">
@@ -516,6 +546,9 @@
                     </button>
                     <button onclick="bukaModalTambahUser()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 text-xs font-semibold py-2 px-3 rounded-lg border border-emerald-100 transition active:scale-95">
                         ➕ Tambah User
+                    </button>
+                    <button onclick="bukaModalTambahMapel()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-semibold py-2 px-3 rounded-lg border border-indigo-100 transition active:scale-95">
+                        📚 Tambah Mapel
                     </button>
                 </div>
             </div>
@@ -562,22 +595,44 @@
 
             <!-- TABS ADMIN -->
             <div class="flex border-b border-slate-200 mb-6 overflow-x-auto whitespace-nowrap scrollbar-none">
-                <button onclick="setTabAdmin('users')" id="admin-tab-users" class="py-3 px-4 sm:px-6 text-xs sm:text-sm font-bold border-b-2 border-purple-600 text-purple-600 transition focus:outline-none">
-                    👤 Manajemen User
+                <button onclick="setTabAdmin('mapel')" id="admin-tab-mapel" class="py-3 px-4 sm:px-6 text-xs sm:text-sm font-bold border-b-2 border-purple-600 text-purple-600 transition focus:outline-none">
+                    📚 Mata Pelajaran
+                </button>
+                <button onclick="setTabAdmin('users')" id="admin-tab-users" class="py-3 px-4 sm:px-6 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-purple-600 transition focus:outline-none">
+                    👤 User
                 </button>
                 <button onclick="setTabAdmin('soal')" id="admin-tab-soal" class="py-3 px-4 sm:px-6 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-purple-600 transition focus:outline-none">
-                    📝 Bank Soal
+                    📝 Soal
                 </button>
                 <button onclick="setTabAdmin('hasil')" id="admin-tab-hasil" class="py-3 px-4 sm:px-6 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-purple-600 transition focus:outline-none">
-                    📊 Semua Hasil
+                    📊 Hasil
                 </button>
                 <button onclick="setTabAdmin('logs')" id="admin-tab-logs" class="py-3 px-4 sm:px-6 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-purple-600 transition focus:outline-none">
-                    📋 Log Aktivitas
+                    📋 Logs
                 </button>
             </div>
 
+            <!-- TAB MAPEL -->
+            <div id="admin-content-mapel" class="space-y-4">
+                <div class="table-wrap border border-slate-100 rounded-xl shadow-sm bg-white">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nama Mapel</th>
+                                <th>Kode</th>
+                                <th class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-tabel-mapel">
+                            <tr><td colspan="4" class="empty-state"><span class="icon">📚</span><br>Belum ada mata pelajaran.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- TAB USERS -->
-            <div id="admin-content-users" class="space-y-4">
+            <div id="admin-content-users" class="hidden space-y-4">
                 <div class="table-wrap border border-slate-100 rounded-xl shadow-sm bg-white">
                     <table>
                         <thead>
@@ -596,7 +651,7 @@
                 </div>
             </div>
 
-            <!-- TAB SOAL ADMIN (mirip guru, tapi dengan aksi lebih luas) -->
+            <!-- TAB SOAL ADMIN -->
             <div id="admin-content-soal" class="hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     <div class="lg:col-span-5 bg-slate-50 p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm">
@@ -604,6 +659,12 @@
                             <span>➕</span> <span>Tambah Soal (Admin)</span>
                         </h3>
                         <div class="space-y-3">
+                            <div>
+                                <label class="block text-slate-600 text-xs font-semibold mb-1">Mata Pelajaran</label>
+                                <select id="admin-input-mapel" class="w-full border border-slate-200 rounded-lg p-2 text-base focus:ring-2 focus:ring-purple-500 bg-white">
+                                    <option value="">Pilih Mapel</option>
+                                </select>
+                            </div>
                             <div>
                                 <label class="block text-slate-600 text-xs font-semibold mb-1">Pertanyaan</label>
                                 <textarea id="admin-input-tanya" rows="3" class="w-full border border-slate-200 rounded-lg p-2.5 text-base focus:ring-2 focus:ring-purple-500 bg-white resize-none" placeholder="Teks pertanyaan..."></textarea>
@@ -654,11 +715,14 @@
                 </div>
             </div>
 
-            <!-- TAB HASIL ADMIN (semua hasil dengan filter) -->
+            <!-- TAB HASIL ADMIN -->
             <div id="admin-content-hasil" class="hidden">
                 <div class="flex flex-wrap items-center gap-3 mb-4">
                     <span class="text-xs font-medium text-slate-500">Filter:</span>
-                    <input type="text" id="admin-filter-hasil" placeholder="Cari nama..." class="border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-purple-500 bg-white">
+                    <select id="admin-filter-mapel" class="border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-purple-500 bg-white">
+                        <option value="">Semua Mapel</option>
+                    </select>
+                    <input type="text" id="admin-filter-nama" placeholder="Cari nama..." class="border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-purple-500 bg-white">
                     <button onclick="adminFilterHasil()" class="bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-purple-200 transition">Cari</button>
                     <button onclick="adminMuatHasil()" class="text-slate-400 text-xs hover:text-slate-600">↻ Reset</button>
                 </div>
@@ -668,13 +732,14 @@
                             <tr>
                                 <th>No</th>
                                 <th>Nama Peserta</th>
+                                <th class="text-center">Mapel</th>
                                 <th class="text-center">Nilai</th>
                                 <th class="text-center">Waktu</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="admin-tabel-hasil">
-                            <tr><td colspan="5" class="empty-state"><span class="icon">📊</span><br>Belum ada data ujian.</td></tr>
+                            <tr><td colspan="6" class="empty-state"><span class="icon">📊</span><br>Belum ada data ujian.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -695,18 +760,24 @@
         </div>
 
         <!-- ============================================================ -->
-        <!-- 6. VIEW: REGISTRASI SISWA -->
+        <!-- 6. VIEW: REGISTRASI SISWA (dengan pilihan mapel) -->
         <!-- ============================================================ -->
         <div id="view-siswa-login" class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-8 hidden fade-in">
             <div class="flex items-center gap-3 mb-1">
                 <span class="text-2xl">🧑‍🎓</span>
                 <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Identitas Siswa</h2>
             </div>
-            <p class="text-slate-500 text-xs sm:text-sm mb-6">Masukkan nama lengkap sesuai absen untuk memulai ujian.</p>
+            <p class="text-slate-500 text-xs sm:text-sm mb-6">Masukkan nama dan pilih mata pelajaran yang akan diujikan.</p>
             <div class="space-y-4">
                 <div>
                     <label class="block text-slate-700 text-xs font-semibold uppercase tracking-wider mb-2">Nama Lengkap</label>
                     <input type="text" id="nama-siswa" class="w-full border border-slate-200 rounded-xl py-3 px-4 text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition" placeholder="Masukkan nama Anda">
+                </div>
+                <div>
+                    <label class="block text-slate-700 text-xs font-semibold uppercase tracking-wider mb-2">Mata Pelajaran</label>
+                    <select id="siswa-pilih-mapel" class="w-full border border-slate-200 rounded-xl py-3 px-4 text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition bg-white">
+                        <option value="">-- Pilih Mapel --</option>
+                    </select>
                 </div>
                 <button onclick="mulaiUjian()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl transition shadow-md active:scale-[0.98]">
                     Mulai Ujian Sekarang
@@ -723,6 +794,7 @@
                     <div class="min-w-0 pr-2">
                         <span class="text-[10px] font-bold text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded">Lembar Soal</span>
                         <h3 id="display-nama-siswa" class="font-bold text-sm sm:text-base text-slate-900 mt-1 truncate">-</h3>
+                        <span id="display-mapel-siswa" class="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded">Mapel: -</span>
                     </div>
                     <div class="bg-rose-50 border border-rose-100 px-3 py-1.5 rounded-xl text-center shrink-0">
                         <span class="text-[8px] sm:text-[10px] text-rose-400 font-bold uppercase tracking-wider block">Sisa Waktu</span>
@@ -770,7 +842,7 @@
 
     <!-- ========== FOOTER ========== -->
     <footer class="bg-white border-t border-slate-100 py-3 text-center text-[10px] sm:text-xs text-slate-400 font-medium shrink-0">
-        &copy; 2026 CBT Premium Engine · Cloud Database · v3.0
+        &copy; 2026 CBT Multi-Mapel Engine · Cloud Database · v4.0
     </footer>
 
     <!-- ========== MODAL GLOBAL ========== -->
@@ -800,48 +872,44 @@
         // ================================================================
         // DATA DEFAULT
         // ================================================================
+        const defaultMapel = [
+            { id: 1, nama: "Matematika", kode: "MTK" },
+            { id: 2, nama: "Bahasa Indonesia", kode: "BIN" },
+            { id: 3, nama: "Bahasa Inggris", kode: "BIG" },
+            { id: 4, nama: "IPA", kode: "IPA" },
+            { id: 5, nama: "IPS", kode: "IPS" }
+        ];
+
         const defaultSoal = [
-            { id: 1, tanya: "Sebuah toko memberikan diskon 20% untuk semua jenis jaket. Jika harga sebuah jaket adalah Rp 150.000, berapa uang yang harus dibayarkan setelah diskon?",
-                opsi: ["A. Rp 110.000", "B. Rp 120.000", "C. Rp 130.000", "D. Rp 140.000"], kunci: 1 },
-            { id: 2, tanya: "Perhatikan pola bilangan berikut: 3, 7, 11, 15, ... Angka berapakah yang tepat untuk mengisi suku berikutnya?",
-                opsi: ["A. 17", "B. 18", "C. 19", "D. 20"], kunci: 2 },
-            { id: 3, tanya: "Ibu membeli 2,5 kg tepung terigu. Sebanyak 1 1/4 kg digunakan untuk membuat kue. Berapa sisa tepung terigu Ibu sekarang?",
-                opsi: ["A. 1,25 kg", "B. 1,50 kg", "C. 1,75 kg", "D. 2,00 kg"], kunci: 0 },
-            { id: 4, tanya: "Sebuah mobil menghabiskan 4 liter bensin untuk menempuh jarak 60 km. Berapa liter bensin yang diperlukan untuk menempuh jarak 150 km?",
-                opsi: ["A. 8 liter", "B. 10 liter", "C. 12 liter", "D. 14 liter"], kunci: 1 },
-            { id: 5, tanya: "Hasil dari perhitungan pecahan 2/3 + 1/4 adalah...",
-                opsi: ["A. 3/7", "B. 5/12", "C. 8/12", "D. 11/12"], kunci: 3 },
-            { id: 6, tanya: "Skala pada peta adalah 1 : 500.000. Jika jarak dua kota pada peta adalah 8 cm, maka jarak sebenarnya kedua kota tersebut adalah...",
-                opsi: ["A. 4 km", "B. 40 km", "C. 400 km", "D. 4.000 km"], kunci: 1 },
-            { id: 7, tanya: "Sebuah bak mandi berbentuk kubus dengan panjang rusuk bagian dalam 80 cm. Berapa liter volume air maksimal yang dapat ditampung bak tersebut?",
-                opsi: ["A. 512 liter", "B. 51,2 liter", "C. 6.400 liter", "D. 640 liter"], kunci: 0 },
-            { id: 8, tanya: "Pola angka: 2, 4, 8, 16, ... Tentukan angka pada suku ke-6 dari pola tersebut!",
-                opsi: ["A. 32", "B. 48", "C. 64", "D. 128"], kunci: 2 },
-            { id: 9, tanya: "Dalam sebuah kelas terdapat 40 siswa. Jika 60% dari total siswa adalah perempuan, berapakah jumlah siswa laki-laki di kelas tersebut?",
-                opsi: ["A. 16 siswa", "B. 24 siswa", "C. 18 siswa", "D. 20 siswa"], kunci: 0 },
-            { id: 10, tanya: "Seorang pekerja bangunan dibayar Rp 600.000 untuk 4 hari kerja. Berapa upah yang diterima pekerja tersebut jika ia bekerja selama 10 hari?",
-                opsi: ["A. Rp 1.200.000", "B. Rp 1.500.000", "C. Rp 1.800.000", "D. Rp 2.000.000"], kunci: 1 },
-            { id: 11, tanya: "Budi mengendarai sepeda motor dengan kecepatan rata-rata 60 km/jam. Jika ia berangkat pukul 07.00 dan tiba pukul 09.30, berapakah jarak yang ditempuh Budi?",
-                opsi: ["A. 120 km", "B. 140 km", "C. 150 km", "D. 160 km"], kunci: 2 },
-            { id: 12, tanya: "Rata-rata nilai ujian matematika dari 5 orang siswa adalah 80. Jika ditambah nilai siswa ke-6, rata-ratanya menjadi 82. Berapakah nilai siswa ke-6 tersebut?",
-                opsi: ["A. 84", "B. 88", "C. 90", "D. 92"], kunci: 3 },
-            { id: 13, tanya: "Sebuah taman berbentuk lingkaran memiliki diameter 14 meter. Berapakah luas dari taman tersebut? (Gunakan pi = 22/7)",
-                opsi: ["A. 154 meter persegi", "B. 616 meter persegi", "C. 44 meter persegi", "D. 88 meter persegi"],
-                kunci: 0 },
-            { id: 14, tanya: "Perbandingan uang Andi dan uang Boni adalah 3 : 5. Jika total uang mereka berdua adalah Rp 400.000, berapakah selisih uang mereka?",
-                opsi: ["A. Rp 50.000", "B. Rp 100.000", "C. Rp 150.000", "D. Rp 200.000"], kunci: 1 },
-            { id: 15, tanya: "Hasil dari operasi campuran (48 - 12) : 4 + 6 x 3 adalah...",
-                opsi: ["A. 27", "B. 36", "C. 45", "D. 54"], kunci: 0 },
-            { id: 16, tanya: "Sebuah produk dijual dengan harga Rp 80.000 dan toko mendapatkan keuntungan sebesar 25% dari harga beli. Berapakah harga beli awal produk tersebut?",
-                opsi: ["A. Rp 60.000", "B. Rp 64.000", "C. Rp 70.000", "D. Rp 75.000"], kunci: 1 },
-            { id: 17, tanya: "Pola deret angka bertingkat: 1, 3, 6, 10, 15, ... Suku ke-7 dari deret tersebut adalah...",
-                opsi: ["A. 21", "B. 25", "C. 28", "D. 32"], kunci: 2 },
-            { id: 18, tanya: "Denah sebidang tanah berbentuk persegi panjang memiliki ukuran 10 cm x 6 cm. Jika skala denah adalah 1 : 200, berapakah keliling sebenarnya tanah tersebut?",
-                opsi: ["A. 32 meter", "B. 64 meter", "C. 120 meter", "D. 240 meter"], kunci: 1 },
-            { id: 19, tanya: "Tiga buah lampu hias menyala berurutan. Lampu merah menyala setiap 4 detik, lampu kuning setiap 6 detik, dan lampu hijau setiap 8 detik. Pada detik keberapa ketiga lampu akan menyala bersamaan untuk pertama kalinya?",
-                opsi: ["A. Detik ke-12", "B. Detik ke-18", "C. Detik ke-24", "D. Detik ke-48"], kunci: 2 },
-            { id: 20, tanya: "Sebuah proyek jembatan dapat diselesaikan oleh 12 pekerja dalam waktu 20 hari. Jika pekerja ditambah menjadi 15 orang, berapa hari waktu yang diperlukan untuk menyelesaikan jembatan tersebut?",
-                opsi: ["A. 14 hari", "B. 15 hari", "C. 16 hari", "D. 18 hari"], kunci: 2 }
+            // Matematika
+            { id: 1, mapel_id: 1, tanya: "Hasil dari 2 + 3 adalah?", opsi: ["A. 4", "B. 5", "C. 6", "D. 7"], kunci: 1 },
+            { id: 2, mapel_id: 1, tanya: "Akar kuadrat dari 81 adalah?", opsi: ["A. 7", "B. 8", "C. 9", "D. 10"], kunci: 2 },
+            // Bahasa Indonesia
+            { id: 3, mapel_id: 2, tanya: "Sinonim dari 'cepat' adalah?", opsi: ["A. Lambat", "B. Kilat", "C. Pelan", "D. Lama"],
+                kunci: 1 },
+            { id: 4, mapel_id: 2, tanya: "Kalimat baku adalah kalimat yang ...", opsi: ["A. Mengandung slang", "B. Sesuai EYD",
+                    "C. Tidak logis", "D. Bertele-tele"
+                ], kunci: 1 },
+            // Bahasa Inggris
+            { id: 5, mapel_id: 3, tanya: "What is the meaning of 'book'?", opsi: ["A. Pensil", "B. Buku", "C. Meja",
+                    "D. Kursi"
+                ], kunci: 1 },
+            { id: 6, mapel_id: 3, tanya: "She ... to school every day.", opsi: ["A. go", "B. goes", "C. going", "D. gone"],
+                kunci: 1 },
+            // IPA
+            { id: 7, mapel_id: 4, tanya: "Planet terbesar di tata surya adalah?", opsi: ["A. Bumi", "B. Jupiter", "C. Saturnus",
+                    "D. Mars"
+                ], kunci: 1 },
+            { id: 8, mapel_id: 4, tanya: "Bagian sel yang berfungsi sebagai pusat kendali adalah?", opsi: ["A. Membran sel",
+                    "B. Sitoplasma", "C. Nukleus", "D. Mitokondria"
+                ], kunci: 2 },
+            // IPS
+            { id: 9, mapel_id: 5, tanya: "Ibu kota Indonesia adalah?", opsi: ["A. Jakarta", "B. Surabaya", "C. Bandung",
+                    "D. Medan"
+                ], kunci: 0 },
+            { id: 10, mapel_id: 5, tanya: "Gunung tertinggi di Indonesia adalah?", opsi: ["A. Krakatau", "B. Merapi",
+                    "C. Semeru", "D. Rinjani"
+                ], kunci: 2 }
         ];
 
         const defaultUsers = [
@@ -856,16 +924,16 @@
         // VARIABEL GLOBAL
         // ================================================================
         let bankSoal = [];
+        let daftarMapel = [];
         let dbActive = false;
         let supabaseClient = null;
         let waktuUjian = 30 * 60;
         let intervalTimer;
         let namaPesertaAktif = "";
+        let mapelPesertaAktif = null; // id mapel
         let indeksSoalAktif = 0;
         let jawabanSiswa = {};
         let raguRaguSiswa = {};
-
-        // Data users (local fallback)
         let users = [];
         let logs = [];
 
@@ -900,15 +968,121 @@
         // LOAD DATA AWAL
         // ================================================================
         window.onload = async () => {
+            await loadMapel();
             await sinkronisasiSoal();
             await loadUsers();
             await loadLogs();
-            // Tampilkan menu utama
+            // Isi dropdown mapel di siswa, guru, admin
+            populateMapelDropdowns();
             gantiHalaman('view-menu');
         };
 
         // ================================================================
-        // SINKRONISASI SOAL
+        // MANAJEMEN MAPEL
+        // ================================================================
+        async function loadMapel() {
+            if (dbActive && supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('mata_pelajaran')
+                        .select('*')
+                        .order('id', { ascending: true });
+                    if (error) throw error;
+                    if (!data || data.length === 0) {
+                        // Seeding default
+                        for (let m of defaultMapel) {
+                            await supabaseClient.from('mata_pelajaran').insert([m]);
+                        }
+                        await loadMapel();
+                        return;
+                    }
+                    daftarMapel = data;
+                    console.log(`✅ Loaded ${daftarMapel.length} mapel from Supabase`);
+                } catch (err) {
+                    console.error("❌ Gagal load mapel:", err);
+                    loadMapelLocal();
+                }
+            } else {
+                loadMapelLocal();
+            }
+        }
+
+        function loadMapelLocal() {
+            const stored = localStorage.getItem('local_mapel');
+            if (stored) {
+                try {
+                    daftarMapel = JSON.parse(stored);
+                } catch (e) {
+                    daftarMapel = defaultMapel.map(m => ({ ...m }));
+                    localStorage.setItem('local_mapel', JSON.stringify(daftarMapel));
+                }
+            } else {
+                daftarMapel = defaultMapel.map(m => ({ ...m }));
+                localStorage.setItem('local_mapel', JSON.stringify(daftarMapel));
+            }
+            console.log(`📁 Loaded ${daftarMapel.length} mapel from Local Storage`);
+        }
+
+        async function saveMapel() {
+            if (dbActive && supabaseClient) {
+                try {
+                    await supabaseClient.from('mata_pelajaran').delete().neq('id', 0);
+                    for (let m of daftarMapel) {
+                        await supabaseClient.from('mata_pelajaran').insert([m]);
+                    }
+                } catch (err) {
+                    console.error("❌ Gagal save mapel:", err);
+                    localStorage.setItem('local_mapel', JSON.stringify(daftarMapel));
+                }
+            } else {
+                localStorage.setItem('local_mapel', JSON.stringify(daftarMapel));
+            }
+        }
+
+        function getNamaMapel(id) {
+            const found = daftarMapel.find(m => m.id === id);
+            return found ? found.nama : 'Tidak Diketahui';
+        }
+
+        function populateMapelDropdowns() {
+            // Siswa
+            const selSiswa = document.getElementById('siswa-pilih-mapel');
+            selSiswa.innerHTML = '<option value="">-- Pilih Mapel --</option>';
+            daftarMapel.forEach(m => {
+                selSiswa.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
+            });
+
+            // Guru tambah soal
+            const selGuru = document.getElementById('guru-input-mapel');
+            selGuru.innerHTML = '<option value="">Pilih Mapel</option>';
+            daftarMapel.forEach(m => {
+                selGuru.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
+            });
+
+            // Admin tambah soal
+            const selAdmin = document.getElementById('admin-input-mapel');
+            selAdmin.innerHTML = '<option value="">Pilih Mapel</option>';
+            daftarMapel.forEach(m => {
+                selAdmin.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
+            });
+
+            // Filter mapel guru
+            const filterGuru = document.getElementById('guru-filter-mapel');
+            filterGuru.innerHTML = '<option value="">Semua Mapel</option>';
+            daftarMapel.forEach(m => {
+                filterGuru.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
+            });
+
+            // Filter mapel admin
+            const filterAdmin = document.getElementById('admin-filter-mapel');
+            filterAdmin.innerHTML = '<option value="">Semua Mapel</option>';
+            daftarMapel.forEach(m => {
+                filterAdmin.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
+            });
+        }
+
+        // ================================================================
+        // SINKRONISASI SOAL (dengan mapel)
         // ================================================================
         async function sinkronisasiSoal() {
             if (dbActive && supabaseClient) {
@@ -922,6 +1096,7 @@
                         // Seeding default
                         for (let s of defaultSoal) {
                             await supabaseClient.from('bank_soal').insert([{
+                                mapel_id: s.mapel_id,
                                 tanya: s.tanya,
                                 opsi_a: s.opsi[0],
                                 opsi_b: s.opsi[1],
@@ -935,6 +1110,7 @@
                     }
                     bankSoal = data.map(item => ({
                         id: item.id,
+                        mapel_id: item.mapel_id,
                         tanya: item.tanya,
                         opsi: [item.opsi_a, item.opsi_b, item.opsi_c, item.opsi_d],
                         kunci: item.kunci
@@ -968,7 +1144,7 @@
         }
 
         // ================================================================
-        // MANAJEMEN USER (local fallback + Supabase)
+        // MANAJEMEN USER (sama seperti sebelumnya)
         // ================================================================
         async function loadUsers() {
             if (dbActive && supabaseClient) {
@@ -979,7 +1155,6 @@
                         .order('id', { ascending: true });
                     if (error) throw error;
                     if (!data || data.length === 0) {
-                        // seeding default users
                         for (let u of defaultUsers) {
                             await supabaseClient.from('users').insert([u]);
                         }
@@ -1000,23 +1175,16 @@
         function loadUsersLocal() {
             const stored = localStorage.getItem('local_users');
             if (stored) {
-                try {
-                    users = JSON.parse(stored);
-                } catch (e) {
-                    users = defaultUsers.map(u => ({ ...u }));
-                    localStorage.setItem('local_users', JSON.stringify(users));
-                }
+                try { users = JSON.parse(stored); } catch (e) { users = defaultUsers.map(u => ({ ...u })); }
             } else {
                 users = defaultUsers.map(u => ({ ...u }));
-                localStorage.setItem('local_users', JSON.stringify(users));
             }
-            console.log(`📁 Loaded ${users.length} users from Local Storage`);
+            localStorage.setItem('local_users', JSON.stringify(users));
         }
 
         async function saveUsers() {
             if (dbActive && supabaseClient) {
                 try {
-                    // Sinkronisasi: hapus semua dan insert ulang (sederhana)
                     await supabaseClient.from('users').delete().neq('id', 0);
                     for (let u of users) {
                         await supabaseClient.from('users').insert([u]);
@@ -1064,7 +1232,6 @@
         async function saveLogs() {
             if (dbActive && supabaseClient) {
                 try {
-                    // Simpan hanya jika ada log baru
                     for (let l of logs) {
                         if (!l.id) {
                             await supabaseClient.from('logs').insert([l]);
@@ -1108,10 +1275,20 @@
 
             if (idHalaman === 'view-guru-dashboard') {
                 setTabGuru('hasil');
+                populateMapelDropdowns();
             }
             if (idHalaman === 'view-admin-dashboard') {
-                setTabAdmin('users');
+                setTabAdmin('mapel');
                 adminMuatStats();
+                adminMuatMapel();
+                adminMuatUsers();
+                adminMuatSoal();
+                adminMuatHasil();
+                adminMuatLogs();
+                populateMapelDropdowns();
+            }
+            if (idHalaman === 'view-siswa-login') {
+                populateMapelDropdowns();
             }
         }
 
@@ -1121,11 +1298,10 @@
         }
 
         // ================================================================
-        // LOGIN GURU
+        // LOGIN GURU & ADMIN (sama)
         // ================================================================
         function loginGuru() {
             const pass = document.getElementById('input-pass-guru').value;
-            // Cek di database users
             const user = users.find(u => u.role === 'guru' && u.password === pass);
             if (user) {
                 document.getElementById('error-guru').classList.add('hidden');
@@ -1134,22 +1310,20 @@
                 gantiHalaman('view-guru-dashboard');
                 muatDashboardGuru();
                 muatDaftarSoalGuru();
+                populateMapelDropdowns();
             } else if (pass === 'Guru123') {
-                // fallback default
                 document.getElementById('error-guru').classList.add('hidden');
                 document.getElementById('input-pass-guru').value = '';
                 tambahLog('Guru login (default)');
                 gantiHalaman('view-guru-dashboard');
                 muatDashboardGuru();
                 muatDaftarSoalGuru();
+                populateMapelDropdowns();
             } else {
                 document.getElementById('error-guru').classList.remove('hidden');
             }
         }
 
-        // ================================================================
-        // LOGIN ADMIN
-        // ================================================================
         function loginAdmin() {
             const pass = document.getElementById('input-pass-admin').value;
             const user = users.find(u => u.role === 'admin' && u.password === pass);
@@ -1159,20 +1333,24 @@
                 tambahLog(`Admin "${user.nama}" login`);
                 gantiHalaman('view-admin-dashboard');
                 adminMuatStats();
+                adminMuatMapel();
                 adminMuatUsers();
                 adminMuatSoal();
                 adminMuatHasil();
                 adminMuatLogs();
+                populateMapelDropdowns();
             } else if (pass === 'Admin123') {
                 document.getElementById('error-admin').classList.add('hidden');
                 document.getElementById('input-pass-admin').value = '';
                 tambahLog('Admin login (default)');
                 gantiHalaman('view-admin-dashboard');
                 adminMuatStats();
+                adminMuatMapel();
                 adminMuatUsers();
                 adminMuatSoal();
                 adminMuatHasil();
                 adminMuatLogs();
+                populateMapelDropdowns();
             } else {
                 document.getElementById('error-admin').classList.remove('hidden');
             }
@@ -1206,28 +1384,41 @@
             }
         }
 
+        function guruFilterMapel() {
+            muatDashboardGuru();
+        }
+
         // ================================================================
-        // DASHBOARD GURU - HASIL
+        // DASHBOARD GURU - HASIL (dengan filter mapel)
         // ================================================================
         async function muatDashboardGuru() {
             const tbody = document.getElementById('guru-tabel-hasil');
-            tbody.innerHTML = `<tr><td colspan="4" class="empty-state"><span class="icon">⏳</span><br>Memuat data...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="empty-state"><span class="icon">⏳</span><br>Memuat data...</td></tr>`;
+
+            const filterMapel = document.getElementById('guru-filter-mapel').value;
 
             let dataHasil = [];
             if (dbActive && supabaseClient) {
                 try {
-                    const { data, error } = await supabaseClient
-                        .from('hasil_ujian')
-                        .select('*')
-                        .order('id', { ascending: false });
+                    let query = supabaseClient.from('hasil_ujian').select('*').order('id', { ascending: false });
+                    if (filterMapel) {
+                        query = query.eq('mapel_id', parseInt(filterMapel));
+                    }
+                    const { data, error } = await query;
                     if (error) throw error;
                     dataHasil = data || [];
                 } catch (err) {
                     console.error("❌ Gagal fetch hasil:", err);
                     dataHasil = JSON.parse(localStorage.getItem('local_hasil_ujian')) || [];
+                    if (filterMapel) {
+                        dataHasil = dataHasil.filter(item => item.mapel_id === parseInt(filterMapel));
+                    }
                 }
             } else {
                 dataHasil = JSON.parse(localStorage.getItem('local_hasil_ujian')) || [];
+                if (filterMapel) {
+                    dataHasil = dataHasil.filter(item => item.mapel_id === parseInt(filterMapel));
+                }
             }
 
             tbody.innerHTML = '';
@@ -1238,17 +1429,20 @@
                 totalNilai = dataHasil.reduce((s, i) => s + i.nilai, 0);
                 tertinggi = Math.max(...dataHasil.map(i => i.nilai));
                 dataHasil.forEach((item, idx) => {
+                    const mapelName = getNamaMapel(item.mapel_id);
                     tbody.innerHTML += `
                         <tr>
                             <td>${idx + 1}</td>
                             <td class="font-semibold">${item.nama}</td>
+                            <td class="text-center"><span class="mapel-badge guru">${mapelName}</span></td>
                             <td class="text-center"><span class="bg-blue-50 text-blue-700 font-bold px-2.5 py-1 rounded-full text-xs border border-blue-100">${item.nilai}</span></td>
                             <td class="text-center text-[11px] text-slate-400">${item.waktu}</td>
                         </tr>
                     `;
                 });
             } else {
-                tbody.innerHTML = `<tr><td colspan="4" class="empty-state"><span class="icon">📭</span><br>Belum ada data nilai.</td></tr>`;
+                tbody.innerHTML =
+                `<tr><td colspan="5" class="empty-state"><span class="icon">📭</span><br>Belum ada data nilai untuk mapel ini.</td></tr>`;
             }
 
             document.getElementById('guru-stat-total').innerText = total;
@@ -1257,7 +1451,7 @@
         }
 
         // ================================================================
-        // DAFTAR SOAL GURU
+        // DAFTAR SOAL GURU (dengan mapel)
         // ================================================================
         function muatDaftarSoalGuru() {
             const container = document.getElementById('guru-list-soal');
@@ -1278,11 +1472,12 @@
                     opsiList +=
                         `<p class="text-xs ${isCorrect} mt-0.5"><span>${idx === soal.kunci ? '✔️' : '•'}</span> <span>${opsi}</span></p>`;
                 });
-
+                const mapelName = getNamaMapel(soal.mapel_id);
                 container.innerHTML += `
                     <div class="p-3.5 border border-slate-100 rounded-xl bg-slate-50/60 flex justify-between items-start gap-3 hover:border-blue-200 transition shadow-sm">
                         <div class="flex-grow min-w-0">
                             <span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">No. ${index + 1}</span>
+                            <span class="mapel-badge guru ml-2">${mapelName}</span>
                             <h4 class="font-semibold text-xs sm:text-sm text-slate-800 mt-1.5 leading-relaxed break-words">${soal.tanya}</h4>
                             <div class="mt-2 pt-1.5 border-t border-slate-100">${opsiList}</div>
                         </div>
@@ -1293,9 +1488,10 @@
         }
 
         // ================================================================
-        // GURU: TAMBAH SOAL
+        // GURU: TAMBAH SOAL (dengan mapel)
         // ================================================================
         async function guruTambahSoal() {
+            const mapel_id = parseInt(document.getElementById('guru-input-mapel').value);
             const tanya = document.getElementById('guru-input-tanya').value.trim();
             const opsi0 = document.getElementById('guru-input-opsi-0').value.trim();
             const opsi1 = document.getElementById('guru-input-opsi-1').value.trim();
@@ -1303,14 +1499,15 @@
             const opsi3 = document.getElementById('guru-input-opsi-3').value.trim();
             const kunci = parseInt(document.getElementById('guru-input-kunci').value);
 
-            if (!tanya || !opsi0 || !opsi1 || !opsi2 || !opsi3) {
-                alert("Semua kolom wajib diisi!");
+            if (!mapel_id || !tanya || !opsi0 || !opsi1 || !opsi2 || !opsi3) {
+                alert("Semua kolom wajib diisi, termasuk pilih mapel!");
                 return;
             }
 
             if (dbActive && supabaseClient) {
                 try {
                     await supabaseClient.from('bank_soal').insert([{
+                        mapel_id,
                         tanya,
                         opsi_a: opsi0,
                         opsi_b: opsi1,
@@ -1319,19 +1516,18 @@
                         kunci
                     }]);
                     await sinkronisasiSoal();
-                    tambahLog(`Guru menambah soal: "${tanya.substring(0, 30)}..."`);
+                    tambahLog(`Guru menambah soal (mapel ${mapel_id}): "${tanya.substring(0, 30)}..."`);
                 } catch (err) {
                     alert("Gagal simpan: " + err.message);
                     return;
                 }
             } else {
                 const newId = bankSoal.length > 0 ? Math.max(...bankSoal.map(s => s.id)) + 1 : 1;
-                bankSoal.push({ id: newId, tanya, opsi: [opsi0, opsi1, opsi2, opsi3], kunci });
+                bankSoal.push({ id: newId, mapel_id, tanya, opsi: [opsi0, opsi1, opsi2, opsi3], kunci });
                 localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
-                tambahLog(`Guru menambah soal (local): "${tanya.substring(0, 30)}..."`);
+                tambahLog(`Guru menambah soal (local) mapel ${mapel_id}: "${tanya.substring(0, 30)}..."`);
             }
 
-            // Reset form
             ['guru-input-tanya', 'guru-input-opsi-0', 'guru-input-opsi-1', 'guru-input-opsi-2', 'guru-input-opsi-3']
             .forEach(id => document.getElementById(id).value = '');
             document.getElementById('guru-input-kunci').value = '0';
@@ -1339,7 +1535,7 @@
         }
 
         // ================================================================
-        // GURU: HAPUS SOAL
+        // GURU: HAPUS SOAL & RESET (sama seperti sebelumnya, tapi dengan log mapel)
         // ================================================================
         async function guruHapusSoal(id) {
             tampilkanModal("Hapus Soal?", "Soal akan dihapus dari database.", async () => {
@@ -1363,9 +1559,6 @@
             });
         }
 
-        // ================================================================
-        // GURU: RESET BANK SOAL
-        // ================================================================
         async function guruResetBankSoal() {
             tampilkanModal("Reset Bank Soal?", "Kembalikan ke soal default pabrikan.", async () => {
                 if (dbActive && supabaseClient) {
@@ -1373,6 +1566,7 @@
                         await supabaseClient.from('bank_soal').delete().neq('id', 0);
                         for (let s of defaultSoal) {
                             await supabaseClient.from('bank_soal').insert([{
+                                mapel_id: s.mapel_id,
                                 tanya: s.tanya,
                                 opsi_a: s.opsi[0],
                                 opsi_b: s.opsi[1],
@@ -1398,9 +1592,6 @@
             });
         }
 
-        // ================================================================
-        // GURU: RESET HASIL
-        // ================================================================
         async function bukaModalResetGuru() {
             tampilkanModal("Hapus Semua Hasil?", "Menghapus seluruh data nilai siswa.", async () => {
                 if (dbActive && supabaseClient) {
@@ -1422,12 +1613,14 @@
         }
 
         // ================================================================
-        // ADMIN: TAB NAVIGASI
+        // ADMIN: TAB NAVIGASI (tambah mapel)
         // ================================================================
         function setTabAdmin(tab) {
-            const tabs = ['users', 'soal', 'hasil', 'logs'];
-            const btnIds = ['admin-tab-users', 'admin-tab-soal', 'admin-tab-hasil', 'admin-tab-logs'];
-            const contentIds = ['admin-content-users', 'admin-content-soal', 'admin-content-hasil', 'admin-content-logs'];
+            const tabs = ['mapel', 'users', 'soal', 'hasil', 'logs'];
+            const btnIds = ['admin-tab-mapel', 'admin-tab-users', 'admin-tab-soal', 'admin-tab-hasil', 'admin-tab-logs'];
+            const contentIds = ['admin-content-mapel', 'admin-content-users', 'admin-content-soal', 'admin-content-hasil',
+                'admin-content-logs'
+            ];
 
             tabs.forEach((t, i) => {
                 const btn = document.getElementById(btnIds[i]);
@@ -1443,7 +1636,7 @@
                 }
             });
 
-            // Load data sesuai tab
+            if (tab === 'mapel') adminMuatMapel();
             if (tab === 'users') adminMuatUsers();
             if (tab === 'soal') adminMuatSoal();
             if (tab === 'hasil') adminMuatHasil();
@@ -1451,7 +1644,7 @@
         }
 
         // ================================================================
-        // ADMIN: STATS
+        // ADMIN: STATS (dengan mapel)
         // ================================================================
         function adminMuatStats() {
             const totalUsers = users.length;
@@ -1459,7 +1652,7 @@
 
             let dataHasil = [];
             if (dbActive && supabaseClient) {
-                // async, kita panggil terpisah
+                // async
             } else {
                 dataHasil = JSON.parse(localStorage.getItem('local_hasil_ujian')) || [];
             }
@@ -1475,7 +1668,6 @@
                 document.getElementById('admin-stat-rata').innerText = '0';
             }
 
-            // Update juga dari supabase jika online
             if (dbActive && supabaseClient) {
                 supabaseClient.from('hasil_ujian').select('*').then(({ data, error }) => {
                     if (!error && data) {
@@ -1490,24 +1682,95 @@
         }
 
         // ================================================================
-        // ADMIN: MANAJEMEN USER
+        // ADMIN: MANAJEMEN MAPEL
+        // ================================================================
+        function adminMuatMapel() {
+            const tbody = document.getElementById('admin-tabel-mapel');
+            tbody.innerHTML = '';
+            if (daftarMapel.length === 0) {
+                tbody.innerHTML =
+                    `<tr><td colspan="4" class="empty-state"><span class="icon">📚</span><br>Belum ada mata pelajaran.</td></tr>`;
+                return;
+            }
+            daftarMapel.forEach((m, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${m.id}</td>
+                        <td class="font-semibold">${m.nama}</td>
+                        <td><span class="mapel-badge admin">${m.kode || '-'}</span></td>
+                        <td class="text-center">
+                            <button onclick="adminHapusMapel(${m.id})" class="text-rose-500 hover:text-rose-700 text-xs font-medium px-2 py-1 rounded border border-rose-100 hover:bg-rose-50 transition">Hapus</button>
+                            <button onclick="adminEditMapel(${m.id})" class="text-blue-500 hover:text-blue-700 text-xs font-medium px-2 py-1 rounded border border-blue-100 hover:bg-blue-50 transition">Edit</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function adminHapusMapel(id) {
+            const mapel = daftarMapel.find(m => m.id === id);
+            if (!mapel) return;
+            // Cek apakah ada soal atau hasil yang menggunakan mapel ini
+            const soalTerpakai = bankSoal.some(s => s.mapel_id === id);
+            if (soalTerpakai) {
+                alert("Mapel ini masih memiliki soal! Hapus soal terlebih dahulu.");
+                return;
+            }
+            tampilkanModal("Hapus Mapel?", `Yakin ingin menghapus "${mapel.nama}"?`, async () => {
+                daftarMapel = daftarMapel.filter(m => m.id !== id);
+                await saveMapel();
+                tambahLog(`Admin menghapus mapel "${mapel.nama}"`);
+                adminMuatMapel();
+                adminMuatStats();
+                populateMapelDropdowns();
+                tutupModal();
+            });
+        }
+
+        function adminEditMapel(id) {
+            const mapel = daftarMapel.find(m => m.id === id);
+            if (!mapel) return;
+            const newNama = prompt("Edit nama mapel:", mapel.nama);
+            if (newNama && newNama.trim() !== "") {
+                mapel.nama = newNama.trim();
+                const newKode = prompt("Edit kode mapel:", mapel.kode || "");
+                if (newKode !== null) mapel.kode = newKode.trim() || "";
+                saveMapel();
+                tambahLog(`Admin mengedit mapel ID ${id}`);
+                adminMuatMapel();
+                populateMapelDropdowns();
+            }
+        }
+
+        function bukaModalTambahMapel() {
+            const nama = prompt("Masukkan nama mata pelajaran:");
+            if (!nama || nama.trim() === "") return;
+            const kode = prompt("Masukkan kode mapel (opsional):", "");
+            const newId = daftarMapel.length > 0 ? Math.max(...daftarMapel.map(m => m.id)) + 1 : 1;
+            daftarMapel.push({ id: newId, nama: nama.trim(), kode: kode.trim() || "" });
+            saveMapel();
+            tambahLog(`Admin menambah mapel "${nama}"`);
+            adminMuatMapel();
+            adminMuatStats();
+            populateMapelDropdowns();
+        }
+
+        // ================================================================
+        // ADMIN: MANAJEMEN USER (sama)
         // ================================================================
         function adminMuatUsers() {
             const tbody = document.getElementById('admin-tabel-users');
             tbody.innerHTML = '';
-
             if (users.length === 0) {
                 tbody.innerHTML =
                     `<tr><td colspan="5" class="empty-state"><span class="icon">👤</span><br>Belum ada user terdaftar.</td></tr>`;
                 return;
             }
-
             const roleLabels = {
                 admin: '<span class="badge-role admin">Admin</span>',
                 guru: '<span class="badge-role guru">Guru</span>',
                 siswa: '<span class="badge-role siswa">Siswa</span>'
             };
-
             users.forEach((u, idx) => {
                 tbody.innerHTML += `
                     <tr>
@@ -1560,7 +1823,7 @@
         }
 
         // ================================================================
-        // ADMIN: MANAJEMEN SOAL
+        // ADMIN: MANAJEMEN SOAL (dengan mapel)
         // ================================================================
         function adminMuatSoal() {
             const container = document.getElementById('admin-list-soal');
@@ -1581,11 +1844,12 @@
                     opsiList +=
                         `<p class="text-xs ${isCorrect} mt-0.5"><span>${idx === soal.kunci ? '✔️' : '•'}</span> <span>${opsi}</span></p>`;
                 });
-
+                const mapelName = getNamaMapel(soal.mapel_id);
                 container.innerHTML += `
                     <div class="p-3.5 border border-slate-100 rounded-xl bg-slate-50/60 flex justify-between items-start gap-3 hover:border-purple-200 transition shadow-sm">
                         <div class="flex-grow min-w-0">
                             <span class="text-[9px] font-bold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">No. ${index + 1}</span>
+                            <span class="mapel-badge admin ml-2">${mapelName}</span>
                             <h4 class="font-semibold text-xs sm:text-sm text-slate-800 mt-1.5 leading-relaxed break-words">${soal.tanya}</h4>
                             <div class="mt-2 pt-1.5 border-t border-slate-100">${opsiList}</div>
                         </div>
@@ -1596,6 +1860,7 @@
         }
 
         async function adminTambahSoal() {
+            const mapel_id = parseInt(document.getElementById('admin-input-mapel').value);
             const tanya = document.getElementById('admin-input-tanya').value.trim();
             const opsi0 = document.getElementById('admin-input-opsi-0').value.trim();
             const opsi1 = document.getElementById('admin-input-opsi-1').value.trim();
@@ -1603,14 +1868,15 @@
             const opsi3 = document.getElementById('admin-input-opsi-3').value.trim();
             const kunci = parseInt(document.getElementById('admin-input-kunci').value);
 
-            if (!tanya || !opsi0 || !opsi1 || !opsi2 || !opsi3) {
-                alert("Semua kolom wajib diisi!");
+            if (!mapel_id || !tanya || !opsi0 || !opsi1 || !opsi2 || !opsi3) {
+                alert("Semua kolom wajib diisi, termasuk pilih mapel!");
                 return;
             }
 
             if (dbActive && supabaseClient) {
                 try {
                     await supabaseClient.from('bank_soal').insert([{
+                        mapel_id,
                         tanya,
                         opsi_a: opsi0,
                         opsi_b: opsi1,
@@ -1619,16 +1885,16 @@
                         kunci
                     }]);
                     await sinkronisasiSoal();
-                    tambahLog(`Admin menambah soal: "${tanya.substring(0, 30)}..."`);
+                    tambahLog(`Admin menambah soal (mapel ${mapel_id}): "${tanya.substring(0, 30)}..."`);
                 } catch (err) {
                     alert("Gagal simpan: " + err.message);
                     return;
                 }
             } else {
                 const newId = bankSoal.length > 0 ? Math.max(...bankSoal.map(s => s.id)) + 1 : 1;
-                bankSoal.push({ id: newId, tanya, opsi: [opsi0, opsi1, opsi2, opsi3], kunci });
+                bankSoal.push({ id: newId, mapel_id, tanya, opsi: [opsi0, opsi1, opsi2, opsi3], kunci });
                 localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
-                tambahLog(`Admin menambah soal (local): "${tanya.substring(0, 30)}..."`);
+                tambahLog(`Admin menambah soal (local) mapel ${mapel_id}: "${tanya.substring(0, 30)}..."`);
             }
 
             ['admin-input-tanya', 'admin-input-opsi-0', 'admin-input-opsi-1', 'admin-input-opsi-2', 'admin-input-opsi-3']
@@ -1668,6 +1934,7 @@
                         await supabaseClient.from('bank_soal').delete().neq('id', 0);
                         for (let s of defaultSoal) {
                             await supabaseClient.from('bank_soal').insert([{
+                                mapel_id: s.mapel_id,
                                 tanya: s.tanya,
                                 opsi_a: s.opsi[0],
                                 opsi_b: s.opsi[1],
@@ -1695,18 +1962,21 @@
         }
 
         // ================================================================
-        // ADMIN: HASIL UJIAN
+        // ADMIN: HASIL UJIAN (dengan mapel & filter)
         // ================================================================
-        async function adminMuatHasil(filter = '') {
+        async function adminMuatHasil(filterNama = '', filterMapel = '') {
             const tbody = document.getElementById('admin-tabel-hasil');
-            tbody.innerHTML = `<tr><td colspan="5" class="empty-state"><span class="icon">⏳</span><br>Memuat data...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><span class="icon">⏳</span><br>Memuat data...</td></tr>`;
 
             let dataHasil = [];
             if (dbActive && supabaseClient) {
                 try {
                     let query = supabaseClient.from('hasil_ujian').select('*').order('id', { ascending: false });
-                    if (filter) {
-                        query = query.ilike('nama', `%${filter}%`);
+                    if (filterMapel) {
+                        query = query.eq('mapel_id', parseInt(filterMapel));
+                    }
+                    if (filterNama) {
+                        query = query.ilike('nama', `%${filterNama}%`);
                     }
                     const { data, error } = await query;
                     if (error) throw error;
@@ -1714,29 +1984,37 @@
                 } catch (err) {
                     console.error("❌ Gagal fetch hasil:", err);
                     dataHasil = JSON.parse(localStorage.getItem('local_hasil_ujian')) || [];
-                    if (filter) {
-                        dataHasil = dataHasil.filter(item => item.nama.toLowerCase().includes(filter.toLowerCase()));
+                    if (filterMapel) {
+                        dataHasil = dataHasil.filter(item => item.mapel_id === parseInt(filterMapel));
+                    }
+                    if (filterNama) {
+                        dataHasil = dataHasil.filter(item => item.nama.toLowerCase().includes(filterNama.toLowerCase()));
                     }
                 }
             } else {
                 dataHasil = JSON.parse(localStorage.getItem('local_hasil_ujian')) || [];
-                if (filter) {
-                    dataHasil = dataHasil.filter(item => item.nama.toLowerCase().includes(filter.toLowerCase()));
+                if (filterMapel) {
+                    dataHasil = dataHasil.filter(item => item.mapel_id === parseInt(filterMapel));
+                }
+                if (filterNama) {
+                    dataHasil = dataHasil.filter(item => item.nama.toLowerCase().includes(filterNama.toLowerCase()));
                 }
             }
 
             tbody.innerHTML = '';
             if (dataHasil.length === 0) {
                 tbody.innerHTML =
-                    `<tr><td colspan="5" class="empty-state"><span class="icon">📭</span><br>Belum ada data ujian.</td></tr>`;
+                    `<tr><td colspan="6" class="empty-state"><span class="icon">📭</span><br>Belum ada data ujian.</td></tr>`;
                 return;
             }
 
             dataHasil.forEach((item, idx) => {
+                const mapelName = getNamaMapel(item.mapel_id);
                 tbody.innerHTML += `
                     <tr>
                         <td>${idx + 1}</td>
                         <td class="font-semibold">${item.nama}</td>
+                        <td class="text-center"><span class="mapel-badge admin">${mapelName}</span></td>
                         <td class="text-center"><span class="bg-purple-50 text-purple-700 font-bold px-2.5 py-1 rounded-full text-xs border border-purple-100">${item.nilai}</span></td>
                         <td class="text-center text-[11px] text-slate-400">${item.waktu}</td>
                         <td class="text-center">
@@ -1748,8 +2026,9 @@
         }
 
         function adminFilterHasil() {
-            const filter = document.getElementById('admin-filter-hasil').value.trim();
-            adminMuatHasil(filter);
+            const filterMapel = document.getElementById('admin-filter-mapel').value;
+            const filterNama = document.getElementById('admin-filter-nama').value.trim();
+            adminMuatHasil(filterNama, filterMapel);
         }
 
         async function adminHapusHasil(index) {
@@ -1788,7 +2067,7 @@
         }
 
         // ================================================================
-        // ADMIN: LOGS
+        // ADMIN: LOGS (sama)
         // ================================================================
         function adminMuatLogs() {
             const container = document.getElementById('admin-log-list');
@@ -1829,19 +2108,24 @@
         }
 
         // ================================================================
-        // ADMIN: RESET SEMUA
+        // ADMIN: RESET SEMUA (dengan mapel)
         // ================================================================
         function bukaModalResetAdmin() {
-            tampilkanModal("⚠️ Reset Total Sistem?", "Semua data (soal, hasil, user, log) akan dihapus total!", async () => {
+            tampilkanModal("⚠️ Reset Total Sistem?", "Semua data (mapel, soal, hasil, user, log) akan dihapus total!", async () => {
                 try {
                     if (dbActive && supabaseClient) {
                         await supabaseClient.from('bank_soal').delete().neq('id', 0);
                         await supabaseClient.from('hasil_ujian').delete().neq('id', 0);
                         await supabaseClient.from('users').delete().neq('id', 0);
                         await supabaseClient.from('logs').delete().neq('id', 0);
+                        await supabaseClient.from('mata_pelajaran').delete().neq('id', 0);
                         // Re-seed default
+                        for (let m of defaultMapel) {
+                            await supabaseClient.from('mata_pelajaran').insert([m]);
+                        }
                         for (let s of defaultSoal) {
                             await supabaseClient.from('bank_soal').insert([{
+                                mapel_id: s.mapel_id,
                                 tanya: s.tanya,
                                 opsi_a: s.opsi[0],
                                 opsi_b: s.opsi[1],
@@ -1853,23 +2137,29 @@
                         for (let u of defaultUsers) {
                             await supabaseClient.from('users').insert([u]);
                         }
+                        await loadMapel();
                         await sinkronisasiSoal();
                         await loadUsers();
                         logs = [];
                         tambahLog('Admin mereset total sistem');
                     } else {
+                        localStorage.removeItem('local_mapel');
                         localStorage.removeItem('local_bank_soal');
                         localStorage.removeItem('local_hasil_ujian');
                         localStorage.removeItem('local_users');
                         localStorage.removeItem('local_logs');
+                        daftarMapel = defaultMapel.map(m => ({ ...m }));
                         bankSoal = defaultSoal.map(s => ({ ...s }));
                         users = defaultUsers.map(u => ({ ...u }));
                         logs = [];
+                        localStorage.setItem('local_mapel', JSON.stringify(daftarMapel));
                         localStorage.setItem('local_bank_soal', JSON.stringify(bankSoal));
                         localStorage.setItem('local_users', JSON.stringify(users));
                         tambahLog('Admin mereset total sistem (local)');
                     }
+                    populateMapelDropdowns();
                     adminMuatStats();
+                    adminMuatMapel();
                     adminMuatUsers();
                     adminMuatSoal();
                     adminMuatHasil();
@@ -1883,51 +2173,67 @@
         }
 
         // ================================================================
-        // UJIAN SISWA
+        // UJIAN SISWA (dengan mapel)
         // ================================================================
         async function mulaiUjian() {
             await sinkronisasiSoal();
-            if (bankSoal.length === 0) {
-                alert("Bank soal kosong! Hubungi guru.");
+            const mapelId = parseInt(document.getElementById('siswa-pilih-mapel').value);
+            const inputNama = document.getElementById('nama-siswa').value.trim();
+
+            if (!mapelId) {
+                alert("Silakan pilih mata pelajaran terlebih dahulu!");
+                return;
+            }
+            if (inputNama === "") {
+                alert("Mohon isi nama lengkap!");
                 return;
             }
 
-            const inputNama = document.getElementById('nama-siswa').value.trim();
-            if (inputNama === "") return alert("Mohon isi nama lengkap!");
+            // Filter soal berdasarkan mapel
+            const soalMapel = bankSoal.filter(s => s.mapel_id === mapelId);
+            if (soalMapel.length === 0) {
+                alert("Belum ada soal untuk mapel ini. Hubungi guru.");
+                return;
+            }
 
             namaPesertaAktif = inputNama;
+            mapelPesertaAktif = mapelId;
             document.getElementById('display-nama-siswa').innerText = namaPesertaAktif;
+            document.getElementById('display-mapel-siswa').innerText = `Mapel: ${getNamaMapel(mapelId)}`;
             document.getElementById('nama-siswa').value = "";
 
+            // Gunakan hanya soal mapel tersebut, tapi kita tetap simpan di bankSoal asli untuk akses
+            // Kita akan set indeks berdasarkan soal yang sudah difilter
+            // Namun kita tetap pakai bankSoal global, tapi kita buat array sementara
+            // Atau kita modifikasi agar ujian hanya menggunakan soal mapel tertentu
+            // Kita simpan state soal ujian
+            window.soalUjian = soalMapel;
+            window.indeksSoalUjian = 0;
             jawabanSiswa = {};
             raguRaguSiswa = {};
-            indeksSoalAktif = 0;
 
-            renderUjian();
+            renderUjianMapel();
             waktuUjian = 30 * 60;
             clearInterval(intervalTimer);
             jalankanTimer();
             gantiHalaman('view-ujian');
         }
 
-        function renderUjian() {
-            renderSoalAktif();
-            renderGridNomor();
-        }
-
-        function renderSoalAktif() {
+        function renderUjianMapel() {
+            const soal = window.soalUjian[window.indeksSoalUjian];
+            if (!soal) {
+                // fallback
+                return;
+            }
             const kontainer = document.getElementById('kontainer-soal-aktif');
-            const soal = bankSoal[indeksSoalAktif];
-
             let opsiHtml = '';
             soal.opsi.forEach((opsi, idx) => {
                 const tercheck = jawabanSiswa[soal.id] === idx ? 'checked' : '';
                 const styleAktif = jawabanSiswa[soal.id] === idx ? 'border-indigo-600 bg-indigo-50/60 font-semibold' :
                     'border-slate-200 bg-white';
-
                 opsiHtml += `
                     <label class="flex items-center p-3.5 my-2.5 border rounded-xl cursor-pointer transition shadow-sm active:bg-slate-50 ${styleAktif}">
-                        <input type="radio" name="opsi-soal" value="${idx}" ${tercheck} onchange="pilihJawaban(${soal.id}, ${idx})" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 scale-110">
+                        <input type="radio" name="opsi-soal" value="${idx}" ${tercheck} onchange="pilihJawabanMapel(${soal.id}, ${idx})" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 scale-110">
                         <span class="ml-3 text-xs sm:text-sm text-slate-700 leading-relaxed">${opsi}</span>
                     </label>
                 `;
@@ -1935,14 +2241,34 @@
 
             kontainer.innerHTML = `
                 <div class="mt-2">
-                    <span class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-500 rounded">Soal ${indeksSoalAktif + 1} / ${bankSoal.length}</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-500 rounded">Soal ${window.indeksSoalUjian + 1} / ${window.soalUjian.length}</span>
                     <p class="font-semibold text-sm sm:text-base text-slate-800 mt-3 leading-relaxed break-words">${soal.tanya}</p>
                     <div class="mt-4">${opsiHtml}</div>
                 </div>
             `;
 
-            document.getElementById('btn-prev').disabled = indeksSoalAktif === 0;
-            document.getElementById('btn-next').innerText = indeksSoalAktif === bankSoal.length - 1 ? 'Selesai' : 'Berikutnya';
+            // Grid navigasi
+            const grid = document.getElementById('grid-nomor-soal');
+            grid.innerHTML = '';
+            window.soalUjian.forEach((s, idx) => {
+                let statusStyle = "bg-slate-50 text-slate-600 border border-slate-200";
+                if (idx === window.indeksSoalUjian) {
+                    statusStyle = "bg-indigo-600 text-white ring-4 ring-indigo-100 border-indigo-600 font-bold";
+                } else if (raguRaguSiswa[s.id]) {
+                    statusStyle = "bg-amber-500 text-white border-amber-500";
+                } else if (jawabanSiswa[s.id] !== undefined) {
+                    statusStyle = "bg-emerald-500 text-white border-emerald-500";
+                }
+                grid.innerHTML += `
+                    <button onclick="lompatKeSoalMapel(${idx})" class="w-full aspect-square flex items-center justify-center rounded-xl text-xs sm:text-sm font-semibold transition active:scale-90 shadow-sm ${statusStyle}">
+                        ${idx + 1}
+                    </button>
+                `;
+            });
+
+            document.getElementById('btn-prev').disabled = window.indeksSoalUjian === 0;
+            document.getElementById('btn-next').innerText = window.indeksSoalUjian === window.soalUjian.length - 1 ? 'Selesai' :
+                'Berikutnya';
 
             const btnRagu = document.getElementById('btn-ragu');
             if (raguRaguSiswa[soal.id]) {
@@ -1954,59 +2280,87 @@
             }
         }
 
-        function renderGridNomor() {
-            const grid = document.getElementById('grid-nomor-soal');
-            grid.innerHTML = '';
-
-            bankSoal.forEach((soal, idx) => {
-                let statusStyle = "bg-slate-50 text-slate-600 border border-slate-200";
-
-                if (idx === indeksSoalAktif) {
-                    statusStyle = "bg-indigo-600 text-white ring-4 ring-indigo-100 border-indigo-600 font-bold";
-                } else if (raguRaguSiswa[soal.id]) {
-                    statusStyle = "bg-amber-500 text-white border-amber-500";
-                } else if (jawabanSiswa[soal.id] !== undefined) {
-                    statusStyle = "bg-emerald-500 text-white border-emerald-500";
-                }
-
-                grid.innerHTML += `
-                    <button onclick="lompatKeSoal(${idx})" class="w-full aspect-square flex items-center justify-center rounded-xl text-xs sm:text-sm font-semibold transition active:scale-90 shadow-sm ${statusStyle}">
-                        ${idx + 1}
-                    </button>
-                `;
-            });
-        }
-
-        function pilihJawaban(idSoal, indeksOpsi) {
+        function pilihJawabanMapel(idSoal, indeksOpsi) {
             jawabanSiswa[idSoal] = indeksOpsi;
-            renderUjian();
+            renderUjianMapel();
         }
 
-        function tandaiRagu() {
-            const idSoal = bankSoal[indeksSoalAktif].id;
-            raguRaguSiswa[idSoal] = !raguRaguSiswa[idSoal];
-            renderUjian();
-        }
-
-        function lompatKeSoal(idx) {
-            indeksSoalAktif = idx;
-            renderUjian();
+        function lompatKeSoalMapel(idx) {
+            window.indeksSoalUjian = idx;
+            renderUjianMapel();
         }
 
         function soalSebelumnya() {
-            if (indeksSoalAktif > 0) {
-                indeksSoalAktif--;
-                renderUjian();
+            if (window.indeksSoalUjian > 0) {
+                window.indeksSoalUjian--;
+                renderUjianMapel();
             }
         }
 
         function soalBerikutnya() {
-            if (indeksSoalAktif < bankSoal.length - 1) {
-                indeksSoalAktif++;
-                renderUjian();
+            if (window.indeksSoalUjian < window.soalUjian.length - 1) {
+                window.indeksSoalUjian++;
+                renderUjianMapel();
             } else {
                 bukaModalKumpul();
             }
+        }
+
+        function tandaiRagu() {
+            const idSoal = window.soalUjian[window.indeksSoalUjian].id;
+            raguRaguSiswa[idSoal] = !raguRaguSiswa[idSoal];
+            renderUjianMapel();
+        }
+
+        // ================================================================
+        // KUMPULKAN UJIAN (dengan mapel)
+        // ================================================================
+        function bukaModalKumpul() {
+            tampilkanModal("Kumpulkan Ujian?", "Seluruh jawaban akan dievaluasi.", () => {
+                tutupModal();
+                kumpulkanHasilAkhirMapel();
+            });
+        }
+
+        async function kumpulkanHasilAkhirMapel() {
+            clearInterval(intervalTimer);
+            const soal = window.soalUjian;
+            let jumlahBenar = 0;
+            soal.forEach(s => {
+                if (jawabanSiswa[s.id] !== undefined && jawabanSiswa[s.id] === s.kunci) {
+                    jumlahBenar++;
+                }
+            });
+
+            const nilaiAkhir = Math.round((jumlahBenar / soal.length) * 100);
+            const stringWaktu = new Date().toLocaleString('id-ID');
+
+            if (dbActive && supabaseClient) {
+                try {
+                    await supabaseClient.from('hasil_ujian').insert([{
+                        nama: namaPesertaAktif,
+                        mapel_id: mapelPesertaAktif,
+                        nilai: nilaiAkhir,
+                        waktu: stringWaktu
+                    }]);
+                    tambahLog(`Siswa "${namaPesertaAktif}" selesai ujian mapel ${getNamaMapel(mapelPesertaAktif)}, nilai ${nilaiAkhir}`);
+                } catch (err) {
+                    console.error("❌ Gagal simpan hasil:", err);
+                    simpanHasilLokalMapel(namaPesertaAktif, mapelPesertaAktif, nilaiAkhir, stringWaktu);
+                }
+            } else {
+                simpanHasilLokalMapel(namaPesertaAktif, mapelPesertaAktif, nilaiAkhir, stringWaktu);
+            }
+
+            document.getElementById('display-nilai-siswa').innerText = nilaiAkhir;
+            gantiHalaman('view-selesai');
+        }
+
+        function simpanHasilLokalMapel(nama, mapel_id, nilai, waktu) {
+            const dataHasil = JSON.parse(localStorage.getItem('local_hasil_ujian')) || [];
+            dataHasil.push({ nama, mapel_id, nilai, waktu });
+            localStorage.setItem('local_hasil_ujian', JSON.stringify(dataHasil));
+            tambahLog(`Siswa "${nama}" selesai ujian (local) mapel ${getNamaMapel(mapel_id)}, nilai ${nilai}`);
         }
 
         // ================================================================
@@ -2022,59 +2376,10 @@
                 elemenTimer.innerText = `${menit}:${detik}`;
                 if (waktuUjian <= 0) {
                     clearInterval(intervalTimer);
-                    kumpulkanHasilAkhir();
+                    kumpulkanHasilAkhirMapel();
                 }
                 waktuUjian--;
             }, 1000);
-        }
-
-        // ================================================================
-        // KUMPULKAN UJIAN
-        // ================================================================
-        function bukaModalKumpul() {
-            tampilkanModal("Kumpulkan Ujian?", "Seluruh jawaban akan dievaluasi.", () => {
-                tutupModal();
-                kumpulkanHasilAkhir();
-            });
-        }
-
-        async function kumpulkanHasilAkhir() {
-            clearInterval(intervalTimer);
-            let jumlahBenar = 0;
-            bankSoal.forEach(soal => {
-                if (jawabanSiswa[soal.id] !== undefined && jawabanSiswa[soal.id] === soal.kunci) {
-                    jumlahBenar++;
-                }
-            });
-
-            const nilaiAkhir = Math.round((jumlahBenar / bankSoal.length) * 100);
-            const stringWaktu = new Date().toLocaleString('id-ID');
-
-            if (dbActive && supabaseClient) {
-                try {
-                    await supabaseClient.from('hasil_ujian').insert([{
-                        nama: namaPesertaAktif,
-                        nilai: nilaiAkhir,
-                        waktu: stringWaktu
-                    }]);
-                    tambahLog(`Siswa "${namaPesertaAktif}" selesai ujian, nilai ${nilaiAkhir}`);
-                } catch (err) {
-                    console.error("❌ Gagal simpan hasil:", err);
-                    simpanHasilLokal(namaPesertaAktif, nilaiAkhir, stringWaktu);
-                }
-            } else {
-                simpanHasilLokal(namaPesertaAktif, nilaiAkhir, stringWaktu);
-            }
-
-            document.getElementById('display-nilai-siswa').innerText = nilaiAkhir;
-            gantiHalaman('view-selesai');
-        }
-
-        function simpanHasilLokal(nama, nilai, waktu) {
-            const dataHasil = JSON.parse(localStorage.getItem('local_hasil_ujian')) || [];
-            dataHasil.push({ nama, nilai, waktu });
-            localStorage.setItem('local_hasil_ujian', JSON.stringify(dataHasil));
-            tambahLog(`Siswa "${nama}" selesai ujian (local), nilai ${nilai}`);
         }
 
         // ================================================================
@@ -2101,5 +2406,6 @@
             setTimeout(() => modal.classList.add('hidden'), 200);
         }
     </script>
+
 </body>
 </html>
