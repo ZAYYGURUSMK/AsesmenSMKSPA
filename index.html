@@ -332,7 +332,6 @@
             transition: all 0.15s;
             font-family: inherit;
             text-align: center;
-            letter-spacing: 2px;
         }
         .login-card input:focus {
             outline: none;
@@ -425,66 +424,66 @@
                     <span class="tagline text-xs sm:text-sm tracking-[4px] sm:tracking-[8px]">BERKARYA</span>
                 </div>
                 <h2 class="text-xl sm:text-3xl font-extrabold text-slate-900">SMK <span class="text-indigo-600">Prama Artha</span></h2>
-                <p class="text-xs sm:text-sm text-slate-500 max-w-xs">Silakan pilih peran dan masukkan password</p>
+                <p class="text-xs sm:text-sm text-slate-500 max-w-xs">Silakan pilih peran Anda</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
-                <!-- SISWA -->
+                <!-- SISWA (tanpa password) -->
                 <button onclick="gantiHalaman('view-siswa-login')" class="card-hover bg-white border-2 border-slate-100 hover:border-emerald-500 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 transition">
                     <div class="bg-emerald-50 text-emerald-600 p-3 rounded-xl shrink-0">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                     </div>
                     <div>
                         <h3 class="font-bold text-base sm:text-lg text-slate-800">Siswa</h3>
-                        <p class="text-slate-400 text-xs">Login &amp; ujian</p>
+                        <p class="text-slate-400 text-xs">Masukkan nama</p>
                     </div>
                 </button>
 
-                <!-- GURU -->
+                <!-- GURU (password) -->
                 <button onclick="gantiHalaman('view-guru-login')" class="card-hover bg-white border-2 border-slate-100 hover:border-blue-500 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 transition">
                     <div class="bg-blue-50 text-blue-600 p-3 rounded-xl shrink-0">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                     </div>
                     <div>
                         <h3 class="font-bold text-base sm:text-lg text-slate-800">Guru</h3>
-                        <p class="text-slate-400 text-xs">Login &amp; kelola</p>
+                        <p class="text-slate-400 text-xs">Password</p>
                     </div>
                 </button>
 
-                <!-- ADMIN -->
+                <!-- ADMIN (password) -->
                 <button onclick="gantiHalaman('view-admin-login')" class="card-hover bg-white border-2 border-slate-100 hover:border-purple-500 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 transition">
                     <div class="bg-purple-50 text-purple-600 p-3 rounded-xl shrink-0">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     </div>
                     <div>
                         <h3 class="font-bold text-base sm:text-lg text-slate-800">Admin</h3>
-                        <p class="text-slate-400 text-xs">Login &amp; kendali</p>
+                        <p class="text-slate-400 text-xs">Password</p>
                     </div>
                 </button>
             </div>
         </div>
 
         <!-- ============================================================ -->
-        <!-- 2. LOGIN SISWA (hanya password) -->
+        <!-- 2. LOGIN SISWA (HANYA NAMA, TANPA PASSWORD) -->
         <!-- ============================================================ -->
         <div id="view-siswa-login" class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden login-card">
             <span class="login-icon">🧑‍🎓</span>
-            <div class="login-title">Login Siswa</div>
-            <div class="login-sub">Masukkan password untuk masuk</div>
+            <div class="login-title">Masuk sebagai Siswa</div>
+            <div class="login-sub">Cukup masukkan nama lengkap Anda</div>
             <form onsubmit="event.preventDefault(); loginSiswa();" class="space-y-4">
                 <div>
-                    <label>🔑 Password Siswa</label>
-                    <input type="password" id="siswa-password" placeholder="Masukkan password" value="siswa123">
-                    <div class="hint">Default: siswa123</div>
+                    <label>📝 Nama Lengkap</label>
+                    <input type="text" id="siswa-nama-input" placeholder="Contoh: Andi Wijaya" value="Andi Wijaya">
+                    <div class="hint">Masukkan nama sesuai absen</div>
                 </div>
-                <div id="siswa-error" class="error-msg">⚠️ Password salah! Coba lagi.</div>
-                <button type="submit" class="btn btn-success">Masuk sebagai Siswa</button>
+                <div id="siswa-error" class="error-msg">⚠️ Nama tidak boleh kosong!</div>
+                <button type="submit" class="btn btn-success">Masuk ke Dashboard</button>
                 <button type="button" onclick="kembaliKeMenuUtama()" class="btn btn-outline btn-sm">Kembali ke Menu</button>
             </form>
         </div>
 
         <!-- ============================================================ -->
-        <!-- 3. LOGIN GURU (hanya password) -->
+        <!-- 3. LOGIN GURU (password) -->
         <!-- ============================================================ -->
         <div id="view-guru-login" class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden login-card">
             <span class="login-icon">👨‍🏫</span>
@@ -503,7 +502,7 @@
         </div>
 
         <!-- ============================================================ -->
-        <!-- 4. LOGIN ADMIN (hanya password) -->
+        <!-- 4. LOGIN ADMIN (password) -->
         <!-- ============================================================ -->
         <div id="view-admin-login" class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 hidden login-card">
             <span class="login-icon">🛡️</span>
@@ -532,14 +531,14 @@
                 </h2>
                 <div class="flex gap-2">
                     <span class="text-xs text-slate-500 bg-slate-100 px-3 py-1 rounded-full flex items-center gap-1">
-                        👤 <span id="siswa-nama">Andi Wijaya</span>
+                        👤 <span id="siswa-nama-display">-</span>
                     </span>
                     <button onclick="logout()" class="btn btn-danger btn-sm">Logout</button>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                <div class="stat-card"><span class="label">Nama</span><span class="value text-base" id="siswa-nama-display">Andi Wijaya</span></div>
+                <div class="stat-card"><span class="label">Nama</span><span class="value text-base" id="siswa-nama-card">-</span></div>
                 <div class="stat-card"><span class="label">Kelas</span><span class="value text-base">XII RPL 1</span></div>
                 <div class="stat-card"><span class="label">Rata-rata</span><span class="value">85</span></div>
             </div>
@@ -658,9 +657,9 @@
                 <span class="brand text-xs font-extrabold text-indigo-800">ARTHA JAYA</span>
                 <span class="tagline-alt text-[6px] text-indigo-400 border-l border-indigo-200 pl-1">BERKARYA</span>
             </span>
-            <span>SMK Prama Artha · CBT v2.0</span>
+            <span>SMK Prama Artha · CBT</span>
             <span class="text-slate-300">|</span>
-            <span>Password Login</span>
+            <span>Siswa: Nama | Guru/Admin: Password</span>
         </div>
     </footer>
 
@@ -669,27 +668,17 @@
     <!-- ============================================================ -->
     <script>
         // ================================================================
-        // KONFIGURASI PASSWORD DEFAULT
+        // KONFIGURASI
         // ================================================================
         const PASSWORDS = {
-            siswa: 'siswa123',
             guru: 'guru123',
             admin: 'admin123'
         };
 
-        // Data dummy untuk dashboard
+        // Data dummy
         const DATA = {
-            siswa: {
-                nama: 'Andi Wijaya',
-                kelas: 'XII RPL 1',
-                rataRata: 85
-            },
-            guru: {
-                nama: 'Budi Santoso'
-            },
-            admin: {
-                nama: 'Admin Utama'
-            }
+            guru: { nama: 'Budi Santoso' },
+            admin: { nama: 'Admin Utama' }
         };
 
         // ================================================================
@@ -697,10 +686,10 @@
         // ================================================================
         let currentUser = null;
 
-        function setSession(role) {
+        function setSession(role, nama = null) {
             currentUser = {
                 role: role,
-                nama: DATA[role] ? DATA[role].nama : role
+                nama: nama || (DATA[role] ? DATA[role].nama : role)
             };
             localStorage.setItem('cbt_user', JSON.stringify(currentUser));
             updateUI();
@@ -753,7 +742,6 @@
                     kembaliKeMenuUtama();
                     return;
                 }
-                // Cek role
                 if (id === 'view-siswa-dashboard' && user.role !== 'siswa') {
                     alert('Akses ditolak! Hanya untuk Siswa.');
                     kembaliKeMenuUtama();
@@ -771,12 +759,10 @@
                 }
             }
 
-            // Sembunyikan semua
             document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
             const target = document.getElementById(id);
             if (target) target.classList.remove('hidden');
 
-            // Update UI
             updateUI();
         }
 
@@ -792,27 +778,31 @@
         }
 
         // ================================================================
-        // FUNGSI LOGIN (hanya password)
+        // LOGIN SISWA (HANYA NAMA)
         // ================================================================
         function loginSiswa() {
-            const pass = document.getElementById('siswa-password').value.trim();
+            const nama = document.getElementById('siswa-nama-input').value.trim();
             const errorEl = document.getElementById('siswa-error');
 
-            if (pass === PASSWORDS.siswa) {
-                errorEl.style.display = 'none';
-                setSession('siswa');
-                // Update nama
-                document.getElementById('siswa-nama').textContent = DATA.siswa.nama;
-                document.getElementById('siswa-nama-display').textContent = DATA.siswa.nama;
-                gantiHalaman('view-siswa-dashboard');
-            } else {
+            if (nama === '') {
                 errorEl.style.display = 'block';
-                // Kosongkan password untuk input ulang
-                document.getElementById('siswa-password').value = '';
-                document.getElementById('siswa-password').focus();
+                document.getElementById('siswa-nama-input').focus();
+                return;
             }
+
+            errorEl.style.display = 'none';
+            setSession('siswa', nama);
+
+            // Update dashboard dengan nama siswa
+            document.getElementById('siswa-nama-display').textContent = nama;
+            document.getElementById('siswa-nama-card').textContent = nama;
+
+            gantiHalaman('view-siswa-dashboard');
         }
 
+        // ================================================================
+        // LOGIN GURU (password)
+        // ================================================================
         function loginGuru() {
             const pass = document.getElementById('guru-password').value.trim();
             const errorEl = document.getElementById('guru-error');
@@ -829,6 +819,9 @@
             }
         }
 
+        // ================================================================
+        // LOGIN ADMIN (password)
+        // ================================================================
         function loginAdmin() {
             const pass = document.getElementById('admin-password').value.trim();
             const errorEl = document.getElementById('admin-error');
@@ -851,7 +844,7 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 const active = document.activeElement;
-                if (active && active.id === 'siswa-password') loginSiswa();
+                if (active && active.id === 'siswa-nama-input') loginSiswa();
                 if (active && active.id === 'guru-password') loginGuru();
                 if (active && active.id === 'admin-password') loginAdmin();
             }
@@ -864,8 +857,8 @@
             const user = getSession();
             if (user) {
                 if (user.role === 'siswa') {
-                    document.getElementById('siswa-nama').textContent = DATA.siswa.nama;
-                    document.getElementById('siswa-nama-display').textContent = DATA.siswa.nama;
+                    document.getElementById('siswa-nama-display').textContent = user.nama;
+                    document.getElementById('siswa-nama-card').textContent = user.nama;
                     gantiHalaman('view-siswa-dashboard');
                     return;
                 } else if (user.role === 'guru') {
