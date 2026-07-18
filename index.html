@@ -71,6 +71,8 @@
         .btn-admin:hover { background: #6d28d9; }
         .btn-warning { background: #f59e0b; color: white; }
         .btn-warning:hover { background: #d97706; }
+        .btn-export { background: #059669; color: white; }
+        .btn-export:hover { background: #047857; }
 
         .stat-card {
             background: white;
@@ -292,6 +294,21 @@
             font-weight: 600;
             margin: 1px 2px;
         }
+
+        /* Export options */
+        .export-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .export-options select {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            background: white;
+        }
     </style>
 </head>
 <body>
@@ -475,7 +492,19 @@
                 <div class="stat-card"><span class="label">Rata-rata</span><span class="value" id="guru-stat-rata">0</span></div>
                 <div class="stat-card"><span class="label">Tertinggi</span><span class="value" id="guru-stat-tertinggi">0</span></div>
             </div>
-            <h3 class="font-bold text-sm mb-2">📊 Hasil Ujian Siswa (Mapel yang Diajarkan)</h3>
+            
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <h3 class="font-bold text-sm">📊 Hasil Ujian Siswa (Mapel yang Diajarkan)</h3>
+                <div class="export-options">
+                    <select id="guru-export-mapel" class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm">
+                        <option value="all">Semua Mapel</option>
+                    </select>
+                    <button onclick="exportHasilGuru()" class="btn btn-export btn-sm">
+                        📥 Export Excel
+                    </button>
+                </div>
+            </div>
+            
             <div class="table-wrap border border-slate-100 rounded-xl bg-white">
                 <table>
                     <thead><tr><th>No</th><th>Nama</th><th>Mapel</th><th class="text-center">Nilai</th></tr></thead>
@@ -1295,7 +1324,6 @@
             document.getElementById('edit-guru-nama').value = guru.nama;
             document.getElementById('edit-guru-password').value = '';
 
-            // Isi dropdown mapel
             const select = document.getElementById('edit-guru-mapel');
             select.innerHTML = '';
             DATA_MAPEL.forEach(m => {
@@ -1334,7 +1362,6 @@
                 return;
             }
 
-            // Cek duplikat nama (kecuali dirinya sendiri)
             if (users.some(u => u.id !== guruId && u.nama.toLowerCase() === nama.toLowerCase())) {
                 alert('Nama sudah digunakan oleh user lain!');
                 return;
@@ -1360,7 +1387,6 @@
 
             if (!confirm(`Yakin ingin menghapus guru "${guru.nama}"?`)) return;
 
-            // Cek apakah ada session yang sedang menggunakan guru ini
             const session = getSession();
             if (session && session.id === guruId && session.role === 'guru') {
                 alert('Anda tidak dapat menghapus akun yang sedang aktif!');
@@ -1922,6 +1948,11 @@
             renderKelolaSoal();
         }
 
+        // ================================================================
+        // GURU: RENDER HASIL & EKSPOR
+        // ================================================================
+        let cachedHasilGuru = [];
+
         function renderHasilGuru() {
             const user = getSession();
             if (!user || user.role !== 'guru') return;
@@ -1950,6 +1981,7 @@
             });
             
             semuaHasil.sort((a, b) => a.nama.localeCompare(b.nama) || a.mapelId - b.mapelId);
+            cachedHasilGuru = semuaHasil;
             
             const nilaiList = semuaHasil.map(h => h.nilai);
             const totalSiswa = new Set(semuaHasil.map(h => h.nama)).size;
@@ -1959,6 +1991,17 @@
             document.getElementById('guru-stat-siswa').textContent = totalSiswa;
             document.getElementById('guru-stat-rata').textContent = rataRata;
             document.getElementById('guru-stat-tertinggi').textContent = tertinggi;
+
+            // Populate export mapel dropdown
+            const exportSelect = document.getElementById('guru-export-mapel');
+            exportSelect.innerHTML = '<option value="all">Semua Mapel</option>';
+            const uniqueMapel = [...new Set(semuaHasil.map(h => h.mapelId))];
+            uniqueMapel.forEach(mapelId => {
+                const mapel = getMapelById(mapelId);
+                if (mapel) {
+                    exportSelect.innerHTML += `<option value="${mapelId}">${mapel.nama}</option>`;
+                }
+            });
             
             if (semuaHasil.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">Belum ada hasil ujian untuk mapel yang Anda ajarkan.</td></tr>';
@@ -1978,6 +2021,62 @@
             });
         }
 
+        function exportHasilGuru() {
+            const user = getSession();
+            if (!user || user.role !== 'guru') {
+                alert('Akses ditolak!');
+                return;
+            }
+
+            const filterMapel = document.getElementById('guru-export-mapel').value;
+            
+            let dataToExport = cachedHasilGuru;
+            if (filterMapel !== 'all') {
+                dataToExport = dataToExport.filter(item => item.mapelId == filterMapel);
+            }
+
+            if (dataToExport.length === 0) {
+                alert('Tidak ada data untuk diekspor!');
+                return;
+            }
+
+            // Create CSV content
+            let csvContent = '\uFEFF'; // BOM for Excel
+            csvContent += 'No,Nama Siswa,Mata Pelajaran,Nilai,Tanggal\n';
+            
+            dataToExport.forEach((item, idx) => {
+                const row = [
+                    idx + 1,
+                    `"${item.nama}"`,
+                    `"${item.mapelNama}"`,
+                    item.nilai,
+                    `"${item.tanggal || '-'}"`
+                ];
+                csvContent += row.join(',') + '\n';
+            });
+
+            // Create download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            const mapelName = filterMapel !== 'all' ? getMapelById(parseInt(filterMapel))?.nama || 'selected' : 'semua';
+            const filename = `Rekap_Nilai_${user.nama}_${mapelName}_${new Date().toISOString().slice(0,10)}.csv`;
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            alert('✅ Data berhasil diekspor!');
+        }
+
+        // ================================================================
+        // GURU: KELOLA SOAL
+        // ================================================================
         function renderKelolaSoal() {
             const user = getSession();
             if (!user || user.role !== 'guru') return;
