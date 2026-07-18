@@ -750,12 +750,36 @@
         <div id="view-siswa-login" class="w-full max-w-md mx-auto glass-card rounded-2xl p-6 sm:p-8 hidden login-card">
             <span class="login-icon">🧑‍🎓</span>
             <div class="login-title">Masuk sebagai Siswa</div>
-            <div class="login-sub">Cukup masukkan nama lengkap Anda</div>
+            <div class="login-sub">Masukkan nama lengkap dan kelas Anda</div>
             <form onsubmit="event.preventDefault(); loginSiswa();" class="space-y-4">
                 <div>
                     <label>📝 Nama Lengkap</label>
                     <input type="text" id="siswa-nama-input" placeholder="Contoh: Andi Wijaya" value="Andi Wijaya">
                     <div class="hint">Masukkan nama sesuai absen</div>
+                </div>
+                <div>
+                    <label>🏫 Kelas</label>
+                    <select id="siswa-kelas-input" class="w-full border border-white/30 rounded-lg p-3 bg-white/40 backdrop-blur-sm text-center">
+                        <option value="X-RPL 1">X-RPL 1</option>
+                        <option value="X-RPL 2">X-RPL 2</option>
+                        <option value="XI-RPL 1">XI-RPL 1</option>
+                        <option value="XI-RPL 2">XI-RPL 2</option>
+                        <option value="XII-RPL 1">XII-RPL 1</option>
+                        <option value="XII-RPL 2">XII-RPL 2</option>
+                        <option value="X-TKJ 1">X-TKJ 1</option>
+                        <option value="X-TKJ 2">X-TKJ 2</option>
+                        <option value="XI-TKJ 1">XI-TKJ 1</option>
+                        <option value="XI-TKJ 2">XI-TKJ 2</option>
+                        <option value="XII-TKJ 1">XII-TKJ 1</option>
+                        <option value="XII-TKJ 2">XII-TKJ 2</option>
+                        <option value="X-MM 1">X-MM 1</option>
+                        <option value="X-MM 2">X-MM 2</option>
+                        <option value="XI-MM 1">XI-MM 1</option>
+                        <option value="XI-MM 2">XI-MM 2</option>
+                        <option value="XII-MM 1">XII-MM 1</option>
+                        <option value="XII-MM 2">XII-MM 2</option>
+                    </select>
+                    <div class="hint">Pilih kelas Anda</div>
                 </div>
                 <div id="siswa-error" class="error-msg">⚠️ Nama tidak boleh kosong!</div>
                 <button type="submit" class="btn btn-success">Masuk ke Dashboard</button>
@@ -807,6 +831,9 @@
                 <div class="flex gap-2 flex-wrap">
                     <span class="text-xs text-slate-500 bg-white/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1">
                         👤 <span id="siswa-nama-display">-</span>
+                    </span>
+                    <span class="text-xs text-slate-500 bg-white/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1">
+                        🏫 <span id="siswa-kelas-display">-</span>
                     </span>
                     <button onclick="logout()" class="btn btn-danger btn-sm">Logout</button>
                 </div>
@@ -872,9 +899,9 @@
             
             <div class="table-wrap border border-white/20 rounded-xl bg-white/20 backdrop-blur-sm">
                 <table>
-                    <thead><tr><th>No</th><th>Nama</th><th>Mapel</th><th class="text-center">Nilai</th></tr></thead>
+                    <thead><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Mapel</th><th class="text-center">Nilai</th></tr></thead>
                     <tbody id="guru-tabel-hasil">
-                        <tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
+                        <tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -927,7 +954,7 @@
                         <span class="bg-emerald-100/60 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full">UJIAN</span>
                         <span id="ujian-mapel">-</span>
                     </h2>
-                    <p class="text-xs text-slate-500">Peserta: <span id="ujian-nama">-</span></p>
+                    <p class="text-xs text-slate-500">Peserta: <span id="ujian-nama">-</span> | Kelas: <span id="ujian-kelas">-</span></p>
                     <p id="tab-warning" class="text-xs text-rose-500 font-semibold hidden">⚠️ Jangan tinggalkan tab ini!</p>
                 </div>
                 <div class="timer-box">
@@ -1039,6 +1066,114 @@
             </div>
         </div>
 
+        <!-- GURU: TAMBAH SOAL -->
+        <div id="view-guru-tambah-soal" class="w-full max-w-2xl mx-auto glass-card rounded-2xl p-4 sm:p-8 hidden">
+            <div class="page-header">
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-blue-100/60 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
+                    Tambah Soal
+                </h2>
+                <button onclick="gantiHalaman('view-guru-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
+            </div>
+            <form onsubmit="event.preventDefault(); guruTambahSoal();" class="space-y-4">
+                <div>
+                    <label>Mata Pelajaran</label>
+                    <select id="guru-input-mapel" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm"></select>
+                </div>
+                <div>
+                    <label>Kelas</label>
+                    <select id="guru-input-kelas" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm">
+                        <option value="all">Semua Kelas</option>
+                        <option value="X-RPL 1">X-RPL 1</option>
+                        <option value="X-RPL 2">X-RPL 2</option>
+                        <option value="XI-RPL 1">XI-RPL 1</option>
+                        <option value="XI-RPL 2">XI-RPL 2</option>
+                        <option value="XII-RPL 1">XII-RPL 1</option>
+                        <option value="XII-RPL 2">XII-RPL 2</option>
+                        <option value="X-TKJ 1">X-TKJ 1</option>
+                        <option value="X-TKJ 2">X-TKJ 2</option>
+                        <option value="XI-TKJ 1">XI-TKJ 1</option>
+                        <option value="XI-TKJ 2">XI-TKJ 2</option>
+                        <option value="XII-TKJ 1">XII-TKJ 1</option>
+                        <option value="XII-TKJ 2">XII-TKJ 2</option>
+                        <option value="X-MM 1">X-MM 1</option>
+                        <option value="X-MM 2">X-MM 2</option>
+                        <option value="XI-MM 1">XI-MM 1</option>
+                        <option value="XI-MM 2">XI-MM 2</option>
+                        <option value="XII-MM 1">XII-MM 1</option>
+                        <option value="XII-MM 2">XII-MM 2</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Pertanyaan</label>
+                    <textarea id="guru-input-tanya" rows="3" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Tulis pertanyaan..."></textarea>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div><label>Opsi A</label><input type="text" id="guru-input-opsi-0" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi A"></div>
+                    <div><label>Opsi B</label><input type="text" id="guru-input-opsi-1" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi B"></div>
+                    <div><label>Opsi C</label><input type="text" id="guru-input-opsi-2" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi C"></div>
+                    <div><label>Opsi D</label><input type="text" id="guru-input-opsi-3" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi D"></div>
+                </div>
+                <div>
+                    <label>Kunci Jawaban</label>
+                    <select id="guru-input-kunci" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm">
+                        <option value="0">A</option>
+                        <option value="1">B</option>
+                        <option value="2">C</option>
+                        <option value="3">D</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">💾 Simpan Soal</button>
+            </form>
+        </div>
+
+        <!-- GURU: KELOLA SOAL -->
+        <div id="view-guru-kelola-soal" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
+            <div class="page-header">
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-blue-100/60 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
+                    Kelola Soal
+                </h2>
+                <button onclick="gantiHalaman('view-guru-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
+            </div>
+            <div class="flex flex-wrap gap-2 mb-4">
+                <select id="guru-filter-kelola" class="border border-white/30 rounded-lg px-3 py-1.5 text-sm bg-white/40 backdrop-blur-sm">
+                    <option value="">Semua Mapel (Saya)</option>
+                </select>
+                <select id="guru-filter-kelas" class="border border-white/30 rounded-lg px-3 py-1.5 text-sm bg-white/40 backdrop-blur-sm">
+                    <option value="">Semua Kelas</option>
+                    <option value="X-RPL 1">X-RPL 1</option>
+                    <option value="X-RPL 2">X-RPL 2</option>
+                    <option value="XI-RPL 1">XI-RPL 1</option>
+                    <option value="XI-RPL 2">XI-RPL 2</option>
+                    <option value="XII-RPL 1">XII-RPL 1</option>
+                    <option value="XII-RPL 2">XII-RPL 2</option>
+                    <option value="X-TKJ 1">X-TKJ 1</option>
+                    <option value="X-TKJ 2">X-TKJ 2</option>
+                    <option value="XI-TKJ 1">XI-TKJ 1</option>
+                    <option value="XI-TKJ 2">XI-TKJ 2</option>
+                    <option value="XII-TKJ 1">XII-TKJ 1</option>
+                    <option value="XII-TKJ 2">XII-TKJ 2</option>
+                    <option value="X-MM 1">X-MM 1</option>
+                    <option value="X-MM 2">X-MM 2</option>
+                    <option value="XI-MM 1">XI-MM 1</option>
+                    <option value="XI-MM 2">XI-MM 2</option>
+                    <option value="XII-MM 1">XII-MM 1</option>
+                    <option value="XII-MM 2">XII-MM 2</option>
+                </select>
+                <button onclick="renderKelolaSoal()" class="btn btn-primary btn-sm">Filter</button>
+                <button onclick="gantiHalaman('view-guru-tambah-soal')" class="btn btn-success btn-sm">+ Tambah Soal</button>
+            </div>
+            <div class="table-wrap border border-white/20 rounded-xl bg-white/20 backdrop-blur-sm">
+                <table>
+                    <thead><tr><th>ID</th><th>Mapel</th><th>Kelas</th><th>Pertanyaan</th><th class="text-center">Kunci</th><th class="text-center">Aksi</th></tr></thead>
+                    <tbody id="guru-tabel-kelola">
+                        <tr><td colspan="6" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- ADMIN: TAMBAH USER -->
         <div id="view-admin-tambah-user" class="w-full max-w-md mx-auto glass-card rounded-2xl p-4 sm:p-8 hidden">
             <div class="page-header">
@@ -1059,6 +1194,29 @@
                         <option value="siswa">Siswa</option>
                         <option value="guru">Guru</option>
                         <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div id="siswa-kelas-field" class="hidden">
+                    <label>Kelas</label>
+                    <select id="admin-user-kelas" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm">
+                        <option value="X-RPL 1">X-RPL 1</option>
+                        <option value="X-RPL 2">X-RPL 2</option>
+                        <option value="XI-RPL 1">XI-RPL 1</option>
+                        <option value="XI-RPL 2">XI-RPL 2</option>
+                        <option value="XII-RPL 1">XII-RPL 1</option>
+                        <option value="XII-RPL 2">XII-RPL 2</option>
+                        <option value="X-TKJ 1">X-TKJ 1</option>
+                        <option value="X-TKJ 2">X-TKJ 2</option>
+                        <option value="XI-TKJ 1">XI-TKJ 1</option>
+                        <option value="XI-TKJ 2">XI-TKJ 2</option>
+                        <option value="XII-TKJ 1">XII-TKJ 1</option>
+                        <option value="XII-TKJ 2">XII-TKJ 2</option>
+                        <option value="X-MM 1">X-MM 1</option>
+                        <option value="X-MM 2">X-MM 2</option>
+                        <option value="XI-MM 1">XI-MM 1</option>
+                        <option value="XI-MM 2">XI-MM 2</option>
+                        <option value="XII-MM 1">XII-MM 1</option>
+                        <option value="XII-MM 2">XII-MM 2</option>
                     </select>
                 </div>
                 <div>
@@ -1151,12 +1309,13 @@
                         <tr>
                             <th>No</th>
                             <th>Nama Siswa</th>
+                            <th>Kelas</th>
                             <th class="text-center">Total Ujian</th>
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="admin-tabel-siswa">
-                        <tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
+                        <tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1250,11 +1409,11 @@
         // DEFAULT USERS
         // ================================================================
         const DEFAULT_USERS = [
-            { id: 1, nama: 'Admin Utama', role: 'admin', password: 'Admin123', mapel: [] },
-            { id: 2, nama: 'Budi Santoso', role: 'guru', password: 'Guru123', mapel: [1, 2] },
-            { id: 3, nama: 'Siti Rahayu', role: 'guru', password: 'Guru123', mapel: [3, 4] },
-            { id: 4, nama: 'Andi Wijaya', role: 'siswa', password: '', mapel: [] },
-            { id: 5, nama: 'Dewi Lestari', role: 'siswa', password: '', mapel: [] },
+            { id: 1, nama: 'Admin Utama', role: 'admin', password: 'Admin123', mapel: [], kelas: '' },
+            { id: 2, nama: 'Budi Santoso', role: 'guru', password: 'Guru123', mapel: [1, 2], kelas: '' },
+            { id: 3, nama: 'Siti Rahayu', role: 'guru', password: 'Guru123', mapel: [3, 4], kelas: '' },
+            { id: 4, nama: 'Andi Wijaya', role: 'siswa', password: '', mapel: [], kelas: 'X-RPL 1' },
+            { id: 5, nama: 'Dewi Lestari', role: 'siswa', password: '', mapel: [], kelas: 'XI-RPL 2' },
         ];
 
         let users = [];
@@ -1355,46 +1514,46 @@
         }
 
         // ================================================================
-        // DATA SOAL
+        // DATA SOAL (dengan kelas)
         // ================================================================
         const DEFAULT_SOAL = {
             1: [
-                { id: 1, tanya: 'Hasil dari 2 + 3 adalah?', opsi: ['A. 4', 'B. 5', 'C. 6', 'D. 7'], kunci: 1 },
-                { id: 2, tanya: 'Akar kuadrat dari 81 adalah?', opsi: ['A. 7', 'B. 8', 'C. 9', 'D. 10'], kunci: 2 },
-                { id: 3, tanya: 'Berapakah 10 x 10?', opsi: ['A. 50', 'B. 100', 'C. 150', 'D. 200'], kunci: 1 },
-                { id: 4, tanya: 'Hasil dari 15 : 3 adalah?', opsi: ['A. 3', 'B. 4', 'C. 5', 'D. 6'], kunci: 2 },
-                { id: 5, tanya: 'Berapakah 7 x 8?', opsi: ['A. 48', 'B. 54', 'C. 56', 'D. 62'], kunci: 2 },
+                { id: 1, tanya: 'Hasil dari 2 + 3 adalah?', opsi: ['A. 4', 'B. 5', 'C. 6', 'D. 7'], kunci: 1, kelas: 'all' },
+                { id: 2, tanya: 'Akar kuadrat dari 81 adalah?', opsi: ['A. 7', 'B. 8', 'C. 9', 'D. 10'], kunci: 2, kelas: 'all' },
+                { id: 3, tanya: 'Berapakah 10 x 10?', opsi: ['A. 50', 'B. 100', 'C. 150', 'D. 200'], kunci: 1, kelas: 'all' },
+                { id: 4, tanya: 'Hasil dari 15 : 3 adalah?', opsi: ['A. 3', 'B. 4', 'C. 5', 'D. 6'], kunci: 2, kelas: 'all' },
+                { id: 5, tanya: 'Berapakah 7 x 8?', opsi: ['A. 48', 'B. 54', 'C. 56', 'D. 62'], kunci: 2, kelas: 'all' },
             ],
             2: [
                 { id: 10, tanya: 'Sinonim dari "cepat" adalah?', opsi: ['A. Lambat', 'B. Kilat', 'C. Pelan', 'D. Lama'],
-                kunci: 1 },
+                kunci: 1, kelas: 'all' },
                 { id: 11, tanya: 'Kalimat baku adalah kalimat yang ...', opsi: ['A. Mengandung slang', 'B. Sesuai EYD',
                         'C. Tidak logis', 'D. Bertele-tele'
-                    ], kunci: 1 },
+                    ], kunci: 1, kelas: 'all' },
                 { id: 12, tanya: 'Antonim dari "besar" adalah?', opsi: ['A. Kecil', 'B. Tinggi', 'C. Luas', 'D. Panjang'],
-                    kunci: 0 },
+                    kunci: 0, kelas: 'all' },
             ],
             3: [
                 { id: 20, tanya: 'What is the meaning of "book"?', opsi: ['A. Pensil', 'B. Buku', 'C. Meja', 'D. Kursi'],
-                    kunci: 1 },
+                    kunci: 1, kelas: 'all' },
                 { id: 21, tanya: 'She ... to school every day.', opsi: ['A. go', 'B. goes', 'C. going', 'D. gone'],
-                    kunci: 1 },
+                    kunci: 1, kelas: 'all' },
             ],
             4: [
                 { id: 30, tanya: 'Planet terbesar di tata surya adalah?', opsi: ['A. Bumi', 'B. Jupiter', 'C. Saturnus',
                         'D. Mars'
-                    ], kunci: 1 },
+                    ], kunci: 1, kelas: 'all' },
                 { id: 31, tanya: 'Bagian sel yang berfungsi sebagai pusat kendali adalah?', opsi: ['A. Membran sel',
                         'B. Sitoplasma', 'C. Nukleus', 'D. Mitokondria'
-                    ], kunci: 2 },
+                    ], kunci: 2, kelas: 'all' },
             ],
             5: [
                 { id: 40, tanya: 'Ibu kota Indonesia adalah?', opsi: ['A. Jakarta', 'B. Surabaya', 'C. Bandung',
                         'D. Medan'
-                    ], kunci: 0 },
+                    ], kunci: 0, kelas: 'all' },
                 { id: 41, tanya: 'Gunung tertinggi di Indonesia adalah?', opsi: ['A. Krakatau', 'B. Merapi', 'C. Semeru',
                         'D. Rinjani'
-                    ], kunci: 2 },
+                    ], kunci: 2, kelas: 'all' },
             ],
         };
 
@@ -1417,23 +1576,29 @@
 
         function getSoalByMapel(mapelId) { return DATA_SOAL[mapelId] || []; }
 
+        function getSoalByMapelAndKelas(mapelId, kelas) {
+            const soal = DATA_SOAL[mapelId] || [];
+            if (kelas === 'all') return soal;
+            return soal.filter(s => s.kelas === 'all' || s.kelas === kelas);
+        }
+
         function getNextSoalId(mapelId) {
             const soal = DATA_SOAL[mapelId] || [];
             if (soal.length === 0) return (mapelId * 10) + 1;
             return Math.max(...soal.map(s => s.id)) + 1;
         }
 
-        function tambahSoal(mapelId, tanya, opsi, kunci) {
+        function tambahSoal(mapelId, tanya, opsi, kunci, kelas) {
             if (!DATA_SOAL[mapelId]) DATA_SOAL[mapelId] = [];
             const newId = getNextSoalId(mapelId);
-            DATA_SOAL[mapelId].push({ id: newId, tanya, opsi, kunci });
+            DATA_SOAL[mapelId].push({ id: newId, tanya, opsi, kunci, kelas: kelas || 'all' });
             saveSoalToStorage();
         }
 
-        function editSoalById(id, mapelId, tanya, opsi, kunci) {
+        function editSoalById(id, mapelId, tanya, opsi, kunci, kelas) {
             const list = DATA_SOAL[mapelId] || [];
             const idx = list.findIndex(s => s.id === id);
-            if (idx !== -1) { list[idx] = { id, tanya, opsi, kunci };
+            if (idx !== -1) { list[idx] = { id, tanya, opsi, kunci, kelas: kelas || 'all' };
                 saveSoalToStorage(); return true; }
             return false;
         }
@@ -1451,13 +1616,14 @@
         // ================================================================
         let currentUser = null;
 
-        function setSession(role, nama = null, userId = null) {
+        function setSession(role, nama = null, userId = null, kelas = '') {
             const userData = users.find(u => u.nama === nama && u.role === role);
             currentUser = { 
                 role: role, 
                 nama: nama,
                 id: userId || (userData ? userData.id : null),
-                mapel: userData ? userData.mapel || [] : []
+                mapel: userData ? userData.mapel || [] : [],
+                kelas: kelas || (userData ? userData.kelas || '' : '')
             };
             localStorage.setItem('cbt_user', JSON.stringify(currentUser));
             updateUI();
@@ -1476,6 +1642,7 @@
                         if (userData) {
                             currentUser.id = userData.id;
                             currentUser.mapel = userData.mapel || [];
+                            currentUser.kelas = userData.kelas || currentUser.kelas || '';
                         }
                     }
                     return currentUser; 
@@ -1498,7 +1665,6 @@
             
             if (user) {
                 badge.classList.remove('hidden');
-                // HEADER: Tampilkan hanya nama depan (first name) saja
                 const firstName = getFirstName(user.nama);
                 nameEl.textContent = firstName || user.role;
                 roleEl.textContent = user.role;
@@ -1577,6 +1743,7 @@
         // ================================================================
         function loginSiswa() {
             const nama = document.getElementById('siswa-nama-input').value.trim();
+            const kelas = document.getElementById('siswa-kelas-input').value;
             const errorEl = document.getElementById('siswa-error');
             
             if (nama === '') { 
@@ -1592,9 +1759,15 @@
                 return;
             }
             
-            setSession('siswa', user.nama, user.id);
-            // DASHBOARD SISWA: Tampilkan nama lengkap
+            // Update kelas siswa jika berbeda
+            if (user.kelas !== kelas) {
+                user.kelas = kelas;
+                saveUsersToStorage();
+            }
+            
+            setSession('siswa', user.nama, user.id, kelas);
             document.getElementById('siswa-nama-display').textContent = user.nama;
+            document.getElementById('siswa-kelas-display').textContent = kelas;
             updateUI();
             gantiHalaman('view-siswa-dashboard');
         }
@@ -1606,8 +1779,7 @@
             const user = users.find(u => u.role === 'guru' && u.password === pass);
             if (user) {
                 errorEl.style.display = 'none';
-                setSession('guru', user.nama, user.id);
-                // DASHBOARD GURU: Tampilkan nama lengkap
+                setSession('guru', user.nama, user.id, '');
                 document.getElementById('guru-nama-display').textContent = user.nama;
                 updateUI();
                 gantiHalaman('view-guru-dashboard');
@@ -1625,8 +1797,7 @@
             const user = users.find(u => u.role === 'admin' && u.password === pass);
             if (user) {
                 errorEl.style.display = 'none';
-                setSession('admin', user.nama, user.id);
-                // DASHBOARD ADMIN: Tampilkan nama lengkap
+                setSession('admin', user.nama, user.id, '');
                 document.getElementById('admin-nama-display').textContent = user.nama;
                 updateUI();
                 gantiHalaman('view-admin-dashboard');
@@ -1638,7 +1809,7 @@
         }
 
         // ================================================================
-        // SISWA: HASIL UJIAN
+        // SISWA: HASIL UJIAN (dengan kelas)
         // ================================================================
         function getHasilSiswa(nama) {
             const key = 'cbt_hasil_' + nama;
@@ -1647,10 +1818,10 @@
             return {};
         }
 
-        function simpanHasilSiswa(nama, mapelId, nilai) {
+        function simpanHasilSiswa(nama, mapelId, nilai, kelas) {
             const key = 'cbt_hasil_' + nama;
             const data = getHasilSiswa(nama);
-            data[mapelId] = { nilai, tanggal: new Date().toLocaleString('id-ID') };
+            data[mapelId] = { nilai, tanggal: new Date().toLocaleString('id-ID'), kelas: kelas || '' };
             localStorage.setItem(key, JSON.stringify(data));
         }
 
@@ -1696,7 +1867,7 @@
 
             let mapelItems = [];
             DATA_MAPEL.forEach(mapel => {
-                const soal = getSoalByMapel(mapel.id);
+                const soal = getSoalByMapelAndKelas(mapel.id, user.kelas || 'all');
                 const jumlah = soal.length;
                 const selesai = isMapelSelesai(user.nama, mapel.id);
                 const nilai = getNilaiMapel(user.nama, mapel.id);
@@ -1713,7 +1884,7 @@
                     statusText = '❌ Kosong';
                     statusClass = 'kosong';
                     disabledClass = 'disabled';
-                    onClick = `alert('Belum ada soal untuk mapel ini.');`;
+                    onClick = `alert('Belum ada soal untuk mapel ini di kelas Anda.');`;
                 } else {
                     statusText = `${jumlah} soal tersedia`;
                     statusClass = 'tersedia';
@@ -1745,7 +1916,7 @@
             const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
             
             if (totalPages === 0 || items.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center text-slate-400 py-8">Belum ada mata pelajaran tersedia.</div>';
+                container.innerHTML = '<div class="col-span-full text-center text-slate-400 py-8">Belum ada mata pelajaran tersedia untuk kelas Anda.</div>';
                 updateSlideNav(0, 0);
                 return;
             }
@@ -1837,6 +2008,7 @@
         // ================================================================
         let ujianSiswa = {
             nama: '',
+            kelas: '',
             mapelId: null,
             mapelNama: '',
             soal: [],
@@ -1902,6 +2074,7 @@
             if (!ujianSiswa.mapelId) return;
             const state = {
                 nama: ujianSiswa.nama,
+                kelas: ujianSiswa.kelas,
                 mapelId: ujianSiswa.mapelId,
                 mapelNama: ujianSiswa.mapelNama,
                 soal: ujianSiswa.soal,
@@ -1984,6 +2157,7 @@
             const mapelNama = ujianSiswa.mapelNama || 'Tidak diketahui';
             const namaSiswa = ujianSiswa.nama;
             const mapelId = ujianSiswa.mapelId;
+            const kelas = ujianSiswa.kelas;
 
             ujianSiswa.soal.forEach(soal => {
                 if (ujianSiswa.jawaban[soal.id] === soal.kunci) benar++;
@@ -1991,7 +2165,7 @@
             const nilai = total > 0 ? Math.round((benar / total) * 100) : 0;
 
             if (namaSiswa && mapelId) {
-                simpanHasilSiswa(namaSiswa, mapelId, nilai);
+                simpanHasilSiswa(namaSiswa, mapelId, nilai, kelas);
             }
 
             localStorage.removeItem('cbt_ujian_aktif');
@@ -1999,6 +2173,7 @@
 
             ujianSiswa = {
                 nama: '',
+                kelas: '',
                 mapelId: null,
                 mapelNama: '',
                 soal: [],
@@ -2008,7 +2183,7 @@
                 timer: 30 * 60
             };
 
-            await alert(`📊 Ujian Selesai!\n\n📚 Mapel: ${mapelNama}\n✅ Benar: ${benar}/${total}\n🎯 Nilai: ${nilai}\n\n✅ Hasil telah disimpan.`);
+            await alert(`📊 Ujian Selesai!\n\n📚 Mapel: ${mapelNama}\n🏫 Kelas: ${kelas}\n✅ Benar: ${benar}/${total}\n🎯 Nilai: ${nilai}\n\n✅ Hasil telah disimpan.`);
 
             gantiHalaman(redirectTo);
         }
@@ -2109,13 +2284,14 @@
             const mapel = DATA_MAPEL.find(m => m.id === mapelId);
             if (!mapel) return;
 
-            const soal = getSoalByMapel(mapelId);
+            const soal = getSoalByMapelAndKelas(mapelId, user.kelas || 'all');
             if (soal.length === 0) {
-                alert('❌ Belum ada soal untuk mapel ini. Silakan pilih mapel lain.');
+                alert('❌ Belum ada soal untuk mapel ini di kelas Anda. Silakan pilih mapel lain.');
                 return;
             }
 
             ujianSiswa.nama = user.nama;
+            ujianSiswa.kelas = user.kelas || '';
             ujianSiswa.mapelId = mapelId;
             ujianSiswa.mapelNama = mapel.nama;
             ujianSiswa.soal = soal;
@@ -2129,6 +2305,7 @@
             localStorage.removeItem('cbt_reload_lock');
 
             document.getElementById('ujian-nama').textContent = user.nama;
+            document.getElementById('ujian-kelas').textContent = user.kelas || '-';
             document.getElementById('ujian-mapel').textContent = mapel.nama;
 
             clearAntiTab();
@@ -2215,7 +2392,7 @@
                 const sisaWaktu = Math.max(0, state.timer - Math.floor(elapsed / 1000));
 
                 if (sisaWaktu <= 0) {
-                    simpanHasilSiswa(state.nama, state.mapelId, 0);
+                    simpanHasilSiswa(state.nama, state.mapelId, 0, state.kelas);
                     localStorage.removeItem('cbt_ujian_aktif');
                     alert('⏰ Waktu ujian telah habis selama masa tunggu. Ujian dianggap selesai dengan nilai 0.');
                     gantiHalaman('view-siswa-dashboard');
@@ -2223,6 +2400,7 @@
                 }
 
                 ujianSiswa.nama = state.nama;
+                ujianSiswa.kelas = state.kelas || '';
                 ujianSiswa.mapelId = state.mapelId;
                 ujianSiswa.mapelNama = state.mapelNama;
                 ujianSiswa.soal = state.soal;
@@ -2238,6 +2416,7 @@
                 }
 
                 document.getElementById('ujian-nama').textContent = ujianSiswa.nama;
+                document.getElementById('ujian-kelas').textContent = ujianSiswa.kelas || '-';
                 document.getElementById('ujian-mapel').textContent = ujianSiswa.mapelNama;
 
                 clearAntiTab();
@@ -2254,7 +2433,7 @@
         }
 
         // ================================================================
-        // GURU: TAMBAH SOAL & KELOLA (dengan filter mapel guru)
+        // GURU: TAMBAH SOAL
         // ================================================================
         function guruTambahSoal() {
             const mapelId = parseInt(document.getElementById('guru-input-mapel').value);
@@ -2266,13 +2445,14 @@
                 document.getElementById('guru-input-opsi-3').value.trim()
             ];
             const kunci = parseInt(document.getElementById('guru-input-kunci').value);
+            const kelas = document.getElementById('guru-input-kelas').value;
 
             if (!tanya || opsi.some(o => !o)) {
                 alert('Semua kolom wajib diisi!');
                 return;
             }
 
-            tambahSoal(mapelId, tanya, opsi, kunci);
+            tambahSoal(mapelId, tanya, opsi, kunci, kelas);
             alert('✅ Soal berhasil ditambahkan!');
 
             document.getElementById('guru-input-tanya').value = '';
@@ -2307,6 +2487,7 @@
                         const mapel = getMapelById(mapelIdNum);
                         semuaHasil.push({
                             nama: siswa.nama,
+                            kelas: hasil[mapelId].kelas || siswa.kelas || '-',
                             mapelId: mapelIdNum,
                             mapelNama: mapel ? mapel.nama : 'Mapel ' + mapelId,
                             nilai: hasil[mapelId].nilai,
@@ -2339,7 +2520,7 @@
             });
             
             if (semuaHasil.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">Belum ada hasil ujian untuk mapel yang Anda ajarkan.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Belum ada hasil ujian untuk mapel yang Anda ajarkan.</td></tr>';
                 return;
             }
             
@@ -2349,6 +2530,7 @@
                     <tr>
                         <td>${idx + 1}</td>
                         <td>${item.nama}</td>
+                        <td>${item.kelas}</td>
                         <td>${item.mapelNama}</td>
                         <td class="text-center"><span class="bg-blue-50/60 text-blue-700 font-bold px-2 py-0.5 rounded-full text-xs">${item.nilai}</span></td>
                     </tr>
@@ -2376,12 +2558,13 @@
             }
 
             let csvContent = '\uFEFF';
-            csvContent += 'No,Nama Siswa,Mata Pelajaran,Nilai,Tanggal\n';
+            csvContent += 'No,Nama Siswa,Kelas,Mata Pelajaran,Nilai,Tanggal\n';
             
             dataToExport.forEach((item, idx) => {
                 const row = [
                     idx + 1,
                     `"${item.nama}"`,
+                    `"${item.kelas}"`,
                     `"${item.mapelNama}"`,
                     item.nilai,
                     `"${item.tanggal || '-'}"`
@@ -2408,14 +2591,15 @@
         }
 
         // ================================================================
-        // GURU: KELOLA SOAL (hanya mapel yang diajarkan)
+        // GURU: KELOLA SOAL
         // ================================================================
         function renderKelolaSoal() {
             const user = getSession();
             if (!user || user.role !== 'guru') return;
             
             loadSoalFromStorage();
-            const filter = document.getElementById('guru-filter-kelola').value;
+            const filterMapel = document.getElementById('guru-filter-kelola').value;
+            const filterKelas = document.getElementById('guru-filter-kelas').value;
             const tbody = document.getElementById('guru-tabel-kelola');
             tbody.innerHTML = '';
 
@@ -2428,7 +2612,7 @@
                     filterSelect.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
                 }
             });
-            filterSelect.value = filter;
+            filterSelect.value = filterMapel;
 
             let semuaSoal = [];
             DATA_MAPEL.forEach(m => {
@@ -2440,12 +2624,16 @@
                 }
             });
 
-            if (filter) {
-                semuaSoal = semuaSoal.filter(s => s.mapelId == filter);
+            if (filterMapel) {
+                semuaSoal = semuaSoal.filter(s => s.mapelId == filterMapel);
+            }
+
+            if (filterKelas) {
+                semuaSoal = semuaSoal.filter(s => s.kelas === 'all' || s.kelas === filterKelas);
             }
 
             if (semuaSoal.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Belum ada soal untuk mapel yang Anda ajarkan.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-slate-400 text-xs">Belum ada soal untuk filter yang dipilih.</td></tr>';
                 return;
             }
 
@@ -2457,7 +2645,8 @@
                     <tr>
                         <td>${soal.id}</td>
                         <td>${soal.mapelNama}</td>
-                        <td class="max-w-[200px] truncate">${soal.tanya}</td>
+                        <td>${soal.kelas === 'all' ? 'Semua Kelas' : soal.kelas}</td>
+                        <td class="max-w-[150px] truncate">${soal.tanya}</td>
                         <td class="text-center"><span class="bg-indigo-50/60 text-indigo-700 px-2 py-0.5 rounded-full text-xs font-bold">${kunciHuruf[soal.kunci]}</span></td>
                         <td class="text-center">
                             <button onclick="bukaEditSoal(${soal.id}, ${soal.mapelId})" class="text-blue-500 hover:text-blue-700 text-xs font-medium px-2 py-1 rounded border border-blue-100/30 hover:bg-blue-50/30 transition">✏️ Edit</button>
@@ -2497,6 +2686,8 @@
             if (opsiBaru.some(o => o === null)) return;
             const kunciBaru = prompt('Kunci Jawaban (0=A,1=B,2=C,3=D):', soal.kunci);
             if (kunciBaru === null) return;
+            const kelasBaru = prompt('Kelas (all untuk semua, atau nama kelas):', soal.kelas || 'all');
+            if (kelasBaru === null) return;
 
             const kunciInt = parseInt(kunciBaru);
             if (isNaN(kunciInt) || kunciInt < 0 || kunciInt > 3) {
@@ -2504,7 +2695,7 @@
                 return;
             }
 
-            if (editSoalById(id, mapelId, tanyaBaru.trim(), opsiBaru.map(o => o.trim()), kunciInt)) {
+            if (editSoalById(id, mapelId, tanyaBaru.trim(), opsiBaru.map(o => o.trim()), kunciInt, kelasBaru.trim())) {
                 alert('✅ Soal berhasil diperbarui!');
                 renderKelolaSoal();
                 renderDaftarMapel();
@@ -2699,10 +2890,17 @@
             
             const roleSelect = document.getElementById('admin-user-role');
             const container = document.getElementById('guru-mapel-container');
+            const kelasField = document.getElementById('siswa-kelas-field');
+            
             if (roleSelect.value === 'guru') {
                 container.classList.remove('hidden');
+                kelasField.classList.add('hidden');
+            } else if (roleSelect.value === 'siswa') {
+                container.classList.add('hidden');
+                kelasField.classList.remove('hidden');
             } else {
                 container.classList.add('hidden');
+                kelasField.classList.add('hidden');
             }
         }
 
@@ -2711,10 +2909,16 @@
             if (roleSelect) {
                 roleSelect.addEventListener('change', function() {
                     const container = document.getElementById('guru-mapel-container');
+                    const kelasField = document.getElementById('siswa-kelas-field');
                     if (this.value === 'guru') {
                         container.classList.remove('hidden');
+                        kelasField.classList.add('hidden');
+                    } else if (this.value === 'siswa') {
+                        container.classList.add('hidden');
+                        kelasField.classList.remove('hidden');
                     } else {
                         container.classList.add('hidden');
+                        kelasField.classList.add('hidden');
                     }
                 });
             }
@@ -2832,7 +3036,6 @@
                 session.nama = nama;
                 session.mapel = selectedMapel;
                 localStorage.setItem('cbt_user', JSON.stringify(session));
-                // DASHBOARD GURU: Tampilkan nama lengkap
                 document.getElementById('guru-nama-display').textContent = nama;
                 updateUI();
             }
@@ -2868,7 +3071,7 @@
             tbody.innerHTML = '';
 
             if (siswa.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">Belum ada siswa terdaftar.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Belum ada siswa terdaftar.</td></tr>';
                 return;
             }
 
@@ -2880,6 +3083,7 @@
                     <tr>
                         <td>${idx + 1}</td>
                         <td class="font-semibold">${s.nama}</td>
+                        <td>${s.kelas || '-'}</td>
                         <td class="text-center">${totalUjian}</td>
                         <td class="text-center">
                             <button onclick="bukaDetailSiswa('${s.nama}')" class="btn btn-primary btn-sm">📋 Detail</button>
@@ -2959,6 +3163,7 @@
             const pass = document.getElementById('admin-user-pass').value.trim();
             const mapelSelect = document.getElementById('admin-user-guru-mapel');
             const selectedMapel = Array.from(mapelSelect.selectedOptions).map(opt => parseInt(opt.value));
+            const kelas = document.getElementById('admin-user-kelas').value;
             
             if (!nama) { alert('Nama tidak boleh kosong!'); return; }
             
@@ -2973,7 +3178,8 @@
                 nama: nama, 
                 role: role, 
                 password: pass || '',
-                mapel: role === 'guru' ? selectedMapel : []
+                mapel: role === 'guru' ? selectedMapel : [],
+                kelas: role === 'siswa' ? kelas : ''
             });
             saveUsersToStorage();
             alert('✅ User berhasil ditambahkan!');
@@ -3093,6 +3299,7 @@
                             setSession('siswa', state.nama);
                         } catch(e) {}
                         document.getElementById('siswa-nama-display').textContent = getSession()?.nama || '';
+                        document.getElementById('siswa-kelas-display').textContent = getSession()?.kelas || '';
                         tampilkanLockCountdown(sisa);
                         gantiHalaman('view-siswa-dashboard');
                         return;
@@ -3108,6 +3315,7 @@
                         setSession('siswa', state.nama);
                     } catch(e) {}
                     document.getElementById('siswa-nama-display').textContent = getSession()?.nama || '';
+                    document.getElementById('siswa-kelas-display').textContent = getSession()?.kelas || '';
                     tampilkanLockCountdown(300);
                     gantiHalaman('view-siswa-dashboard');
                     return;
@@ -3118,6 +3326,7 @@
                 if (user) {
                     if (user.role === 'siswa') {
                         document.getElementById('siswa-nama-display').textContent = user.nama;
+                        document.getElementById('siswa-kelas-display').textContent = user.kelas || '-';
                         gantiHalaman('view-siswa-dashboard');
                         return;
                     } else if (user.role === 'guru') {
