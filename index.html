@@ -71,8 +71,6 @@
         .btn-admin:hover { background: #6d28d9; }
         .btn-warning { background: #f59e0b; color: white; }
         .btn-warning:hover { background: #d97706; }
-        .btn-home { background: #0f172a; color: white; }
-        .btn-home:hover { background: #1e293b; }
 
         .stat-card {
             background: white;
@@ -283,24 +281,6 @@
         .modal-edit .modal-box .history-item .info .nilai { font-weight: 700; color: #4f46e5; }
         .modal-edit .modal-box .history-item .info .tgl { font-size: 10px; color: #94a3b8; }
         .modal-edit .modal-box .empty-state { text-align: center; color: #94a3b8; padding: 20px 0; }
-
-        .btn-home-header {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            color: #0f172a;
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .btn-home-header:hover { background: #e2e8f0; }
-        .btn-home-header:active { transform: scale(0.95); }
-        .btn-home-header svg { width: 16px; height: 16px; }
     </style>
 </head>
 <body>
@@ -319,17 +299,17 @@
             <span id="db-status" class="text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-800 shrink-0">Online</span>
         </div>
         <div class="right">
-            <button onclick="kembaliKeMenuUtama()" id="btn-home" class="btn-home-header">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                <span class="hidden sm:inline">Home</span>
-            </button>
             <div id="user-badge" class="user-badge hidden">
                 <span id="user-name">User</span>
                 <span id="user-role" class="role">role</span>
                 <button onclick="logout()" class="logout-btn">✕</button>
             </div>
+            <button onclick="kembaliKeMenuUtama()" id="btn-home" class="flex items-center space-x-1 text-xs font-medium text-slate-600 hover:text-indigo-600 transition border border-slate-200 px-2.5 py-1.5 rounded-lg bg-slate-50 active:scale-95">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span class="hidden sm:inline">Menu</span>
+            </button>
         </div>
     </nav>
 
@@ -480,11 +460,11 @@
                 </div>
             </div>
             <div class="grid grid-cols-3 gap-2 mb-4">
-                <div class="stat-card"><span class="label">Total Siswa</span><span class="value">32</span></div>
-                <div class="stat-card"><span class="label">Rata-rata</span><span class="value">78.5</span></div>
-                <div class="stat-card"><span class="label">Tertinggi</span><span class="value">95</span></div>
+                <div class="stat-card"><span class="label">Total Siswa</span><span class="value" id="guru-stat-siswa">0</span></div>
+                <div class="stat-card"><span class="label">Rata-rata</span><span class="value" id="guru-stat-rata">0</span></div>
+                <div class="stat-card"><span class="label">Tertinggi</span><span class="value" id="guru-stat-tertinggi">0</span></div>
             </div>
-            <h3 class="font-bold text-sm mb-2">📊 Hasil Ujian Siswa</h3>
+            <h3 class="font-bold text-sm mb-2">📊 Hasil Ujian Siswa (Mapel yang Diajarkan)</h3>
             <div class="table-wrap border border-slate-100 rounded-xl bg-white">
                 <table>
                     <thead><tr><th>No</th><th>Nama</th><th>Mapel</th><th class="text-center">Nilai</th></tr></thead>
@@ -617,7 +597,7 @@
             </div>
             <div class="flex flex-wrap gap-2 mb-4">
                 <select id="guru-filter-kelola" class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm">
-                    <option value="">Semua Mapel</option>
+                    <option value="">Semua Mapel (Saya)</option>
                 </select>
                 <button onclick="renderKelolaSoal()" class="btn btn-primary btn-sm">Filter</button>
                 <button onclick="gantiHalaman('view-guru-tambah-soal')" class="btn btn-success btn-sm">+ Tambah Soal</button>
@@ -683,6 +663,13 @@
                 <div>
                     <label>Password</label>
                     <input type="password" id="admin-user-pass" class="border border-slate-200 rounded-lg p-2 w-full" placeholder="Password (kosongkan jika siswa)">
+                </div>
+                <div id="guru-mapel-container" class="hidden">
+                    <label>Mata Pelajaran yang Diajarkan</label>
+                    <select id="admin-user-guru-mapel" class="border border-slate-200 rounded-lg p-2 w-full" multiple>
+                        <!-- Akan diisi oleh JS -->
+                    </select>
+                    <p class="text-xs text-slate-400 mt-1">Tahan Ctrl untuk memilih lebih dari satu mapel</p>
                 </div>
                 <button type="submit" class="btn btn-success">➕ Tambah User</button>
             </form>
@@ -759,11 +746,11 @@
         // DEFAULT USERS
         // ================================================================
         const DEFAULT_USERS = [
-            { id: 1, nama: 'Admin Utama', role: 'admin', password: 'Admin123' },
-            { id: 2, nama: 'Budi Santoso', role: 'guru', password: 'Guru123' },
-            { id: 3, nama: 'Siti Rahayu', role: 'guru', password: 'Guru123' },
-            { id: 4, nama: 'Andi Wijaya', role: 'siswa', password: '' },
-            { id: 5, nama: 'Dewi Lestari', role: 'siswa', password: '' },
+            { id: 1, nama: 'Admin Utama', role: 'admin', password: 'Admin123', mapel: [] },
+            { id: 2, nama: 'Budi Santoso', role: 'guru', password: 'Guru123', mapel: [1, 2] }, // Mengajar Matematika & Bahasa Indonesia
+            { id: 3, nama: 'Siti Rahayu', role: 'guru', password: 'Guru123', mapel: [3, 4] }, // Mengajar Bahasa Inggris & IPA
+            { id: 4, nama: 'Andi Wijaya', role: 'siswa', password: '', mapel: [] },
+            { id: 5, nama: 'Dewi Lestari', role: 'siswa', password: '', mapel: [] },
         ];
 
         let users = [];
@@ -788,9 +775,25 @@
             const nama = document.getElementById('admin-user-nama').value.trim();
             const role = document.getElementById('admin-user-role').value;
             const pass = document.getElementById('admin-user-pass').value.trim();
+            const mapelSelect = document.getElementById('admin-user-guru-mapel');
+            const selectedMapel = Array.from(mapelSelect.selectedOptions).map(opt => parseInt(opt.value));
+            
             if (!nama) { alert('Nama tidak boleh kosong!'); return; }
+            
+            // Cek duplikat nama
+            if (users.some(u => u.nama.toLowerCase() === nama.toLowerCase())) {
+                alert('Nama sudah terdaftar!');
+                return;
+            }
+            
             const newId = getNextUserId();
-            users.push({ id: newId, nama, role, password: pass || '' });
+            users.push({ 
+                id: newId, 
+                nama, 
+                role, 
+                password: pass || '',
+                mapel: role === 'guru' ? selectedMapel : []
+            });
             saveUsersToStorage();
             alert('✅ User berhasil ditambahkan!');
             document.getElementById('admin-user-nama').value = '';
@@ -801,6 +804,20 @@
 
         function getSiswa() {
             return users.filter(u => u.role === 'siswa');
+        }
+
+        function getGuruMapel(guruId) {
+            const guru = users.find(u => u.id === guruId);
+            return guru ? guru.mapel || [] : [];
+        }
+
+        function getGuruByMapel(mapelId) {
+            return users.filter(u => u.role === 'guru' && u.mapel && u.mapel.includes(mapelId));
+        }
+
+        function isGuruAllowed(guruId, mapelId) {
+            const guru = users.find(u => u.id === guruId);
+            return guru && guru.role === 'guru' && guru.mapel && guru.mapel.includes(mapelId);
         }
 
         // ================================================================
@@ -957,8 +974,14 @@
         // ================================================================
         let currentUser = null;
 
-        function setSession(role, nama = null) {
-            currentUser = { role, nama: nama || (DATA[role] ? DATA[role].nama : role) };
+        function setSession(role, nama = null, userId = null) {
+            const userData = users.find(u => u.nama === nama && u.role === role);
+            currentUser = { 
+                role, 
+                nama: nama || (DATA[role] ? DATA[role].nama : role),
+                id: userId || (userData ? userData.id : null),
+                mapel: userData ? userData.mapel || [] : []
+            };
             localStorage.setItem('cbt_user', JSON.stringify(currentUser));
             updateUI();
         }
@@ -1032,6 +1055,7 @@
             }
             if (id === 'view-admin-kelola-mapel') { renderKelolaMapel(); }
             if (id === 'view-admin-kelola-siswa') { renderKelolaSiswa(); }
+            if (id === 'view-admin-tambah-user') { populateGuruMapelDropdown(); }
             if (id === 'view-ujian') { initAntiTab(); } else { clearAntiTab(); }
 
             updateUI();
@@ -1041,21 +1065,17 @@
         // FUNGSI KHUSUS UNTUK KEMBALI KE MENU / DASHBOARD DENGAN AKHIR UJIAN
         // ================================================================
         function kembaliKeMenuUtama() {
-            // Cek apakah ujian sedang aktif (mapelId tidak null dan halaman ujian terlihat)
             if (ujianSiswa.mapelId !== null && document.getElementById('view-ujian') && !document.getElementById('view-ujian').classList.contains('hidden')) {
                 if (confirm('Anda akan keluar dari ujian. Jawaban yang sudah diisi akan dikumpulkan. Lanjutkan?')) {
                     kumpulkanUjian('view-menu', true);
                 }
                 return;
             }
-            // Jika tidak ada ujian aktif, langsung ke menu
             if (ujianTimerInterval) { clearInterval(ujianTimerInterval); ujianTimerInterval = null; }
             if (stateSaveInterval) { clearInterval(stateSaveInterval); stateSaveInterval = null; }
             clearAntiTab();
             localStorage.removeItem('cbt_ujian_aktif');
             localStorage.removeItem('cbt_reload_lock');
-            // Hapus session agar kembali ke menu utama tanpa login
-            clearSession();
             gantiHalaman('view-menu');
         }
 
@@ -1077,7 +1097,6 @@
                 }
                 return;
             }
-            // Jika tidak ada ujian aktif, logout langsung
             if (ujianTimerInterval) { clearInterval(ujianTimerInterval); ujianTimerInterval = null; }
             if (stateSaveInterval) { clearInterval(stateSaveInterval); stateSaveInterval = null; }
             clearAntiTab();
@@ -1096,7 +1115,15 @@
             if (nama === '') { errorEl.style.display = 'block';
                 document.getElementById('siswa-nama-input').focus(); return; }
             errorEl.style.display = 'none';
-            setSession('siswa', nama);
+            
+            // Cek apakah siswa terdaftar
+            const user = users.find(u => u.nama.toLowerCase() === nama.toLowerCase() && u.role === 'siswa');
+            if (!user) {
+                alert('Nama siswa tidak terdaftar. Silahkan hubungi admin.');
+                return;
+            }
+            
+            setSession('siswa', nama, user.id);
             document.getElementById('siswa-nama-display').textContent = nama;
             gantiHalaman('view-siswa-dashboard');
         }
@@ -1105,10 +1132,10 @@
             const pass = document.getElementById('guru-password').value.trim();
             const errorEl = document.getElementById('guru-error');
             const user = users.find(u => u.role === 'guru' && u.password === pass);
-            if (user || pass === PASSWORDS.guru) {
+            if (user) {
                 errorEl.style.display = 'none';
-                setSession('guru', user ? user.nama : 'Budi Santoso');
-                document.getElementById('guru-nama').textContent = user ? user.nama : 'Budi Santoso';
+                setSession('guru', user.nama, user.id);
+                document.getElementById('guru-nama').textContent = user.nama;
                 gantiHalaman('view-guru-dashboard');
             } else {
                 errorEl.style.display = 'block';
@@ -1123,7 +1150,7 @@
             const user = users.find(u => u.role === 'admin' && u.password === pass);
             if (user || pass === PASSWORDS.admin) {
                 errorEl.style.display = 'none';
-                setSession('admin', user ? user.nama : 'Admin Utama');
+                setSession('admin', user ? user.nama : 'Admin Utama', user ? user.id : 1);
                 document.getElementById('admin-nama').textContent = user ? user.nama : 'Admin Utama';
                 gantiHalaman('view-admin-dashboard');
             } else {
@@ -1259,7 +1286,7 @@
         };
         let ujianTimerInterval = null;
         let stateSaveInterval = null;
-        let lockCheckInterval = null; // untuk countdown
+        let lockCheckInterval = null;
 
         const PENALTY_SECONDS = 180;
         let isTabVisible = true;
@@ -1327,7 +1354,7 @@
         }
 
         // ================================================================
-        // KUMPULKAN UJIAN (DENGAN PARAMETER REDIRECT DAN ALERT)
+        // KUMPULKAN UJIAN
         // ================================================================
         function kumpulkanUjian(redirectTo = 'view-siswa-dashboard', showAlert = true) {
             if (ujianTimerInterval) {
@@ -1362,7 +1389,6 @@
             localStorage.removeItem('cbt_ujian_aktif');
             localStorage.removeItem('cbt_reload_lock');
 
-            // Reset state ujian
             ujianSiswa = {
                 nama: '',
                 mapelId: null,
@@ -1494,7 +1520,6 @@
             ujianSiswa.timestamp = Date.now();
 
             simpanStateUjian();
-            // Hapus lock jika ada (saat memulai ujian baru)
             localStorage.removeItem('cbt_reload_lock');
 
             document.getElementById('ujian-nama').textContent = user.nama;
@@ -1536,40 +1561,33 @@
         }
 
         // ================================================================
-        // FUNGSI UNTUK MENANGANI RELOAD LOCK (PENALTI 5 MENIT)
+        // FUNGSI UNTUK MENANGANI RELOAD LOCK
         // ================================================================
         function handleReloadLock() {
             const lock = localStorage.getItem('cbt_reload_lock');
             const state = localStorage.getItem('cbt_ujian_aktif');
             const now = Date.now();
 
-            // Jika tidak ada ujian aktif, hapus lock dan return
             if (!state) {
                 localStorage.removeItem('cbt_reload_lock');
                 return false;
             }
 
-            // Jika ada lock
             if (lock) {
                 const elapsed = now - parseInt(lock);
-                const maxLock = 5 * 60 * 1000; // 5 menit
+                const maxLock = 5 * 60 * 1000;
 
                 if (elapsed < maxLock) {
-                    // Masih dalam masa lock → tampilkan countdown, jangan lanjutkan
                     const sisaLock = Math.ceil((maxLock - elapsed) / 1000);
                     tampilkanLockCountdown(sisaLock);
-                    return true; // lock aktif
+                    return true;
                 } else {
-                    // Lock sudah lewat 5 menit → hapus lock dan lanjutkan
                     localStorage.removeItem('cbt_reload_lock');
-                    // Lanjutkan dengan sisa waktu yang dihitung dari state
-                    return false; // tidak ada lock, bisa lanjut
+                    return false;
                 }
             } else {
-                // Tidak ada lock → buat lock baru (karena reload)
                 localStorage.setItem('cbt_reload_lock', String(now));
-                // Tampilkan lock countdown
-                tampilkanLockCountdown(300); // 5 menit
+                tampilkanLockCountdown(300);
                 return true;
             }
         }
@@ -1582,7 +1600,6 @@
             lockContainer.classList.remove('hidden');
             mapelContainer.style.display = 'none';
 
-            // Hapus interval sebelumnya
             if (lockCheckInterval) clearInterval(lockCheckInterval);
 
             let remaining = sisaDetik;
@@ -1591,11 +1608,9 @@
                 if (remaining <= 0) {
                     clearInterval(lockCheckInterval);
                     lockCheckInterval = null;
-                    // Lock selesai, lanjutkan ujian otomatis
                     lockContainer.classList.add('hidden');
                     mapelContainer.style.display = 'grid';
                     localStorage.removeItem('cbt_reload_lock');
-                    // Lanjutkan ujian
                     lanjutkanUjianSetelahLock();
                     return;
                 }
@@ -1612,7 +1627,6 @@
         function lanjutkanUjianSetelahLock() {
             const stateStr = localStorage.getItem('cbt_ujian_aktif');
             if (!stateStr) {
-                // Tidak ada state, kembali ke dashboard
                 gantiHalaman('view-siswa-dashboard');
                 return;
             }
@@ -1624,7 +1638,6 @@
                 const sisaWaktu = Math.max(0, state.timer - Math.floor(elapsed / 1000));
 
                 if (sisaWaktu <= 0) {
-                    // Waktu habis, nilai 0
                     simpanHasilSiswa(state.nama, state.mapelId, 0);
                     localStorage.removeItem('cbt_ujian_aktif');
                     alert('⏰ Waktu ujian telah habis selama masa tunggu. Ujian dianggap selesai dengan nilai 0.');
@@ -1632,7 +1645,6 @@
                     return;
                 }
 
-                // Lanjutkan ujian
                 ujianSiswa.nama = state.nama;
                 ujianSiswa.mapelId = state.mapelId;
                 ujianSiswa.mapelNama = state.mapelNama;
@@ -1643,7 +1655,6 @@
                 ujianSiswa.timer = sisaWaktu;
                 ujianSiswa.timestamp = Date.now();
 
-                // Update session
                 const user = getSession();
                 if (!user || user.nama !== ujianSiswa.nama) {
                     setSession('siswa', ujianSiswa.nama);
@@ -1666,7 +1677,7 @@
         }
 
         // ================================================================
-        // GURU: TAMBAH SOAL & KELOLA
+        // GURU: TAMBAH SOAL & KELOLA (DENGAN FILTER MAPEL GURU)
         // ================================================================
         function guruTambahSoal() {
             const mapelId = parseInt(document.getElementById('guru-input-mapel').value);
@@ -1693,25 +1704,63 @@
             document.getElementById('guru-input-kunci').value = '0';
 
             renderHasilGuru();
+            renderKelolaSoal();
         }
 
         function renderHasilGuru() {
+            const user = getSession();
+            if (!user || user.role !== 'guru') return;
+            
             const tbody = document.getElementById('guru-tabel-hasil');
-            const data = [
-                { nama: 'Andi Wijaya', mapel: 'Matematika', nilai: 90 },
-                { nama: 'Budi Santoso', mapel: 'Matematika', nilai: 85 },
-                { nama: 'Citra Lestari', mapel: 'Bahasa Indonesia', nilai: 88 },
-                { nama: 'Dewi Anggraini', mapel: 'Bahasa Inggris', nilai: 79 },
-                { nama: 'Eko Prasetyo', mapel: 'IPA', nilai: 92 },
-                { nama: 'Fajar Nugroho', mapel: 'IPS', nilai: 76 },
-            ];
+            const guruMapel = user.mapel || [];
+            
+            // Kumpulkan semua hasil ujian dari semua siswa
+            let semuaHasil = [];
+            const siswaList = getSiswa();
+            
+            siswaList.forEach(siswa => {
+                const hasil = getHasilSiswa(siswa.nama);
+                Object.keys(hasil).forEach(mapelId => {
+                    const mapelIdNum = parseInt(mapelId);
+                    // Hanya tampilkan mapel yang diajarkan oleh guru ini
+                    if (guruMapel.includes(mapelIdNum)) {
+                        const mapel = getMapelById(mapelIdNum);
+                        semuaHasil.push({
+                            nama: siswa.nama,
+                            mapelId: mapelIdNum,
+                            mapelNama: mapel ? mapel.nama : 'Mapel ' + mapelId,
+                            nilai: hasil[mapelId].nilai,
+                            tanggal: hasil[mapelId].tanggal
+                        });
+                    }
+                });
+            });
+            
+            // Urutkan berdasarkan nama
+            semuaHasil.sort((a, b) => a.nama.localeCompare(b.nama) || a.mapelId - b.mapelId);
+            
+            // Hitung statistik
+            const nilaiList = semuaHasil.map(h => h.nilai);
+            const totalSiswa = new Set(semuaHasil.map(h => h.nama)).size;
+            const rataRata = nilaiList.length > 0 ? Math.round(nilaiList.reduce((a,b) => a + b, 0) / nilaiList.length) : 0;
+            const tertinggi = nilaiList.length > 0 ? Math.max(...nilaiList) : 0;
+            
+            document.getElementById('guru-stat-siswa').textContent = totalSiswa;
+            document.getElementById('guru-stat-rata').textContent = rataRata;
+            document.getElementById('guru-stat-tertinggi').textContent = tertinggi;
+            
+            if (semuaHasil.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">Belum ada hasil ujian untuk mapel yang Anda ajarkan.</td></tr>';
+                return;
+            }
+            
             tbody.innerHTML = '';
-            data.forEach((item, idx) => {
+            semuaHasil.forEach((item, idx) => {
                 tbody.innerHTML += `
                     <tr>
                         <td>${idx + 1}</td>
                         <td>${item.nama}</td>
-                        <td>${item.mapel}</td>
+                        <td>${item.mapelNama}</td>
                         <td class="text-center"><span class="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded-full text-xs">${item.nilai}</span></td>
                     </tr>
                 `;
@@ -1719,24 +1768,35 @@
         }
 
         function renderKelolaSoal() {
+            const user = getSession();
+            if (!user || user.role !== 'guru') return;
+            
             loadSoalFromStorage();
             const filter = document.getElementById('guru-filter-kelola').value;
             const tbody = document.getElementById('guru-tabel-kelola');
             tbody.innerHTML = '';
 
             const filterSelect = document.getElementById('guru-filter-kelola');
-            filterSelect.innerHTML = '<option value="">Semua Mapel</option>';
+            filterSelect.innerHTML = '<option value="">Semua Mapel (Saya)</option>';
+            
+            // Hanya tampilkan mapel yang diajarkan oleh guru ini
+            const guruMapel = user.mapel || [];
             DATA_MAPEL.forEach(m => {
-                filterSelect.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
+                if (guruMapel.includes(m.id)) {
+                    filterSelect.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
+                }
             });
             filterSelect.value = filter;
 
             let semuaSoal = [];
             DATA_MAPEL.forEach(m => {
-                const soal = getSoalByMapel(m.id);
-                soal.forEach(s => {
-                    semuaSoal.push({ ...s, mapelId: m.id, mapelNama: m.nama });
-                });
+                // Hanya ambil soal dari mapel yang diajarkan
+                if (guruMapel.includes(m.id)) {
+                    const soal = getSoalByMapel(m.id);
+                    soal.forEach(s => {
+                        semuaSoal.push({ ...s, mapelId: m.id, mapelNama: m.nama });
+                    });
+                }
             });
 
             if (filter) {
@@ -1744,14 +1804,14 @@
             }
 
             if (semuaSoal.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Belum ada soal.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Belum ada soal untuk mapel yang Anda ajarkan.</td></tr>';
                 return;
             }
 
             const kunciHuruf = ['A', 'B', 'C', 'D'];
             semuaSoal.sort((a, b) => a.id - b.id);
 
-            semuaSoal.forEach((soal, idx) => {
+            semuaSoal.forEach((soal) => {
                 tbody.innerHTML += `
                     <tr>
                         <td>${soal.id}</td>
@@ -1768,6 +1828,18 @@
         }
 
         function bukaEditSoal(id, mapelId) {
+            const user = getSession();
+            if (!user || user.role !== 'guru') {
+                alert('Akses ditolak!');
+                return;
+            }
+            
+            // Cek apakah guru berhak mengelola mapel ini
+            if (!user.mapel || !user.mapel.includes(mapelId)) {
+                alert('Anda tidak memiliki akses untuk mengelola mapel ini!');
+                return;
+            }
+            
             const soal = getSoalByMapel(mapelId).find(s => s.id === id);
             if (!soal) {
                 alert('Soal tidak ditemukan!');
@@ -1802,6 +1874,18 @@
         }
 
         function hapusSoal(id, mapelId) {
+            const user = getSession();
+            if (!user || user.role !== 'guru') {
+                alert('Akses ditolak!');
+                return;
+            }
+            
+            // Cek apakah guru berhak mengelola mapel ini
+            if (!user.mapel || !user.mapel.includes(mapelId)) {
+                alert('Anda tidak memiliki akses untuk mengelola mapel ini!');
+                return;
+            }
+            
             if (!confirm(`Yakin ingin menghapus soal ID ${id}?`)) return;
             if (hapusSoalById(id, mapelId)) {
                 alert('✅ Soal berhasil dihapus!');
@@ -1864,6 +1948,7 @@
 
             DATA_MAPEL.forEach(m => {
                 const jml = getSoalByMapel(m.id).length;
+                const guruPengajar = getGuruByMapel(m.id).map(g => g.nama).join(', ') || '-';
                 tbody.innerHTML += `
                     <tr>
                         <td>${m.id}</td>
@@ -1891,6 +1976,7 @@
             renderAdminMapelPreview();
             adminMuatStats();
             populateMapelDropdowns();
+            populateGuruMapelDropdown();
         }
 
         function bukaEditMapel(id) {
@@ -1910,6 +1996,7 @@
                 renderAdminMapelPreview();
                 adminMuatStats();
                 populateMapelDropdowns();
+                populateGuruMapelDropdown();
             } else {
                 alert('❌ Gagal memperbarui mapel.');
             }
@@ -1921,12 +2008,21 @@
             const jml = getSoalByMapel(id).length;
             if (!confirm(`Yakin ingin menghapus mapel "${mapel.nama}"? ${jml > 0 ? `Mapel ini memiliki ${jml} soal yang akan ikut terhapus.` : ''}`)) return;
 
+            // Hapus mapel dari daftar guru yang mengajar
+            users.forEach(u => {
+                if (u.role === 'guru' && u.mapel) {
+                    u.mapel = u.mapel.filter(m => m !== id);
+                }
+            });
+            saveUsersToStorage();
+
             if (hapusMapel(id)) {
                 alert('✅ Mapel dan semua soalnya berhasil dihapus!');
                 renderKelolaMapel();
                 renderAdminMapelPreview();
                 adminMuatStats();
                 populateMapelDropdowns();
+                populateGuruMapelDropdown();
                 renderDaftarMapel();
             } else {
                 alert('❌ Gagal menghapus mapel.');
@@ -1934,13 +2030,59 @@
         }
 
         function populateMapelDropdowns() {
+            const user = getSession();
             const select = document.getElementById('guru-input-mapel');
+            if (!select) return;
+            select.innerHTML = '';
+            
+            // Untuk guru, hanya tampilkan mapel yang diajarkan
+            if (user && user.role === 'guru') {
+                const guruMapel = user.mapel || [];
+                DATA_MAPEL.forEach(m => {
+                    if (guruMapel.includes(m.id)) {
+                        select.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
+                    }
+                });
+            } else {
+                // Untuk admin atau lainnya, tampilkan semua
+                DATA_MAPEL.forEach(m => {
+                    select.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
+                });
+            }
+        }
+
+        function populateGuruMapelDropdown() {
+            const select = document.getElementById('admin-user-guru-mapel');
             if (!select) return;
             select.innerHTML = '';
             DATA_MAPEL.forEach(m => {
                 select.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
             });
+            
+            // Tampilkan/hide dropdown mapel berdasarkan role
+            const roleSelect = document.getElementById('admin-user-role');
+            const container = document.getElementById('guru-mapel-container');
+            if (roleSelect.value === 'guru') {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
         }
+
+        // Event listener untuk role change pada tambah user
+        document.addEventListener('DOMContentLoaded', function() {
+            const roleSelect = document.getElementById('admin-user-role');
+            if (roleSelect) {
+                roleSelect.addEventListener('change', function() {
+                    const container = document.getElementById('guru-mapel-container');
+                    if (this.value === 'guru') {
+                        container.classList.remove('hidden');
+                    } else {
+                        container.classList.add('hidden');
+                    }
+                });
+            }
+        });
 
         // ================================================================
         // ADMIN: KELOLA SISWA (RESET)
@@ -2057,58 +2199,41 @@
             loadMapelFromStorage();
             loadSoalFromStorage();
 
-            // Cek apakah ada ujian aktif dan lock
             const stateStr = localStorage.getItem('cbt_ujian_aktif');
             if (stateStr) {
-                // Ada ujian aktif, cek lock
                 const lock = localStorage.getItem('cbt_reload_lock');
                 if (lock) {
                     const now = Date.now();
                     const elapsed = now - parseInt(lock);
                     const maxLock = 5 * 60 * 1000;
                     if (elapsed < maxLock) {
-                        // Masih dalam lock
                         const sisa = Math.ceil((maxLock - elapsed) / 1000);
-                        // Pastikan user adalah siswa
-                        const user = getSession();
-                        if (!user || user.role !== 'siswa') {
-                            // Set session sebagai siswa
-                            try {
-                                const state = JSON.parse(stateStr);
-                                setSession('siswa', state.nama);
-                            } catch(e) {}
-                        }
+                        try {
+                            const state = JSON.parse(stateStr);
+                            setSession('siswa', state.nama);
+                        } catch(e) {}
                         document.getElementById('siswa-nama-display').textContent = getSession()?.nama || '';
-                        // Tampilkan lock countdown
                         tampilkanLockCountdown(sisa);
                         gantiHalaman('view-siswa-dashboard');
                         return;
                     } else {
-                        // Lock sudah lewat, hapus lock dan lanjutkan
                         localStorage.removeItem('cbt_reload_lock');
-                        // Lanjutkan ujian
                         lanjutkanUjianSetelahLock();
                         return;
                     }
                 } else {
-                    // Tidak ada lock, artinya ini pertama kali reload setelah state dibuat
-                    // Buat lock baru
                     localStorage.setItem('cbt_reload_lock', String(Date.now()));
-                    // Pastikan user adalah siswa
                     try {
                         const state = JSON.parse(stateStr);
                         setSession('siswa', state.nama);
                     } catch(e) {}
                     document.getElementById('siswa-nama-display').textContent = getSession()?.nama || '';
-                    // Tampilkan lock countdown
                     tampilkanLockCountdown(300);
                     gantiHalaman('view-siswa-dashboard');
                     return;
                 }
             } else {
-                // Tidak ada ujian aktif, hapus lock jika ada
                 localStorage.removeItem('cbt_reload_lock');
-                // Lanjutkan login normal
                 const user = getSession();
                 if (user) {
                     if (user.role === 'siswa') {
