@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SMK Prama Artha - CBT</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * { -webkit-tap-highlight-color: transparent; }
@@ -693,9 +694,53 @@
             color: #94a3b8;
             font-size: 16px;
         }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(79, 70, 229, 0.2);
+            border-radius: 50%;
+            border-top-color: #4f46e5;
+            animation: spin 0.8s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .loading-overlay .loading-box {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 30px 40px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .loading-overlay .loading-box p {
+            margin-top: 12px;
+            color: #475569;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
+
+    <!-- LOADING OVERLAY -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-box">
+            <div class="loading-spinner"></div>
+            <p>Memuat data...</p>
+        </div>
+    </div>
 
     <!-- TOAST WARNING -->
     <div id="toast-warning"></div>
@@ -1388,6 +1433,41 @@
     <!-- ============================================================ -->
     <script>
         // ================================================================
+        // SUPABASE CONFIG
+        // ================================================================
+        const SUPABASE_URL = 'https://rsfepmlqbcpnqnavhesw.supabase.co'; // Ganti dengan URL Supabase Anda
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZmVwbWxxYmNwbnFuYXZoZXN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDQzMDYsImV4cCI6MjA5OTYyMDMwNn0.jRbCyr19TBrQjtjD76kQQFIdqjh4isZ3clxCXQ6xK5g'; // Ganti dengan Anon Key Supabase Anda
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ================================================================
+        // GLOBAL STATE
+        // ================================================================
+        let currentUser = null;
+        let users = [];
+        let DATA_MAPEL = [];
+        let DATA_SOAL = {};
+
+        // ================================================================
+        // LOADING / TOAST
+        // ================================================================
+        function showLoading() {
+            document.getElementById('loading-overlay').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-overlay').classList.add('hidden');
+        }
+
+        function showToast(message, type = 'danger') {
+            const toast = document.getElementById('toast-warning');
+            toast.textContent = message;
+            toast.className = type;
+            toast.style.display = 'block';
+            clearTimeout(toast._hide);
+            toast._hide = setTimeout(() => { toast.style.display = 'none'; }, 5000);
+        }
+
+        // ================================================================
         // HELPER FUNCTIONS
         // ================================================================
         function getFirstName(fullName) {
@@ -1451,247 +1531,87 @@
         };
 
         // ================================================================
-        // KONFIGURASI
+        // SUPABASE - DATA LOADING
         // ================================================================
-        const PASSWORDS = { guru: 'Guru123', admin: 'Admin123' };
+        async function loadDataFromSupabase() {
+            showLoading();
+            try {
+                // Load users
+                const { data: usersData, error: usersError } = await supabase
+                    .from('users')
+                    .select('*');
+                if (usersError) throw usersError;
+                users = usersData || [];
 
-        // ================================================================
-        // DEFAULT USERS
-        // ================================================================
-        const DEFAULT_USERS = [
-            { id: 1, nama: 'Prama Artha', role: 'admin', password: 'Admin123', mapel: [], kelas: '' },
-            { id: 2, nama: 'Budi Santoso', role: 'guru', password: 'Guru123', mapel: [1, 2], kelas: '' },
-            { id: 3, nama: 'Siti Rahayu', role: 'guru', password: 'Guru123', mapel: [3, 4], kelas: '' },
-            { id: 4, nama: 'Andi Wijaya', role: 'siswa', password: '', mapel: [], kelas: 'X-RPL 1' },
-            { id: 5, nama: 'Dewi Lestari', role: 'siswa', password: '', mapel: [], kelas: 'XI-RPL 2' },
-        ];
+                // Load mapel
+                const { data: mapelData, error: mapelError } = await supabase
+                    .from('mapel')
+                    .select('*');
+                if (mapelError) throw mapelError;
+                DATA_MAPEL = mapelData || [];
 
-        let users = [];
+                // Load soal
+                const { data: soalData, error: soalError } = await supabase
+                    .from('soal')
+                    .select('*');
+                if (soalError) throw soalError;
+                
+                // Group soal by mapel_id
+                DATA_SOAL = {};
+                (soalData || []).forEach(s => {
+                    if (!DATA_SOAL[s.mapel_id]) DATA_SOAL[s.mapel_id] = [];
+                    DATA_SOAL[s.mapel_id].push(s);
+                });
 
-        function loadUsersFromStorage() {
-            const stored = localStorage.getItem('cbt_users');
-            if (stored) { 
-                try { 
-                    users = JSON.parse(stored); 
-                    return; 
-                } catch (e) {} 
+                // Update UI
+                updateUI();
+                
+                // Check session
+                const session = localStorage.getItem('cbt_user');
+                if (session) {
+                    try {
+                        const user = JSON.parse(session);
+                        const userData = users.find(u => u.id === user.id);
+                        if (userData) {
+                            currentUser = userData;
+                            updateUI();
+                            // Redirect based on role
+                            if (userData.role === 'siswa') {
+                                document.getElementById('siswa-nama-display').textContent = userData.nama;
+                                document.getElementById('siswa-kelas-display').textContent = userData.kelas || '-';
+                                gantiHalaman('view-siswa-dashboard');
+                            } else if (userData.role === 'guru') {
+                                document.getElementById('guru-nama-display').textContent = userData.nama;
+                                gantiHalaman('view-guru-dashboard');
+                            } else if (userData.role === 'admin') {
+                                document.getElementById('admin-nama-display').textContent = userData.nama;
+                                gantiHalaman('view-admin-dashboard');
+                            }
+                        } else {
+                            localStorage.removeItem('cbt_user');
+                            gantiHalaman('view-menu');
+                        }
+                    } catch(e) {
+                        localStorage.removeItem('cbt_user');
+                        gantiHalaman('view-menu');
+                    }
+                } else {
+                    gantiHalaman('view-menu');
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showToast('❌ Gagal memuat data dari database!', 'danger');
+                gantiHalaman('view-menu');
             }
-            users = JSON.parse(JSON.stringify(DEFAULT_USERS));
-            localStorage.setItem('cbt_users', JSON.stringify(users));
-        }
-
-        function saveUsersToStorage() {
-            localStorage.setItem('cbt_users', JSON.stringify(users));
-        }
-
-        function getNextUserId() {
-            if (users.length === 0) return 1;
-            return Math.max(...users.map(u => u.id)) + 1;
-        }
-
-        function getGuruList() {
-            return users.filter(u => u.role === 'guru');
-        }
-
-        function getSiswa() {
-            return users.filter(u => u.role === 'siswa');
-        }
-
-        function getGuruMapel(guruId) {
-            const guru = users.find(u => u.id === guruId);
-            return guru ? guru.mapel || [] : [];
-        }
-
-        function getGuruByMapel(mapelId) {
-            return users.filter(u => u.role === 'guru' && u.mapel && u.mapel.includes(mapelId));
-        }
-
-        // ================================================================
-        // DEFAULT MAPEL & SOAL
-        // ================================================================
-        const DEFAULT_MAPEL = [
-            { id: 1, nama: 'Matematika', kode: 'MTK', icon: '📐' },
-            { id: 2, nama: 'Bahasa Indonesia', kode: 'BIN', icon: '📖' },
-            { id: 3, nama: 'Bahasa Inggris', kode: 'BIG', icon: '🌍' },
-            { id: 4, nama: 'IPA', kode: 'IPA', icon: '🔬' },
-            { id: 5, nama: 'IPS', kode: 'IPS', icon: '🏛️' },
-        ];
-
-        let DATA_MAPEL = [];
-
-        function loadMapelFromStorage() {
-            const stored = localStorage.getItem('cbt_mapel');
-            if (stored) { try { DATA_MAPEL = JSON.parse(stored); return; } catch (e) {} }
-            DATA_MAPEL = JSON.parse(JSON.stringify(DEFAULT_MAPEL));
-            localStorage.setItem('cbt_mapel', JSON.stringify(DATA_MAPEL));
-        }
-
-        function saveMapelToStorage() { localStorage.setItem('cbt_mapel', JSON.stringify(DATA_MAPEL)); }
-
-        function getMapelById(id) { return DATA_MAPEL.find(m => m.id === id); }
-
-        function getNextMapelId() {
-            if (DATA_MAPEL.length === 0) return 1;
-            return Math.max(...DATA_MAPEL.map(m => m.id)) + 1;
-        }
-
-        function tambahMapel(nama, kode, icon) {
-            const newId = getNextMapelId();
-            DATA_MAPEL.push({ id: newId, nama: nama.trim(), kode: kode.trim(), icon: icon || '📚' });
-            saveMapelToStorage();
-            if (!DATA_SOAL[newId]) DATA_SOAL[newId] = [];
-            saveSoalToStorage();
-        }
-
-        function editMapel(id, nama, kode, icon) {
-            const mapel = getMapelById(id);
-            if (!mapel) return false;
-            mapel.nama = nama.trim();
-            mapel.kode = kode.trim();
-            mapel.icon = icon || '📚';
-            saveMapelToStorage();
-            return true;
-        }
-
-        function hapusMapel(id) {
-            const mapel = getMapelById(id);
-            if (!mapel) return false;
-            if (DATA_SOAL[id]) { delete DATA_SOAL[id];
-                saveSoalToStorage(); }
-            DATA_MAPEL = DATA_MAPEL.filter(m => m.id !== id);
-            saveMapelToStorage();
-            return true;
-        }
-
-        // ================================================================
-        // DATA SOAL
-        // ================================================================
-        const DEFAULT_SOAL = {
-            1: [
-                { id: 1, tanya: 'Hasil dari 2 + 3 adalah?', opsi: ['A. 4', 'B. 5', 'C. 6', 'D. 7'], kunci: 1, kelas: 'all' },
-                { id: 2, tanya: 'Akar kuadrat dari 81 adalah?', opsi: ['A. 7', 'B. 8', 'C. 9', 'D. 10'], kunci: 2, kelas: 'all' },
-                { id: 3, tanya: 'Berapakah 10 x 10?', opsi: ['A. 50', 'B. 100', 'C. 150', 'D. 200'], kunci: 1, kelas: 'all' },
-                { id: 4, tanya: 'Hasil dari 15 : 3 adalah?', opsi: ['A. 3', 'B. 4', 'C. 5', 'D. 6'], kunci: 2, kelas: 'all' },
-                { id: 5, tanya: 'Berapakah 7 x 8?', opsi: ['A. 48', 'B. 54', 'C. 56', 'D. 62'], kunci: 2, kelas: 'all' },
-            ],
-            2: [
-                { id: 10, tanya: 'Sinonim dari "cepat" adalah?', opsi: ['A. Lambat', 'B. Kilat', 'C. Pelan', 'D. Lama'],
-                kunci: 1, kelas: 'all' },
-                { id: 11, tanya: 'Kalimat baku adalah kalimat yang ...', opsi: ['A. Mengandung slang', 'B. Sesuai EYD',
-                        'C. Tidak logis', 'D. Bertele-tele'
-                    ], kunci: 1, kelas: 'all' },
-                { id: 12, tanya: 'Antonim dari "besar" adalah?', opsi: ['A. Kecil', 'B. Tinggi', 'C. Luas', 'D. Panjang'],
-                    kunci: 0, kelas: 'all' },
-            ],
-            3: [
-                { id: 20, tanya: 'What is the meaning of "book"?', opsi: ['A. Pensil', 'B. Buku', 'C. Meja', 'D. Kursi'],
-                    kunci: 1, kelas: 'all' },
-                { id: 21, tanya: 'She ... to school every day.', opsi: ['A. go', 'B. goes', 'C. going', 'D. gone'],
-                    kunci: 1, kelas: 'all' },
-            ],
-            4: [
-                { id: 30, tanya: 'Planet terbesar di tata surya adalah?', opsi: ['A. Bumi', 'B. Jupiter', 'C. Saturnus',
-                        'D. Mars'
-                    ], kunci: 1, kelas: 'all' },
-                { id: 31, tanya: 'Bagian sel yang berfungsi sebagai pusat kendali adalah?', opsi: ['A. Membran sel',
-                        'B. Sitoplasma', 'C. Nukleus', 'D. Mitokondria'
-                    ], kunci: 2, kelas: 'all' },
-            ],
-            5: [
-                { id: 40, tanya: 'Ibu kota Indonesia adalah?', opsi: ['A. Jakarta', 'B. Surabaya', 'C. Bandung',
-                        'D. Medan'
-                    ], kunci: 0, kelas: 'all' },
-                { id: 41, tanya: 'Gunung tertinggi di Indonesia adalah?', opsi: ['A. Krakatau', 'B. Merapi', 'C. Semeru',
-                        'D. Rinjani'
-                    ], kunci: 2, kelas: 'all' },
-            ],
-        };
-
-        let DATA_SOAL = {};
-
-        function loadSoalFromStorage() {
-            const stored = localStorage.getItem('cbt_soal_guru');
-            if (stored) {
-                try {
-                    DATA_SOAL = JSON.parse(stored);
-                    DATA_MAPEL.forEach(m => { if (!DATA_SOAL[m.id]) DATA_SOAL[m.id] = []; });
-                    return;
-                } catch (e) {}
-            }
-            DATA_SOAL = JSON.parse(JSON.stringify(DEFAULT_SOAL));
-            localStorage.setItem('cbt_soal_guru', JSON.stringify(DATA_SOAL));
-        }
-
-        function saveSoalToStorage() { localStorage.setItem('cbt_soal_guru', JSON.stringify(DATA_SOAL)); }
-
-        function getSoalByMapel(mapelId) { return DATA_SOAL[mapelId] || []; }
-
-        function getSoalByMapelAndKelas(mapelId, kelas) {
-            const soal = DATA_SOAL[mapelId] || [];
-            if (kelas === 'all' || !kelas) return soal;
-            return soal.filter(s => s.kelas === 'all' || s.kelas === kelas);
-        }
-
-        function hasSoalForKelas(mapelId, kelas) {
-            const soal = getSoalByMapelAndKelas(mapelId, kelas);
-            return soal.length > 0;
-        }
-
-        function getNextSoalId(mapelId) {
-            const soal = DATA_SOAL[mapelId] || [];
-            if (soal.length === 0) return (mapelId * 10) + 1;
-            return Math.max(...soal.map(s => s.id)) + 1;
-        }
-
-        function tambahSoal(mapelId, tanya, opsi, kunci, kelas) {
-            if (!DATA_SOAL[mapelId]) DATA_SOAL[mapelId] = [];
-            const newId = getNextSoalId(mapelId);
-            DATA_SOAL[mapelId].push({ 
-                id: newId, 
-                tanya, 
-                opsi, 
-                kunci, 
-                kelas: kelas || 'all' 
-            });
-            saveSoalToStorage();
-        }
-
-        function editSoalById(id, mapelId, tanya, opsi, kunci, kelas) {
-            const list = DATA_SOAL[mapelId] || [];
-            const idx = list.findIndex(s => s.id === id);
-            if (idx !== -1) { 
-                list[idx] = { id, tanya, opsi, kunci, kelas: kelas || 'all' };
-                saveSoalToStorage(); 
-                return true; 
-            }
-            return false;
-        }
-
-        function hapusSoalById(id, mapelId) {
-            const list = DATA_SOAL[mapelId] || [];
-            const filtered = list.filter(s => s.id !== id);
-            if (filtered.length !== list.length) { 
-                DATA_SOAL[mapelId] = filtered;
-                saveSoalToStorage(); 
-                return true; 
-            }
-            return false;
+            hideLoading();
         }
 
         // ================================================================
         // SESSION MANAGEMENT
         // ================================================================
-        let currentUser = null;
-
         function setSession(role, nama = null, userId = null, kelas = '') {
-            const userData = users.find(u => u.nama === nama && u.role === role);
-            currentUser = { 
-                role: role, 
-                nama: nama,
-                id: userId || (userData ? userData.id : null),
-                mapel: userData ? userData.mapel || [] : [],
-                kelas: kelas || (userData ? userData.kelas || '' : '')
-            };
+            const userData = users.find(u => u.id === userId);
+            currentUser = userData || { id: userId, nama, role, kelas };
             localStorage.setItem('cbt_user', JSON.stringify(currentUser));
             updateUI();
             return currentUser;
@@ -1699,21 +1619,12 @@
 
         function getSession() {
             if (currentUser) return currentUser;
-            
             const stored = localStorage.getItem('cbt_user');
-            if (stored) { 
-                try { 
+            if (stored) {
+                try {
                     currentUser = JSON.parse(stored);
-                    if (currentUser && currentUser.nama) {
-                        const userData = users.find(u => u.nama === currentUser.nama && u.role === currentUser.role);
-                        if (userData) {
-                            currentUser.id = userData.id;
-                            currentUser.mapel = userData.mapel || [];
-                            currentUser.kelas = userData.kelas || currentUser.kelas || '';
-                        }
-                    }
-                    return currentUser; 
-                } catch (e) {} 
+                    return currentUser;
+                } catch (e) {}
             }
             return null;
         }
@@ -1729,7 +1640,6 @@
             const badge = document.getElementById('user-badge');
             const nameEl = document.getElementById('user-name');
             const roleEl = document.getElementById('user-role');
-            
             if (user) {
                 badge.classList.remove('hidden');
                 const firstName = getFirstName(user.nama);
@@ -1754,30 +1664,30 @@
             const user = getSession();
 
             if (protectedPages.includes(id)) {
-                if (!user) { 
+                if (!user) {
                     alert('Silakan login terlebih dahulu!');
-                    kembaliKeMenuUtama(); 
-                    return; 
+                    kembaliKeMenuUtama();
+                    return;
                 }
-                if (id.startsWith('view-guru-') && user.role !== 'guru') { 
+                if (id.startsWith('view-guru-') && user.role !== 'guru') {
                     alert('Akses ditolak! Hanya untuk Guru.');
-                    kembaliKeMenuUtama(); 
-                    return; 
+                    kembaliKeMenuUtama();
+                    return;
                 }
-                if (id.startsWith('view-admin-') && user.role !== 'admin') { 
+                if (id.startsWith('view-admin-') && user.role !== 'admin') {
                     alert('Akses ditolak! Hanya untuk Admin.');
-                    kembaliKeMenuUtama(); 
-                    return; 
+                    kembaliKeMenuUtama();
+                    return;
                 }
-                if (id === 'view-ujian' && user.role !== 'siswa') { 
+                if (id === 'view-ujian' && user.role !== 'siswa') {
                     alert('Akses ditolak! Hanya untuk Siswa.');
-                    kembaliKeMenuUtama(); 
-                    return; 
+                    kembaliKeMenuUtama();
+                    return;
                 }
-                if (id === 'view-siswa-dashboard' && user.role !== 'siswa') { 
+                if (id === 'view-siswa-dashboard' && user.role !== 'siswa') {
                     alert('Akses ditolak! Hanya untuk Siswa.');
-                    kembaliKeMenuUtama(); 
-                    return; 
+                    kembaliKeMenuUtama();
+                    return;
                 }
             }
 
@@ -1806,23 +1716,68 @@
         }
 
         // ================================================================
+        // FUNGSI KHUSUS UNTUK KEMBALI KE MENU / DASHBOARD
+        // ================================================================
+        async function kembaliKeMenuUtama() {
+            if (ujianSiswa.mapelId !== null && document.getElementById('view-ujian') && !document.getElementById('view-ujian').classList.contains('hidden')) {
+                if (await confirm('Anda akan keluar dari ujian. Jawaban yang sudah diisi akan dikumpulkan. Lanjutkan?')) {
+                    kumpulkanUjian('view-menu', true);
+                }
+                return;
+            }
+            if (ujianTimerInterval) { clearInterval(ujianTimerInterval); ujianTimerInterval = null; }
+            if (stateSaveInterval) { clearInterval(stateSaveInterval); stateSaveInterval = null; }
+            clearAntiTab();
+            localStorage.removeItem('cbt_ujian_aktif');
+            localStorage.removeItem('cbt_reload_lock');
+            gantiHalaman('view-menu');
+        }
+
+        async function kembaliKeDashboardSiswa() {
+            if (ujianSiswa.mapelId !== null && document.getElementById('view-ujian') && !document.getElementById('view-ujian').classList.contains('hidden')) {
+                if (await confirm('Anda akan keluar dari ujian. Jawaban yang sudah diisi akan dikumpulkan. Lanjutkan?')) {
+                    kumpulkanUjian('view-siswa-dashboard', true);
+                }
+                return;
+            }
+            gantiHalaman('view-siswa-dashboard');
+        }
+
+        async function logout() {
+            if (ujianSiswa.mapelId !== null && document.getElementById('view-ujian') && !document.getElementById('view-ujian').classList.contains('hidden')) {
+                if (await confirm('Anda akan logout dari ujian. Jawaban yang sudah diisi akan dikumpulkan. Lanjutkan?')) {
+                    kumpulkanUjian('view-menu', true);
+                    clearSession();
+                }
+                return;
+            }
+            if (ujianTimerInterval) { clearInterval(ujianTimerInterval); ujianTimerInterval = null; }
+            if (stateSaveInterval) { clearInterval(stateSaveInterval); stateSaveInterval = null; }
+            clearAntiTab();
+            localStorage.removeItem('cbt_ujian_aktif');
+            localStorage.removeItem('cbt_reload_lock');
+            clearSession();
+            gantiHalaman('view-menu');
+        }
+
+        // ================================================================
         // LOGIN
         // ================================================================
-        function loginSiswa() {
+        async function loginSiswa() {
             const nama = document.getElementById('siswa-nama-input').value.trim();
             const kelas = document.getElementById('siswa-kelas-input').value;
             const errorEl = document.getElementById('siswa-error');
             
-            if (nama === '') { 
+            if (nama === '') {
                 errorEl.style.display = 'block';
-                document.getElementById('siswa-nama-input').focus(); 
-                return; 
+                document.getElementById('siswa-nama-input').focus();
+                return;
             }
             errorEl.style.display = 'none';
             
-            const user = users.find(u => 
-                u.role === 'siswa' && 
-                u.nama.toLowerCase() === nama.toLowerCase() && 
+            const user = users.find(u =>
+                u.role === 'siswa' &&
+                u.nama.toLowerCase() === nama.toLowerCase() &&
                 u.kelas === kelas
             );
             
@@ -1838,7 +1793,7 @@
             gantiHalaman('view-siswa-dashboard');
         }
 
-        function loginGuru() {
+        async function loginGuru() {
             const pass = document.getElementById('guru-password').value.trim();
             const errorEl = document.getElementById('guru-error');
             
@@ -1856,7 +1811,7 @@
             }
         }
 
-        function loginAdmin() {
+        async function loginAdmin() {
             const pass = document.getElementById('admin-password').value.trim();
             const errorEl = document.getElementById('admin-error');
             
@@ -1877,72 +1832,79 @@
         // ================================================================
         // SISWA: HASIL UJIAN
         // ================================================================
-        function getHasilSiswa(nama, kelas) {
-            const key = 'cbt_hasil_' + getHasilKey(nama, kelas);
-            const stored = localStorage.getItem(key);
-            if (stored) { try { return JSON.parse(stored); } catch (e) { return {}; } }
-            return {};
+        async function getHasilSiswa(nama, kelas) {
+            const user = users.find(u => u.nama === nama && u.kelas === kelas);
+            if (!user) return {};
+            
+            const { data, error } = await supabase
+                .from('hasil_ujian')
+                .select('*')
+                .eq('user_id', user.id);
+            
+            if (error) return {};
+            
+            const hasil = {};
+            data.forEach(h => {
+                hasil[h.mapel_id] = { nilai: h.nilai, tanggal: h.tanggal, kelas: h.kelas };
+            });
+            return hasil;
         }
 
-        function simpanHasilSiswa(nama, mapelId, nilai, kelas) {
-            const key = 'cbt_hasil_' + getHasilKey(nama, kelas);
-            const data = getHasilSiswa(nama, kelas);
-            data[mapelId] = { nilai, tanggal: new Date().toLocaleString('id-ID'), kelas: kelas || '' };
-            localStorage.setItem(key, JSON.stringify(data));
+        async function simpanHasilSiswa(nama, mapelId, nilai, kelas) {
+            const user = users.find(u => u.nama === nama && u.kelas === kelas);
+            if (!user) return;
+            
+            const { error } = await supabase
+                .from('hasil_ujian')
+                .insert({
+                    user_id: user.id,
+                    mapel_id: mapelId,
+                    nilai: nilai,
+                    kelas: kelas || '',
+                    tanggal: new Date().toISOString()
+                });
+            
+            if (error) {
+                console.error('Error saving result:', error);
+                showToast('❌ Gagal menyimpan hasil ujian!', 'danger');
+            }
         }
 
-        function isMapelSelesai(nama, mapelId, kelas) {
-            const data = getHasilSiswa(nama, kelas);
+        async function isMapelSelesai(nama, mapelId, kelas) {
+            const data = await getHasilSiswa(nama, kelas);
             return data.hasOwnProperty(mapelId);
         }
 
-        function getNilaiMapel(nama, mapelId, kelas) {
-            const data = getHasilSiswa(nama, kelas);
+        async function getNilaiMapel(nama, mapelId, kelas) {
+            const data = await getHasilSiswa(nama, kelas);
             if (data[mapelId]) return data[mapelId].nilai;
             return null;
         }
 
-        function resetSiswaMapel(nama, mapelId, kelas) {
-            const key = 'cbt_hasil_' + getHasilKey(nama, kelas);
-            const data = getHasilSiswa(nama, kelas);
-            if (data[mapelId]) { delete data[mapelId];
-                localStorage.setItem(key, JSON.stringify(data)); return true; }
-            return false;
-        }
-
-        function resetSiswaAll(nama, kelas) {
-            const key = 'cbt_hasil_' + getHasilKey(nama, kelas);
-            localStorage.removeItem(key);
-        }
-
         // ================================================================
-        // SISWA: SLIDE NAVIGATION
+        // SISWA: RENDER MAPEL & RIWAYAT
         // ================================================================
         let slideCurrentPage = 0;
         const ITEMS_PER_PAGE = 3;
 
-        function renderDaftarMapel() {
+        async function renderDaftarMapel() {
             const user = getSession();
             if (!user) return;
             
             const container = document.getElementById('siswa-daftar-mapel');
             container.innerHTML = '';
 
-            loadMapelFromStorage();
-            loadSoalFromStorage();
-
             let mapelItems = [];
-            DATA_MAPEL.forEach(mapel => {
-                const hasSoal = hasSoalForKelas(mapel.id, user.kelas || 'all');
-                const selesai = isMapelSelesai(user.nama, mapel.id, user.kelas);
-                const nilai = getNilaiMapel(user.nama, mapel.id, user.kelas);
-
-                if (!hasSoal && !selesai) {
-                    return;
-                }
-
+            
+            for (const mapel of DATA_MAPEL) {
                 const soal = getSoalByMapelAndKelas(mapel.id, user.kelas || 'all');
                 const jumlah = soal.length;
+                const selesai = await isMapelSelesai(user.nama, mapel.id, user.kelas);
+                const nilai = await getNilaiMapel(user.nama, mapel.id, user.kelas);
+
+                if (jumlah === 0 && !selesai) {
+                    continue;
+                }
 
                 let statusText, statusClass, disabledClass = '',
                     onClick = `pilihMapel(${mapel.id})`;
@@ -1953,7 +1915,7 @@
                     disabledClass = 'disabled';
                     onClick = `alert('Anda sudah menyelesaikan ujian ${mapel.nama} dengan nilai ${nilai}. Tidak dapat mengulang.');`;
                 } else if (jumlah === 0) {
-                    return;
+                    continue;
                 } else {
                     statusText = `${jumlah} soal tersedia`;
                     statusClass = 'tersedia';
@@ -1972,7 +1934,7 @@
                         </div>
                     `
                 });
-            });
+            }
 
             window._mapelItems = mapelItems;
             slideCurrentPage = 0;
@@ -2048,13 +2010,10 @@
             }
         }
 
-        // ================================================================
-        // SISWA: RIWAYAT
-        // ================================================================
-        function renderRiwayat() {
+        async function renderRiwayat() {
             const user = getSession();
             if (!user) return;
-            const data = getHasilSiswa(user.nama, user.kelas);
+            const data = await getHasilSiswa(user.nama, user.kelas);
             const container = document.getElementById('siswa-riwayat');
             const keys = Object.keys(data);
             if (keys.length === 0) {
@@ -2066,7 +2025,7 @@
                 const mapel = DATA_MAPEL.find(m => m.id == mapelId);
                 const namaMapel = mapel ? mapel.nama : 'Mapel ' + mapelId;
                 const entry = data[mapelId];
-                html += `<li>${namaMapel} — Nilai: <strong>${entry.nilai}</strong> (${entry.tanggal})</li>`;
+                html += `<li>${namaMapel} — Nilai: <strong>${entry.nilai}</strong> (${new Date(entry.tanggal).toLocaleString('id-ID')})</li>`;
             });
             html += '</ul>';
             container.innerHTML = html;
@@ -2092,15 +2051,6 @@
 
         const PENALTY_SECONDS = 180;
         let isTabVisible = true;
-
-        function showToast(message, type = 'danger') {
-            const toast = document.getElementById('toast-warning');
-            toast.textContent = message;
-            toast.className = type;
-            toast.style.display = 'block';
-            clearTimeout(toast._hide);
-            toast._hide = setTimeout(() => { toast.style.display = 'none'; }, 5000);
-        }
 
         function initAntiTab() {
             clearAntiTab();
@@ -2234,7 +2184,7 @@
             const nilai = total > 0 ? Math.round((benar / total) * 100) : 0;
 
             if (namaSiswa && mapelId) {
-                simpanHasilSiswa(namaSiswa, mapelId, nilai, kelas);
+                await simpanHasilSiswa(namaSiswa, mapelId, nilai, kelas);
             }
 
             localStorage.removeItem('cbt_ujian_aktif');
@@ -2252,7 +2202,9 @@
                 timer: 30 * 60
             };
 
-            await alert(`📊 Ujian Selesai!\n\n📚 Mapel: ${mapelNama}\n🏫 Kelas: ${kelas}\n✅ Benar: ${benar}/${total}\n🎯 Nilai: ${nilai}\n\n✅ Hasil telah disimpan.`);
+            if (showAlert) {
+                await alert(`📊 Ujian Selesai!\n\n📚 Mapel: ${mapelNama}\n🏫 Kelas: ${kelas}\n✅ Benar: ${benar}/${total}\n🎯 Nilai: ${nilai}\n\n✅ Hasil telah disimpan.`);
+            }
 
             gantiHalaman(redirectTo);
         }
@@ -2337,15 +2289,12 @@
             }
         }
 
-        function pilihMapel(mapelId) {
+        async function pilihMapel(mapelId) {
             const user = getSession();
             if (!user) return;
 
-            loadMapelFromStorage();
-            loadSoalFromStorage();
-
-            if (isMapelSelesai(user.nama, mapelId, user.kelas)) {
-                const nilai = getNilaiMapel(user.nama, mapelId, user.kelas);
+            if (await isMapelSelesai(user.nama, mapelId, user.kelas)) {
+                const nilai = await getNilaiMapel(user.nama, mapelId, user.kelas);
                 alert(`Anda sudah menyelesaikan ujian ini dengan nilai ${nilai}. Tidak dapat mengulang.`);
                 return;
             }
@@ -2504,7 +2453,7 @@
         // ================================================================
         // GURU: TAMBAH SOAL
         // ================================================================
-        function guruTambahSoal() {
+        async function guruTambahSoal() {
             const mapelId = parseInt(document.getElementById('guru-input-mapel').value);
             const tanya = document.getElementById('guru-input-tanya').value.trim();
             const opsi = [
@@ -2521,7 +2470,21 @@
                 return;
             }
 
-            tambahSoal(mapelId, tanya, opsi, kunci, kelas);
+            const { error } = await supabase
+                .from('soal')
+                .insert({
+                    mapel_id: mapelId,
+                    tanya: tanya,
+                    opsi: opsi,
+                    kunci: kunci,
+                    kelas: kelas || 'all'
+                });
+
+            if (error) {
+                alert('❌ Gagal menambahkan soal: ' + error.message);
+                return;
+            }
+
             alert('✅ Soal berhasil ditambahkan!');
 
             document.getElementById('guru-input-tanya').value = '';
@@ -2529,6 +2492,7 @@
             .forEach(id => document.getElementById(id).value = '');
             document.getElementById('guru-input-kunci').value = '0';
 
+            await loadDataFromSupabase();
             renderHasilGuru();
             renderKelolaSoal();
             populateMapelDropdowns();
@@ -2539,7 +2503,7 @@
         // ================================================================
         let cachedHasilGuru = [];
 
-        function renderHasilGuru() {
+        async function renderHasilGuru() {
             const user = getSession();
             if (!user || user.role !== 'guru') return;
             
@@ -2547,14 +2511,14 @@
             const guruMapel = user.mapel || [];
             
             let semuaHasil = [];
-            const siswaList = getSiswa();
+            const siswaList = users.filter(u => u.role === 'siswa');
             
-            siswaList.forEach(siswa => {
-                const hasil = getHasilSiswa(siswa.nama, siswa.kelas);
+            for (const siswa of siswaList) {
+                const hasil = await getHasilSiswa(siswa.nama, siswa.kelas);
                 Object.keys(hasil).forEach(mapelId => {
                     const mapelIdNum = parseInt(mapelId);
                     if (guruMapel.includes(mapelIdNum)) {
-                        const mapel = getMapelById(mapelIdNum);
+                        const mapel = DATA_MAPEL.find(m => m.id === mapelIdNum);
                         semuaHasil.push({
                             nama: siswa.nama,
                             kelas: siswa.kelas || '-',
@@ -2565,7 +2529,7 @@
                         });
                     }
                 });
-            });
+            }
             
             semuaHasil.sort((a, b) => a.nama.localeCompare(b.nama) || a.mapelId - b.mapelId);
             cachedHasilGuru = semuaHasil;
@@ -2583,7 +2547,7 @@
             exportSelect.innerHTML = '<option value="all">Semua Mapel</option>';
             const uniqueMapel = [...new Set(semuaHasil.map(h => h.mapelId))];
             uniqueMapel.forEach(mapelId => {
-                const mapel = getMapelById(mapelId);
+                const mapel = DATA_MAPEL.find(m => m.id === mapelId);
                 if (mapel) {
                     exportSelect.innerHTML += `<option value="${mapelId}">${mapel.nama}</option>`;
                 }
@@ -2637,7 +2601,7 @@
                     `"${item.kelas}"`,
                     `"${item.mapelNama}"`,
                     item.nilai,
-                    `"${item.tanggal || '-'}"`
+                    `"${item.tanggal ? new Date(item.tanggal).toLocaleDateString('id-ID') : '-'}"`
                 ];
                 csvContent += row.join(',') + '\n';
             });
@@ -2646,7 +2610,7 @@
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             
-            const mapelName = filterMapel !== 'all' ? getMapelById(parseInt(filterMapel))?.nama || 'selected' : 'semua';
+            const mapelName = filterMapel !== 'all' ? DATA_MAPEL.find(m => m.id == parseInt(filterMapel))?.nama || 'selected' : 'semua';
             const filename = `Rekap_Nilai_${user.nama}_${mapelName}_${new Date().toISOString().slice(0,10)}.csv`;
             
             link.setAttribute('href', url);
@@ -2663,11 +2627,20 @@
         // ================================================================
         // GURU: KELOLA SOAL
         // ================================================================
+        function getSoalByMapel(mapelId) {
+            return DATA_SOAL[mapelId] || [];
+        }
+
+        function getSoalByMapelAndKelas(mapelId, kelas) {
+            const soal = DATA_SOAL[mapelId] || [];
+            if (kelas === 'all' || !kelas) return soal;
+            return soal.filter(s => s.kelas === 'all' || s.kelas === kelas);
+        }
+
         function renderKelolaSoal() {
             const user = getSession();
             if (!user || user.role !== 'guru') return;
             
-            loadSoalFromStorage();
             const filterMapel = document.getElementById('guru-filter-kelola').value;
             const filterKelas = document.getElementById('guru-filter-kelas').value;
             const tbody = document.getElementById('guru-tabel-kelola');
@@ -2727,7 +2700,7 @@
             });
         }
 
-        function bukaEditSoal(id, mapelId) {
+        async function bukaEditSoal(id, mapelId) {
             const user = getSession();
             if (!user || user.role !== 'guru') {
                 alert('Akses ditolak!');
@@ -2765,17 +2738,30 @@
                 return;
             }
 
-            if (editSoalById(id, mapelId, tanyaBaru.trim(), opsiBaru.map(o => o.trim()), kunciInt, kelasBaru.trim())) {
-                alert('✅ Soal berhasil diperbarui!');
-                renderKelolaSoal();
-                renderDaftarMapel();
-                populateMapelDropdowns();
-            } else {
-                alert('❌ Gagal memperbarui soal.');
+            const { error } = await supabase
+                .from('soal')
+                .update({
+                    tanya: tanyaBaru.trim(),
+                    opsi: opsiBaru.map(o => o.trim()),
+                    kunci: kunciInt,
+                    kelas: kelasBaru.trim()
+                })
+                .eq('id', id)
+                .eq('mapel_id', mapelId);
+
+            if (error) {
+                alert('❌ Gagal memperbarui soal: ' + error.message);
+                return;
             }
+
+            alert('✅ Soal berhasil diperbarui!');
+            await loadDataFromSupabase();
+            renderKelolaSoal();
+            renderDaftarMapel();
+            populateMapelDropdowns();
         }
 
-        function hapusSoal(id, mapelId) {
+        async function hapusSoal(id, mapelId) {
             const user = getSession();
             if (!user || user.role !== 'guru') {
                 alert('Akses ditolak!');
@@ -2788,23 +2774,29 @@
             }
             
             if (!confirm(`Yakin ingin menghapus soal ID ${id}?`)) return;
-            if (hapusSoalById(id, mapelId)) {
-                alert('✅ Soal berhasil dihapus!');
-                renderKelolaSoal();
-                renderDaftarMapel();
-                populateMapelDropdowns();
-            } else {
-                alert('❌ Gagal menghapus soal.');
+            
+            const { error } = await supabase
+                .from('soal')
+                .delete()
+                .eq('id', id)
+                .eq('mapel_id', mapelId);
+
+            if (error) {
+                alert('❌ Gagal menghapus soal: ' + error.message);
+                return;
             }
+
+            alert('✅ Soal berhasil dihapus!');
+            await loadDataFromSupabase();
+            renderKelolaSoal();
+            renderDaftarMapel();
+            populateMapelDropdowns();
         }
 
         // ================================================================
         // ADMIN: STATISTIK & MAPEL
         // ================================================================
         function adminMuatStats() {
-            loadMapelFromStorage();
-            loadSoalFromStorage();
-
             document.getElementById('admin-stat-users').innerText = users.length;
             document.getElementById('admin-stat-mapel').innerText = DATA_MAPEL.length;
 
@@ -2839,8 +2831,6 @@
         // ADMIN: KELOLA MAPEL
         // ================================================================
         function renderKelolaMapel() {
-            loadMapelFromStorage();
-            
             const searchQuery = document.getElementById('search-mapel')?.value.toLowerCase().trim() || '';
             
             let mapelList = DATA_MAPEL;
@@ -2878,13 +2868,27 @@
             });
         }
 
-        function bukaModalTambahMapel() {
+        async function bukaModalTambahMapel() {
             const nama = prompt('Masukkan nama mapel:');
             if (!nama || nama.trim() === '') return;
             const kode = prompt('Masukkan kode mapel (opsional):', '');
             const icon = prompt('Masukkan icon (emoji, contoh: 📐):', '📚');
-            tambahMapel(nama.trim(), kode.trim(), icon || '📚');
+            
+            const { error } = await supabase
+                .from('mapel')
+                .insert({
+                    nama: nama.trim(),
+                    kode: kode.trim(),
+                    icon: icon || '📚'
+                });
+
+            if (error) {
+                alert('❌ Gagal menambahkan mapel: ' + error.message);
+                return;
+            }
+
             alert('✅ Mapel berhasil ditambahkan!');
+            await loadDataFromSupabase();
             renderKelolaMapel();
             renderAdminMapelPreview();
             adminMuatStats();
@@ -2894,8 +2898,8 @@
             renderDaftarMapel();
         }
 
-        function bukaEditMapel(id) {
-            const mapel = getMapelById(id);
+        async function bukaEditMapel(id) {
+            const mapel = DATA_MAPEL.find(m => m.id === id);
             if (!mapel) { alert('Mapel tidak ditemukan!'); return; }
 
             const nama = prompt('Edit nama mapel:', mapel.nama);
@@ -2905,47 +2909,395 @@
             const icon = prompt('Edit icon (emoji):', mapel.icon || '📚');
             if (icon === null) return;
 
-            if (editMapel(id, nama.trim(), kode.trim(), icon || '📚')) {
-                alert('✅ Mapel berhasil diperbarui!');
-                renderKelolaMapel();
-                renderAdminMapelPreview();
-                adminMuatStats();
-                populateMapelDropdowns();
-                populateGuruMapelDropdown();
-                renderKelolaGuru();
-                renderDaftarMapel();
-            } else {
-                alert('❌ Gagal memperbarui mapel.');
+            const { error } = await supabase
+                .from('mapel')
+                .update({
+                    nama: nama.trim(),
+                    kode: kode.trim(),
+                    icon: icon || '📚'
+                })
+                .eq('id', id);
+
+            if (error) {
+                alert('❌ Gagal memperbarui mapel: ' + error.message);
+                return;
             }
+
+            alert('✅ Mapel berhasil diperbarui!');
+            await loadDataFromSupabase();
+            renderKelolaMapel();
+            renderAdminMapelPreview();
+            adminMuatStats();
+            populateMapelDropdowns();
+            populateGuruMapelDropdown();
+            renderKelolaGuru();
+            renderDaftarMapel();
         }
 
-        function hapusMapelAdmin(id) {
-            const mapel = getMapelById(id);
+        async function hapusMapelAdmin(id) {
+            const mapel = DATA_MAPEL.find(m => m.id === id);
             if (!mapel) return;
             const jml = getSoalByMapel(id).length;
             if (!confirm(`Yakin ingin menghapus mapel "${mapel.nama}"? ${jml > 0 ? `Mapel ini memiliki ${jml} soal yang akan ikut terhapus.` : ''}`)) return;
 
-            users.forEach(u => {
-                if (u.role === 'guru' && u.mapel) {
-                    u.mapel = u.mapel.filter(m => m !== id);
-                }
-            });
-            saveUsersToStorage();
+            const { error } = await supabase
+                .from('mapel')
+                .delete()
+                .eq('id', id);
 
-            if (hapusMapel(id)) {
-                alert('✅ Mapel dan semua soalnya berhasil dihapus!');
-                renderKelolaMapel();
-                renderAdminMapelPreview();
-                adminMuatStats();
-                populateMapelDropdowns();
-                populateGuruMapelDropdown();
-                renderDaftarMapel();
-                renderKelolaGuru();
-            } else {
-                alert('❌ Gagal menghapus mapel.');
+            if (error) {
+                alert('❌ Gagal menghapus mapel: ' + error.message);
+                return;
+            }
+
+            alert('✅ Mapel dan semua soalnya berhasil dihapus!');
+            await loadDataFromSupabase();
+            renderKelolaMapel();
+            renderAdminMapelPreview();
+            adminMuatStats();
+            populateMapelDropdowns();
+            populateGuruMapelDropdown();
+            renderDaftarMapel();
+            renderKelolaGuru();
+        }
+
+        // ================================================================
+        // ADMIN: KELOLA GURU
+        // ================================================================
+        function renderKelolaGuru() {
+            const searchQuery = document.getElementById('search-guru')?.value.toLowerCase().trim() || '';
+            
+            let guruList = users.filter(u => u.role === 'guru');
+            
+            if (searchQuery) {
+                guruList = guruList.filter(guru => 
+                    guru.nama.toLowerCase().includes(searchQuery)
+                );
+            }
+            
+            const tbody = document.getElementById('admin-tabel-guru');
+            tbody.innerHTML = '';
+
+            if (guruList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">${searchQuery ? 'Tidak ada guru dengan nama "' + searchQuery + '"' : 'Belum ada guru terdaftar.'}</td></tr>`;
+                return;
+            }
+
+            guruList.forEach((guru) => {
+                const mapelTags = (guru.mapel || []).map(id => {
+                    const m = DATA_MAPEL.find(m => m.id === id);
+                    return m ? `<span class="mapel-tag">${m.nama}</span>` : '';
+                }).join(' ');
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${guru.id}</td>
+                        <td class="font-semibold">${guru.nama}</td>
+                        <td><span class="text-xs font-mono bg-white/30 backdrop-blur-sm px-2 py-0.5 rounded">${guru.password || '-'}</span></td>
+                        <td>
+                            <div class="flex flex-wrap gap-1">
+                                ${mapelTags || '<span class="text-slate-400 text-xs">Belum ada mapel</span>'}
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <button onclick="bukaEditGuru(${guru.id})" class="text-blue-500 hover:text-blue-700 text-xs font-medium px-2 py-1 rounded border border-blue-100/30 hover:bg-blue-50/30 transition">✏️ Edit</button>
+                            <button onclick="hapusGuru(${guru.id})" class="text-rose-500 hover:text-rose-700 text-xs font-medium px-2 py-1 rounded border border-rose-100/30 hover:bg-rose-50/30 transition">🗑️ Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function bukaEditGuru(guruId) {
+            const guru = users.find(u => u.id === guruId && u.role === 'guru');
+            if (!guru) {
+                alert('Guru tidak ditemukan!');
+                return;
+            }
+
+            document.getElementById('edit-guru-id').value = guruId;
+            document.getElementById('edit-guru-nama').value = guru.nama;
+            document.getElementById('edit-guru-password').value = '';
+
+            const select = document.getElementById('edit-guru-mapel');
+            select.innerHTML = '';
+            DATA_MAPEL.forEach(m => {
+                const option = document.createElement('option');
+                option.value = m.id;
+                option.textContent = m.nama;
+                if (guru.mapel && guru.mapel.includes(m.id)) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+
+            document.getElementById('modal-guru-title').textContent = `✏️ Edit Guru - ${guru.nama}`;
+            document.getElementById('modal-edit-guru').classList.remove('hidden');
+        }
+
+        function tutupModalEditGuru() {
+            document.getElementById('modal-edit-guru').classList.add('hidden');
+        }
+
+        async function simpanEditGuru() {
+            const guruId = parseInt(document.getElementById('edit-guru-id').value);
+            const nama = document.getElementById('edit-guru-nama').value.trim();
+            const password = document.getElementById('edit-guru-password').value.trim();
+            const select = document.getElementById('edit-guru-mapel');
+            const selectedMapel = Array.from(select.selectedOptions).map(opt => parseInt(opt.value));
+
+            if (!nama) {
+                alert('Nama guru tidak boleh kosong!');
+                return;
+            }
+
+            const guru = users.find(u => u.id === guruId && u.role === 'guru');
+            if (!guru) {
+                alert('Guru tidak ditemukan!');
+                return;
+            }
+
+            if (users.some(u => u.id !== guruId && u.nama.toLowerCase() === nama.toLowerCase() && u.role === 'guru')) {
+                alert('Nama sudah digunakan oleh guru lain!');
+                return;
+            }
+
+            const updateData = {
+                nama: nama,
+                mapel: selectedMapel
+            };
+            if (password) {
+                updateData.password = password;
+            }
+
+            const { error } = await supabase
+                .from('users')
+                .update(updateData)
+                .eq('id', guruId);
+
+            if (error) {
+                alert('❌ Gagal memperbarui guru: ' + error.message);
+                return;
+            }
+
+            alert('✅ Data guru berhasil diperbarui!');
+            tutupModalEditGuru();
+            await loadDataFromSupabase();
+            renderKelolaGuru();
+            renderHasilGuru();
+            populateMapelDropdowns();
+            
+            const session = getSession();
+            if (session && session.id === guruId && session.role === 'guru') {
+                session.nama = nama;
+                session.mapel = selectedMapel;
+                localStorage.setItem('cbt_user', JSON.stringify(session));
+                document.getElementById('guru-nama-display').textContent = nama;
+                updateUI();
             }
         }
 
+        async function hapusGuru(guruId) {
+            const guru = users.find(u => u.id === guruId && u.role === 'guru');
+            if (!guru) return;
+
+            if (!confirm(`Yakin ingin menghapus guru "${guru.nama}"?`)) return;
+
+            const session = getSession();
+            if (session && session.id === guruId && session.role === 'guru') {
+                alert('Anda tidak dapat menghapus akun yang sedang aktif!');
+                return;
+            }
+
+            const { error } = await supabase
+                .from('users')
+                .delete()
+                .eq('id', guruId);
+
+            if (error) {
+                alert('❌ Gagal menghapus guru: ' + error.message);
+                return;
+            }
+
+            alert('✅ Guru berhasil dihapus!');
+            await loadDataFromSupabase();
+            adminMuatStats();
+            renderKelolaGuru();
+            renderKelolaSiswa();
+        }
+
+        // ================================================================
+        // ADMIN: KELOLA SISWA
+        // ================================================================
+        function renderKelolaSiswa() {
+            const searchQuery = document.getElementById('search-siswa')?.value.toLowerCase().trim() || '';
+            
+            let siswa = users.filter(u => u.role === 'siswa');
+            
+            if (searchQuery) {
+                siswa = siswa.filter(s => 
+                    s.nama.toLowerCase().includes(searchQuery)
+                );
+            }
+            
+            const tbody = document.getElementById('admin-tabel-siswa');
+            tbody.innerHTML = '';
+
+            if (siswa.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">${searchQuery ? 'Tidak ada siswa dengan nama "' + searchQuery + '"' : 'Belum ada siswa terdaftar.'}</td></tr>`;
+                return;
+            }
+
+            siswa.forEach(async (s, idx) => {
+                const hasil = await getHasilSiswa(s.nama, s.kelas);
+                const totalUjian = Object.keys(hasil).length;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td class="font-semibold">${s.nama}</td>
+                        <td>${s.kelas || '-'}</td>
+                        <td class="text-center">${totalUjian}</td>
+                        <td class="text-center">
+                            <button onclick="bukaDetailSiswa('${s.nama}', '${s.kelas}')" class="btn btn-primary btn-sm">📋 Detail</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function bukaDetailSiswa(nama, kelas) {
+            const hasil = await getHasilSiswa(nama, kelas);
+            const keys = Object.keys(hasil);
+
+            document.getElementById('modal-siswa-nama').textContent = `📋 Riwayat Ujian - ${nama} (${kelas})`;
+            const content = document.getElementById('modal-siswa-content');
+            content.innerHTML = '';
+
+            if (keys.length === 0) {
+                content.innerHTML = `<div class="empty-state">Belum ada ujian yang dikerjakan.</div>`;
+            } else {
+                keys.forEach(mapelId => {
+                    const mapel = DATA_MAPEL.find(m => m.id == mapelId);
+                    const namaMapel = mapel ? mapel.nama : 'Mapel ' + mapelId;
+                    const entry = hasil[mapelId];
+                    content.innerHTML += `
+                        <div class="history-item">
+                            <div class="info">
+                                <div class="mapel">${namaMapel}</div>
+                                <div class="nilai">Nilai: ${entry.nilai}</div>
+                                <div class="tgl">${new Date(entry.tanggal).toLocaleString('id-ID')}</div>
+                            </div>
+                            <button onclick="resetSiswaMapelHandler('${nama}', '${kelas}', ${mapelId})" class="btn btn-danger btn-sm" style="width:auto;">🔄 Reset</button>
+                        </div>
+                    `;
+                });
+            }
+
+            const btnResetAll = document.getElementById('btn-reset-all-siswa');
+            btnResetAll.onclick = async function() {
+                if (confirm(`⚠️ Yakin ingin mereset SEMUA ujian untuk siswa "${nama}" (${kelas})? Siswa akan dapat mengulang semua mapel.`)) {
+                    const user = users.find(u => u.nama === nama && u.kelas === kelas);
+                    if (user) {
+                        const { error } = await supabase
+                            .from('hasil_ujian')
+                            .delete()
+                            .eq('user_id', user.id);
+                        
+                        if (error) {
+                            alert('❌ Gagal mereset ujian: ' + error.message);
+                            return;
+                        }
+                    }
+                    alert('✅ Semua ujian untuk siswa "' + nama + '" (' + kelas + ') telah direset.');
+                    tutupModalDetailSiswa();
+                    renderKelolaSiswa();
+                    renderDaftarMapel();
+                }
+            };
+
+            document.getElementById('modal-detail-siswa').classList.remove('hidden');
+        }
+
+        async function resetSiswaMapelHandler(nama, kelas, mapelId) {
+            const mapel = DATA_MAPEL.find(m => m.id == mapelId);
+            const namaMapel = mapel ? mapel.nama : 'Mapel ini';
+            if (confirm(`Yakin ingin mereset ujian "${namaMapel}" untuk siswa "${nama}" (${kelas})? Siswa dapat mengulang ujian ini.`)) {
+                const user = users.find(u => u.nama === nama && u.kelas === kelas);
+                if (user) {
+                    const { error } = await supabase
+                        .from('hasil_ujian')
+                        .delete()
+                        .eq('user_id', user.id)
+                        .eq('mapel_id', mapelId);
+                    
+                    if (error) {
+                        alert('❌ Gagal mereset ujian: ' + error.message);
+                        return;
+                    }
+                }
+                alert('✅ Ujian "' + namaMapel + '" untuk siswa "' + nama + '" (' + kelas + ') telah direset.');
+                bukaDetailSiswa(nama, kelas);
+                renderKelolaSiswa();
+                renderDaftarMapel();
+            }
+        }
+
+        function tutupModalDetailSiswa() {
+            document.getElementById('modal-detail-siswa').classList.add('hidden');
+        }
+
+        // ================================================================
+        // ADMIN: TAMBAH USER
+        // ================================================================
+        async function adminTambahUser() {
+            const nama = document.getElementById('admin-user-nama').value.trim();
+            const role = document.getElementById('admin-user-role').value;
+            const pass = document.getElementById('admin-user-pass').value.trim();
+            const mapelSelect = document.getElementById('admin-user-guru-mapel');
+            const selectedMapel = Array.from(mapelSelect.selectedOptions).map(opt => parseInt(opt.value));
+            const kelas = document.getElementById('admin-user-kelas').value;
+            
+            if (!nama) { alert('Nama tidak boleh kosong!'); return; }
+            
+            if (role === 'siswa' && users.some(u => u.nama.toLowerCase() === nama.toLowerCase() && u.kelas === kelas && u.role === 'siswa')) {
+                alert('Nama sudah terdaftar di kelas ini!');
+                return;
+            }
+            
+            if (role === 'guru' && users.some(u => u.nama.toLowerCase() === nama.toLowerCase() && u.role === 'guru')) {
+                alert('Nama guru sudah terdaftar!');
+                return;
+            }
+            
+            const { data, error } = await supabase
+                .from('users')
+                .insert({
+                    nama: nama,
+                    role: role,
+                    password: pass || '',
+                    mapel: role === 'guru' ? selectedMapel : [],
+                    kelas: role === 'siswa' ? kelas : ''
+                })
+                .select();
+
+            if (error) {
+                alert('❌ Gagal menambahkan user: ' + error.message);
+                return;
+            }
+
+            alert('✅ User berhasil ditambahkan!');
+            document.getElementById('admin-user-nama').value = '';
+            document.getElementById('admin-user-pass').value = '';
+            await loadDataFromSupabase();
+            adminMuatStats();
+            renderKelolaSiswa();
+            renderKelolaGuru();
+        }
+
+        // ================================================================
+        // DROPDOWN HELPERS
+        // ================================================================
         function populateMapelDropdowns() {
             const user = getSession();
             const select = document.getElementById('guru-input-mapel');
@@ -3011,363 +3363,6 @@
         });
 
         // ================================================================
-        // ADMIN: KELOLA GURU
-        // ================================================================
-        function renderKelolaGuru() {
-            loadUsersFromStorage();
-            loadMapelFromStorage();
-            
-            const searchQuery = document.getElementById('search-guru')?.value.toLowerCase().trim() || '';
-            
-            let guruList = getGuruList();
-            
-            if (searchQuery) {
-                guruList = guruList.filter(guru => 
-                    guru.nama.toLowerCase().includes(searchQuery)
-                );
-            }
-            
-            const tbody = document.getElementById('admin-tabel-guru');
-            tbody.innerHTML = '';
-
-            if (guruList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">${searchQuery ? 'Tidak ada guru dengan nama "' + searchQuery + '"' : 'Belum ada guru terdaftar.'}</td></tr>`;
-                return;
-            }
-
-            guruList.forEach((guru) => {
-                const mapelTags = guru.mapel.map(id => {
-                    const m = getMapelById(id);
-                    return m ? `<span class="mapel-tag">${m.nama}</span>` : '';
-                }).join(' ');
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${guru.id}</td>
-                        <td class="font-semibold">${guru.nama}</td>
-                        <td><span class="text-xs font-mono bg-white/30 backdrop-blur-sm px-2 py-0.5 rounded">${guru.password || '-'}</span></td>
-                        <td>
-                            <div class="flex flex-wrap gap-1">
-                                ${mapelTags || '<span class="text-slate-400 text-xs">Belum ada mapel</span>'}
-                            </div>
-                        </td>
-                        <td class="text-center">
-                            <button onclick="bukaEditGuru(${guru.id})" class="text-blue-500 hover:text-blue-700 text-xs font-medium px-2 py-1 rounded border border-blue-100/30 hover:bg-blue-50/30 transition">✏️ Edit</button>
-                            <button onclick="hapusGuru(${guru.id})" class="text-rose-500 hover:text-rose-700 text-xs font-medium px-2 py-1 rounded border border-rose-100/30 hover:bg-rose-50/30 transition">🗑️ Hapus</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function bukaEditGuru(guruId) {
-            const guru = users.find(u => u.id === guruId && u.role === 'guru');
-            if (!guru) {
-                alert('Guru tidak ditemukan!');
-                return;
-            }
-
-            document.getElementById('edit-guru-id').value = guruId;
-            document.getElementById('edit-guru-nama').value = guru.nama;
-            document.getElementById('edit-guru-password').value = '';
-
-            const select = document.getElementById('edit-guru-mapel');
-            select.innerHTML = '';
-            DATA_MAPEL.forEach(m => {
-                const option = document.createElement('option');
-                option.value = m.id;
-                option.textContent = m.nama;
-                if (guru.mapel && guru.mapel.includes(m.id)) {
-                    option.selected = true;
-                }
-                select.appendChild(option);
-            });
-
-            document.getElementById('modal-guru-title').textContent = `✏️ Edit Guru - ${guru.nama}`;
-            document.getElementById('modal-edit-guru').classList.remove('hidden');
-        }
-
-        function tutupModalEditGuru() {
-            document.getElementById('modal-edit-guru').classList.add('hidden');
-        }
-
-        function simpanEditGuru() {
-            const guruId = parseInt(document.getElementById('edit-guru-id').value);
-            const nama = document.getElementById('edit-guru-nama').value.trim();
-            const password = document.getElementById('edit-guru-password').value.trim();
-            const select = document.getElementById('edit-guru-mapel');
-            const selectedMapel = Array.from(select.selectedOptions).map(opt => parseInt(opt.value));
-
-            if (!nama) {
-                alert('Nama guru tidak boleh kosong!');
-                return;
-            }
-
-            const guru = users.find(u => u.id === guruId && u.role === 'guru');
-            if (!guru) {
-                alert('Guru tidak ditemukan!');
-                return;
-            }
-
-            if (users.some(u => u.id !== guruId && u.nama.toLowerCase() === nama.toLowerCase())) {
-                alert('Nama sudah digunakan oleh user lain!');
-                return;
-            }
-
-            guru.nama = nama;
-            if (password) {
-                guru.password = password;
-            }
-            guru.mapel = selectedMapel;
-
-            saveUsersToStorage();
-            alert('✅ Data guru berhasil diperbarui!');
-            tutupModalEditGuru();
-            renderKelolaGuru();
-            renderHasilGuru();
-            populateMapelDropdowns();
-            
-            const session = getSession();
-            if (session && session.id === guruId && session.role === 'guru') {
-                session.nama = nama;
-                session.mapel = selectedMapel;
-                localStorage.setItem('cbt_user', JSON.stringify(session));
-                document.getElementById('guru-nama-display').textContent = nama;
-                updateUI();
-            }
-        }
-
-        function hapusGuru(guruId) {
-            const guru = users.find(u => u.id === guruId && u.role === 'guru');
-            if (!guru) return;
-
-            if (!confirm(`Yakin ingin menghapus guru "${guru.nama}"?`)) return;
-
-            const session = getSession();
-            if (session && session.id === guruId && session.role === 'guru') {
-                alert('Anda tidak dapat menghapus akun yang sedang aktif!');
-                return;
-            }
-
-            users = users.filter(u => u.id !== guruId);
-            saveUsersToStorage();
-            alert('✅ Guru berhasil dihapus!');
-            adminMuatStats();
-            renderKelolaGuru();
-            renderKelolaSiswa();
-        }
-
-        // ================================================================
-        // ADMIN: KELOLA SISWA
-        // ================================================================
-        function renderKelolaSiswa() {
-            loadUsersFromStorage();
-            
-            const searchQuery = document.getElementById('search-siswa')?.value.toLowerCase().trim() || '';
-            
-            let siswa = getSiswa();
-            
-            if (searchQuery) {
-                siswa = siswa.filter(s => 
-                    s.nama.toLowerCase().includes(searchQuery)
-                );
-            }
-            
-            const tbody = document.getElementById('admin-tabel-siswa');
-            tbody.innerHTML = '';
-
-            if (siswa.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">${searchQuery ? 'Tidak ada siswa dengan nama "' + searchQuery + '"' : 'Belum ada siswa terdaftar.'}</td></tr>`;
-                return;
-            }
-
-            siswa.forEach((s, idx) => {
-                const hasil = getHasilSiswa(s.nama, s.kelas);
-                const totalUjian = Object.keys(hasil).length;
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${idx + 1}</td>
-                        <td class="font-semibold">${s.nama}</td>
-                        <td>${s.kelas || '-'}</td>
-                        <td class="text-center">${totalUjian}</td>
-                        <td class="text-center">
-                            <button onclick="bukaDetailSiswa('${s.nama}', '${s.kelas}')" class="btn btn-primary btn-sm">📋 Detail</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function bukaDetailSiswa(nama, kelas) {
-            const hasil = getHasilSiswa(nama, kelas);
-            const keys = Object.keys(hasil);
-
-            document.getElementById('modal-siswa-nama').textContent = `📋 Riwayat Ujian - ${nama} (${kelas})`;
-            const content = document.getElementById('modal-siswa-content');
-            content.innerHTML = '';
-
-            if (keys.length === 0) {
-                content.innerHTML = `<div class="empty-state">Belum ada ujian yang dikerjakan.</div>`;
-            } else {
-                keys.forEach(mapelId => {
-                    const mapel = DATA_MAPEL.find(m => m.id == mapelId);
-                    const namaMapel = mapel ? mapel.nama : 'Mapel ' + mapelId;
-                    const entry = hasil[mapelId];
-                    content.innerHTML += `
-                        <div class="history-item">
-                            <div class="info">
-                                <div class="mapel">${namaMapel}</div>
-                                <div class="nilai">Nilai: ${entry.nilai}</div>
-                                <div class="tgl">${entry.tanggal}</div>
-                            </div>
-                            <button onclick="resetSiswaMapelHandler('${nama}', '${kelas}', ${mapelId})" class="btn btn-danger btn-sm" style="width:auto;">🔄 Reset</button>
-                        </div>
-                    `;
-                });
-            }
-
-            const btnResetAll = document.getElementById('btn-reset-all-siswa');
-            btnResetAll.onclick = function() {
-                if (confirm(`⚠️ Yakin ingin mereset SEMUA ujian untuk siswa "${nama}" (${kelas})? Siswa akan dapat mengulang semua mapel.`)) {
-                    resetSiswaAll(nama, kelas);
-                    alert('✅ Semua ujian untuk siswa "' + nama + '" (' + kelas + ') telah direset.');
-                    tutupModalDetailSiswa();
-                    renderKelolaSiswa();
-                    renderDaftarMapel();
-                }
-            };
-
-            document.getElementById('modal-detail-siswa').classList.remove('hidden');
-        }
-
-        function resetSiswaMapelHandler(nama, kelas, mapelId) {
-            const mapel = DATA_MAPEL.find(m => m.id == mapelId);
-            const namaMapel = mapel ? mapel.nama : 'Mapel ini';
-            if (confirm(`Yakin ingin mereset ujian "${namaMapel}" untuk siswa "${nama}" (${kelas})? Siswa dapat mengulang ujian ini.`)) {
-                if (resetSiswaMapel(nama, mapelId, kelas)) {
-                    alert('✅ Ujian "' + namaMapel + '" untuk siswa "' + nama + '" (' + kelas + ') telah direset.');
-                    bukaDetailSiswa(nama, kelas);
-                    renderKelolaSiswa();
-                    renderDaftarMapel();
-                } else {
-                    alert('❌ Gagal mereset ujian.');
-                }
-            }
-        }
-
-        function tutupModalDetailSiswa() {
-            document.getElementById('modal-detail-siswa').classList.add('hidden');
-        }
-
-        // ================================================================
-        // ADMIN: TAMBAH USER
-        // ================================================================
-        function adminTambahUser() {
-            const nama = document.getElementById('admin-user-nama').value.trim();
-            const role = document.getElementById('admin-user-role').value;
-            const pass = document.getElementById('admin-user-pass').value.trim();
-            const mapelSelect = document.getElementById('admin-user-guru-mapel');
-            const selectedMapel = Array.from(mapelSelect.selectedOptions).map(opt => parseInt(opt.value));
-            const kelas = document.getElementById('admin-user-kelas').value;
-            
-            if (!nama) { alert('Nama tidak boleh kosong!'); return; }
-            
-            if (role === 'siswa' && users.some(u => u.nama.toLowerCase() === nama.toLowerCase() && u.kelas === kelas && u.role === 'siswa')) {
-                alert('Nama sudah terdaftar di kelas ini!');
-                return;
-            }
-            
-            if (role === 'guru' && users.some(u => u.nama.toLowerCase() === nama.toLowerCase() && u.role === 'guru')) {
-                alert('Nama guru sudah terdaftar!');
-                return;
-            }
-            
-            const newId = getNextUserId();
-            users.push({ 
-                id: newId, 
-                nama: nama, 
-                role: role, 
-                password: pass || '',
-                mapel: role === 'guru' ? selectedMapel : [],
-                kelas: role === 'siswa' ? kelas : ''
-            });
-            saveUsersToStorage();
-            alert('✅ User berhasil ditambahkan!');
-            document.getElementById('admin-user-nama').value = '';
-            document.getElementById('admin-user-pass').value = '';
-            adminMuatStats();
-            renderKelolaSiswa();
-            renderKelolaGuru();
-        }
-
-        // ================================================================
-        // FUNGSI KHUSUS UNTUK KEMBALI KE MENU / DASHBOARD
-        // ================================================================
-        async function kembaliKeMenuUtama() {
-            if (ujianSiswa.mapelId !== null && document.getElementById('view-ujian') && !document.getElementById('view-ujian').classList.contains('hidden')) {
-                if (await confirm('Anda akan keluar dari ujian. Jawaban yang sudah diisi akan dikumpulkan. Lanjutkan?')) {
-                    tampilkanModalKumpul();
-                    window._redirectAfterSubmit = 'view-menu';
-                }
-                return;
-            }
-            if (ujianTimerInterval) { clearInterval(ujianTimerInterval); ujianTimerInterval = null; }
-            if (stateSaveInterval) { clearInterval(stateSaveInterval); stateSaveInterval = null; }
-            clearAntiTab();
-            localStorage.removeItem('cbt_ujian_aktif');
-            localStorage.removeItem('cbt_reload_lock');
-            gantiHalaman('view-menu');
-        }
-
-        async function kembaliKeDashboardSiswa() {
-            if (ujianSiswa.mapelId !== null && document.getElementById('view-ujian') && !document.getElementById('view-ujian').classList.contains('hidden')) {
-                if (await confirm('Anda akan keluar dari ujian. Jawaban yang sudah diisi akan dikumpulkan. Lanjutkan?')) {
-                    tampilkanModalKumpul();
-                    window._redirectAfterSubmit = 'view-siswa-dashboard';
-                }
-                return;
-            }
-            gantiHalaman('view-siswa-dashboard');
-        }
-
-        async function logout() {
-            if (ujianSiswa.mapelId !== null && document.getElementById('view-ujian') && !document.getElementById('view-ujian').classList.contains('hidden')) {
-                if (await confirm('Anda akan logout dari ujian. Jawaban yang sudah diisi akan dikumpulkan. Lanjutkan?')) {
-                    tampilkanModalKumpul();
-                    window._redirectAfterSubmit = 'view-menu';
-                    window._logoutAfterSubmit = true;
-                }
-                return;
-            }
-            if (ujianTimerInterval) { clearInterval(ujianTimerInterval); ujianTimerInterval = null; }
-            if (stateSaveInterval) { clearInterval(stateSaveInterval); stateSaveInterval = null; }
-            clearAntiTab();
-            localStorage.removeItem('cbt_ujian_aktif');
-            localStorage.removeItem('cbt_reload_lock');
-            clearSession();
-            gantiHalaman('view-menu');
-        }
-
-        // Override kumpulkanUjian untuk redirect
-        const originalKumpulkanUjian = kumpulkanUjian;
-        kumpulkanUjian = function(redirectTo, showAlert) {
-            if (window._redirectAfterSubmit) {
-                redirectTo = window._redirectAfterSubmit;
-                window._redirectAfterSubmit = null;
-            }
-            
-            const logoutAfter = window._logoutAfterSubmit || false;
-            window._logoutAfterSubmit = false;
-            
-            originalKumpulkanUjian(redirectTo, showAlert);
-            
-            if (logoutAfter) {
-                clearSession();
-            }
-        };
-
-        // ================================================================
         // KEYBOARD SUPPORT
         // ================================================================
         document.addEventListener('keydown', function(e) {
@@ -3392,66 +3387,7 @@
         // INISIALISASI
         // ================================================================
         window.onload = function() {
-            loadUsersFromStorage();
-            loadMapelFromStorage();
-            loadSoalFromStorage();
-
-            const stateStr = localStorage.getItem('cbt_ujian_aktif');
-            if (stateStr) {
-                const lock = localStorage.getItem('cbt_reload_lock');
-                if (lock) {
-                    const now = Date.now();
-                    const elapsed = now - parseInt(lock);
-                    const maxLock = 5 * 60 * 1000;
-                    if (elapsed < maxLock) {
-                        const sisa = Math.ceil((maxLock - elapsed) / 1000);
-                        try {
-                            const state = JSON.parse(stateStr);
-                            setSession('siswa', state.nama);
-                        } catch(e) {}
-                        document.getElementById('siswa-nama-display').textContent = getSession()?.nama || '';
-                        document.getElementById('siswa-kelas-display').textContent = getSession()?.kelas || '';
-                        tampilkanLockCountdown(sisa);
-                        gantiHalaman('view-siswa-dashboard');
-                        return;
-                    } else {
-                        localStorage.removeItem('cbt_reload_lock');
-                        lanjutkanUjianSetelahLock();
-                        return;
-                    }
-                } else {
-                    localStorage.setItem('cbt_reload_lock', String(Date.now()));
-                    try {
-                        const state = JSON.parse(stateStr);
-                        setSession('siswa', state.nama);
-                    } catch(e) {}
-                    document.getElementById('siswa-nama-display').textContent = getSession()?.nama || '';
-                    document.getElementById('siswa-kelas-display').textContent = getSession()?.kelas || '';
-                    tampilkanLockCountdown(300);
-                    gantiHalaman('view-siswa-dashboard');
-                    return;
-                }
-            } else {
-                localStorage.removeItem('cbt_reload_lock');
-                const user = getSession();
-                if (user) {
-                    if (user.role === 'siswa') {
-                        document.getElementById('siswa-nama-display').textContent = user.nama;
-                        document.getElementById('siswa-kelas-display').textContent = user.kelas || '-';
-                        gantiHalaman('view-siswa-dashboard');
-                        return;
-                    } else if (user.role === 'guru') {
-                        document.getElementById('guru-nama-display').textContent = user.nama || 'Budi Santoso';
-                        gantiHalaman('view-guru-dashboard');
-                        return;
-                    } else if (user.role === 'admin') {
-                        document.getElementById('admin-nama-display').textContent = user.nama || 'Prama Artha';
-                        gantiHalaman('view-admin-dashboard');
-                        return;
-                    }
-                }
-                gantiHalaman('view-menu');
-            }
+            loadDataFromSupabase();
         };
     </script>
 </body>
