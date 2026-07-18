@@ -1509,7 +1509,7 @@
     </footer>
 
     <!-- ============================================================ -->
-    <!-- JAVASCRIPT - 100% LOCAL STORAGE + EXPORT EXCEL PROFESIONAL -->
+    <!-- JAVASCRIPT - 100% LOCAL STORAGE + EXPORT EXCEL SIMPEL -->
     <!-- ============================================================ -->
     <script>
         // ================================================================
@@ -1691,7 +1691,7 @@
         }
 
         // ================================================================
-        // EXPORT EXCEL PROFESIONAL - TEMA ELEGAN & MODERN
+        // EXPORT EXCEL SIMPEL - BERSIH & NYAMAN DILIHAT
         // ================================================================
         function exportToExcel(data, filename = 'hasil_ujian') {
             if (!data || data.length === 0) {
@@ -1727,202 +1727,127 @@
                 </xml>
                 <![endif]-->
                 <style>
-                    /* ===== PROFESSIONAL THEME ===== */
-                    * { margin: 0; padding: 0; box-sizing: border-box; }
-                    
+                    /* ===== SIMPLE & CLEAN THEME ===== */
                     body {
-                        font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-                        padding: 35px 45px;
+                        font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+                        padding: 30px 35px;
                         background: #ffffff;
-                        color: #1a1a2e;
+                        color: #222222;
                     }
                     
-                    /* ---- HEADER ---- */
+                    /* HEADER */
                     .header {
                         text-align: center;
-                        margin-bottom: 30px;
-                        padding-bottom: 20px;
-                        border-bottom: 3px solid #1a1a2e;
-                        position: relative;
-                    }
-                    .header .top-bar {
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        margin-bottom: 8px;
+                        margin-bottom: 25px;
+                        padding-bottom: 15px;
+                        border-bottom: 2px solid #4f46e5;
                     }
                     .header .school {
-                        font-size: 11px;
-                        color: #6c6c8a;
+                        font-size: 13px;
+                        color: #6b7280;
+                        letter-spacing: 2px;
+                        font-weight: 600;
                         text-transform: uppercase;
-                        letter-spacing: 3px;
-                        font-weight: 600;
-                    }
-                    .header .badge {
-                        background: #e8e8f0;
-                        padding: 4px 16px;
-                        border-radius: 20px;
-                        font-size: 10px;
-                        color: #4a4a6a;
-                        font-weight: 600;
-                        letter-spacing: 1px;
                     }
                     .header h1 {
-                        font-size: 28px;
+                        font-size: 26px;
                         font-weight: 700;
                         color: #1a1a2e;
-                        margin: 6px 0 4px 0;
-                        letter-spacing: 1px;
-                    }
-                    .header h1 span {
-                        color: #4f46e5;
+                        margin: 5px 0 3px 0;
                     }
                     .header .sub {
                         font-size: 14px;
-                        color: #6c6c8a;
-                        font-weight: 400;
+                        color: #6b7280;
                     }
                     .header .date {
                         font-size: 12px;
-                        color: #8a8aaa;
-                        margin-top: 4px;
-                        font-weight: 300;
+                        color: #9ca3af;
+                        margin-top: 3px;
                     }
                     
-                    /* ---- TABLE ---- */
+                    /* TABLE */
                     table {
                         border-collapse: collapse;
                         width: 100%;
                         font-size: 13px;
-                        margin-top: 18px;
+                        margin-top: 15px;
                     }
                     table th {
-                        background: #1a1a2e;
+                        background-color: #4f46e5;
                         color: #ffffff;
                         font-weight: 600;
-                        padding: 12px 16px;
+                        padding: 10px 14px;
                         text-align: left;
-                        border: none;
+                        border: 1px solid #4f46e5;
+                        font-size: 11px;
+                        letter-spacing: 0.5px;
                         text-transform: uppercase;
-                        font-size: 10px;
-                        letter-spacing: 1.2px;
                     }
                     table td {
-                        padding: 10px 16px;
-                        border-bottom: 1px solid #e8e8f0;
-                        color: #1a1a2e;
+                        padding: 9px 14px;
+                        border: 1px solid #e5e7eb;
+                        color: #1f2937;
                         font-size: 13px;
                     }
-                    table tr:last-child td {
-                        border-bottom: 2px solid #1a1a2e;
-                    }
                     table tr:nth-child(even) td {
-                        background-color: #f8f8fc;
+                        background-color: #f9fafb;
                     }
                     table tr:hover td {
-                        background-color: #edecff;
+                        background-color: #eef2ff;
                     }
                     
-                    /* ---- NILAI ---- */
+                    /* NILAI */
                     .nilai {
                         font-weight: 700;
                         text-align: center;
-                        font-size: 15px;
-                        padding: 4px 10px;
-                        border-radius: 4px;
-                        display: inline-block;
-                        min-width: 40px;
+                        font-size: 14px;
                     }
-                    .nilai.tinggi { 
-                        color: #10b981;
-                        background: rgba(16, 185, 129, 0.1);
-                    }
-                    .nilai.sedang { 
-                        color: #f59e0b;
-                        background: rgba(245, 158, 11, 0.1);
-                    }
-                    .nilai.rendah { 
-                        color: #ef4444;
-                        background: rgba(239, 68, 68, 0.1);
-                    }
+                    .nilai.tinggi { color: #059669; }
+                    .nilai.sedang { color: #d97706; }
+                    .nilai.rendah { color: #dc2626; }
                     
-                    /* ---- FOOTER ---- */
+                    /* FOOTER */
                     .footer {
-                        margin-top: 20px;
-                        padding-top: 16px;
-                        border-top: 2px solid #e8e8f0;
+                        margin-top: 18px;
+                        padding-top: 14px;
+                        border-top: 2px solid #e5e7eb;
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
                         flex-wrap: wrap;
-                        gap: 12px;
+                        gap: 10px;
                     }
                     .footer .stats {
                         display: flex;
-                        gap: 28px;
+                        gap: 24px;
                         font-size: 13px;
-                        color: #4a4a6a;
+                        color: #4b5563;
                     }
-                    .footer .stats .stat-item {
-                        display: flex;
-                        align-items: center;
-                        gap: 6px;
-                    }
-                    .footer .stats .stat-item .icon {
-                        font-size: 16px;
-                    }
-                    .footer .stats .stat-item .label {
-                        font-weight: 400;
-                        color: #8a8aaa;
-                    }
-                    .footer .stats .stat-item .value {
+                    .footer .stats strong {
+                        color: #1f2937;
                         font-weight: 700;
-                        color: #1a1a2e;
-                        font-size: 15px;
+                        font-size: 14px;
                     }
                     .footer .copyright {
                         font-size: 11px;
-                        color: #8a8aaa;
-                        font-weight: 300;
-                    }
-                    .footer .copyright strong {
-                        color: #4a4a6a;
-                        font-weight: 600;
+                        color: #9ca3af;
                     }
                     
-                    /* ---- COLUMN WIDTHS ---- */
-                    .col-no { text-align: center; width: 40px; }
-                    .col-nama { min-width: 160px; }
-                    .col-kelas { width: 110px; }
-                    .col-mapel { min-width: 150px; }
-                    .col-nilai { text-align: center; width: 90px; }
-                    .col-tgl { text-align: center; width: 110px; color: #8a8aaa; font-size: 12px; }
-                    
-                    /* ---- GRADE INDICATOR ---- */
-                    .grade-indicator {
-                        display: inline-block;
-                        width: 8px;
-                        height: 8px;
-                        border-radius: 50%;
-                        margin-right: 6px;
-                        vertical-align: middle;
-                    }
-                    .grade-indicator.A { background: #10b981; }
-                    .grade-indicator.B { background: #34d399; }
-                    .grade-indicator.C { background: #fbbf24; }
-                    .grade-indicator.D { background: #f59e0b; }
-                    .grade-indicator.E { background: #ef4444; }
+                    /* COLUMN WIDTHS */
+                    .col-no { text-align: center; width: 35px; }
+                    .col-nama { min-width: 150px; }
+                    .col-kelas { width: 100px; }
+                    .col-mapel { min-width: 140px; }
+                    .col-nilai { text-align: center; width: 70px; }
+                    .col-tgl { text-align: center; width: 100px; color: #9ca3af; font-size: 12px; }
                 </style>
             </head>
             <body>
                 <div class="header">
-                    <div class="top-bar">
-                        <div class="school">SMK Prama Artha</div>
-                        <div class="badge">CBT SYSTEM</div>
-                    </div>
-                    <h1>LAPORAN <span>HASIL UJIAN</span></h1>
+                    <div class="school">SMK Prama Artha</div>
+                    <h1>Laporan Hasil Ujian</h1>
                     <div class="sub">Computer Based Test (CBT)</div>
-                    <div class="date">📅 Dicetak: ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })} 
+                    <div class="date">${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })} 
                     • ${new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
                 </div>
                 
@@ -1941,24 +1866,10 @@
             `;
 
             data.forEach((item, idx) => {
-                let gradeClass = 'nilai';
-                let gradeIndicator = 'A';
-                if (item.nilai >= 85) { 
-                    gradeClass += ' tinggi';
-                    gradeIndicator = 'A';
-                } else if (item.nilai >= 75) { 
-                    gradeClass += ' tinggi';
-                    gradeIndicator = 'B';
-                } else if (item.nilai >= 65) { 
-                    gradeClass += ' sedang';
-                    gradeIndicator = 'C';
-                } else if (item.nilai >= 50) { 
-                    gradeClass += ' sedang';
-                    gradeIndicator = 'D';
-                } else { 
-                    gradeClass += ' rendah';
-                    gradeIndicator = 'E';
-                }
+                let nilaiClass = 'nilai';
+                if (item.nilai >= 80) nilaiClass += ' tinggi';
+                else if (item.nilai >= 60) nilaiClass += ' sedang';
+                else nilaiClass += ' rendah';
 
                 const tgl = item.tanggal ? new Date(item.tanggal).toLocaleDateString('id-ID', { 
                     day: '2-digit', month: 'short', year: 'numeric' 
@@ -1970,10 +1881,7 @@
                         <td class="col-nama">${item.nama}</td>
                         <td class="col-kelas">${item.kelas}</td>
                         <td class="col-mapel">${item.mapelNama}</td>
-                        <td class="col-nilai">
-                            <span class="grade-indicator ${gradeIndicator}"></span>
-                            <span class="${gradeClass}">${item.nilai}</span>
-                        </td>
+                        <td class="${nilaiClass}">${item.nilai}</td>
                         <td class="col-tgl">${tgl}</td>
                     </tr>
                 `;
@@ -1985,29 +1893,13 @@
                 
                 <div class="footer">
                     <div class="stats">
-                        <div class="stat-item">
-                            <span class="icon">📊</span>
-                            <span class="label">Total</span>
-                            <span class="value">${total}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="icon">📈</span>
-                            <span class="label">Rata-rata</span>
-                            <span class="value">${rataRata}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="icon">🏆</span>
-                            <span class="label">Tertinggi</span>
-                            <span class="value">${tertinggi}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="icon">📉</span>
-                            <span class="label">Terendah</span>
-                            <span class="value">${terendah}</span>
-                        </div>
+                        <span>📊 Total: <strong>${total}</strong></span>
+                        <span>📈 Rata-rata: <strong>${rataRata}</strong></span>
+                        <span>🏆 Tertinggi: <strong>${tertinggi}</strong></span>
+                        <span>📉 Terendah: <strong>${terendah}</strong></span>
                     </div>
                     <div class="copyright">
-                        &copy; ${new Date().getFullYear()} <strong>SMK Prama Artha</strong> · Data dari localStorage
+                        &copy; ${new Date().getFullYear()} SMK Prama Artha
                     </div>
                 </div>
             </body>
