@@ -43,26 +43,6 @@
             border-color: rgba(255, 255, 255, 0.6);
         }
 
-        .glass-dark {
-            background: rgba(30, 27, 75, 0.12);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        .glass-input {
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-        .glass-input:focus {
-            background: rgba(255, 255, 255, 0.8);
-            border-color: rgba(79, 70, 229, 0.5);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-
         .hidden { display: none !important; }
         .card-hover:active { transform: scale(0.97); }
 
@@ -415,6 +395,9 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
+        /* ================================================================
+           GLASS MODAL
+           ================================================================ */
         .modal-edit {
             position: fixed;
             inset: 0;
@@ -423,25 +406,103 @@
             align-items: center;
             justify-content: center;
             padding: 16px;
-            background: rgba(15, 23, 42, 0.3);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(15, 23, 42, 0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
         .modal-edit .modal-box {
             background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-radius: 20px;
-            max-width: 500px;
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: 24px;
+            max-width: 480px;
             width: 100%;
-            padding: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
             max-height: 90vh;
             overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.35);
         }
-        .modal-edit .modal-box h3 { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 16px; text-align: center; }
-        .modal-edit .modal-box label { font-size: 12px; font-weight: 600; color: #475569; display: block; margin-bottom: 4px; text-align: left; }
+        .modal-edit .modal-box .modal-icon {
+            font-size: 56px;
+            display: block;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .modal-edit .modal-box h3 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0f172a;
+            text-align: center;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+        .modal-edit .modal-box .modal-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .modal-edit .modal-box .modal-body {
+            margin-bottom: 20px;
+        }
+        .modal-edit .modal-box .modal-body .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            margin-bottom: 4px;
+            font-size: 14px;
+            color: #1e293b;
+        }
+        .modal-edit .modal-box .modal-body .result-item .label {
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        .modal-edit .modal-box .modal-body .result-item .value {
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .modal-edit .modal-box .modal-body .result-item .value.high {
+            color: #10b981;
+        }
+        .modal-edit .modal-box .modal-body .result-item .value.medium {
+            color: #f59e0b;
+        }
+        .modal-edit .modal-box .modal-body .result-item .value.low {
+            color: #ef4444;
+        }
+        .modal-edit .modal-box .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 8px;
+        }
+        .modal-edit .modal-box .modal-actions .btn {
+            width: auto;
+            min-width: 120px;
+        }
+
+        /* Warning modal */
+        .modal-edit.warning .modal-box {
+            border-color: rgba(245, 158, 11, 0.3);
+            background: rgba(255, 251, 235, 0.8);
+        }
+        .modal-edit.danger .modal-box {
+            border-color: rgba(239, 68, 68, 0.3);
+            background: rgba(254, 242, 242, 0.8);
+        }
+
+        .modal-edit .modal-box label { 
+            font-size: 12px; 
+            font-weight: 600; 
+            color: #475569; 
+            display: block; 
+            margin-bottom: 4px; 
+            text-align: left; 
+        }
         .modal-edit .modal-box input, .modal-edit .modal-box select, .modal-edit .modal-box textarea {
             width: 100%;
             border: 1px solid rgba(226, 232, 240, 0.3);
@@ -461,8 +522,7 @@
             border-color: rgba(79, 70, 229, 0.5);
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
-        .modal-edit .modal-box .btn-group { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
-        .modal-edit .modal-box .btn-group .btn { width: auto; }
+
         .modal-edit .modal-box .history-item {
             display: flex;
             justify-content: space-between;
@@ -618,7 +678,6 @@
             color: #0f172a;
         }
 
-        /* Theme toggle button - simple, no dark mode */
         .theme-toggle {
             display: none;
         }
@@ -902,195 +961,29 @@
                 <div class="lg:col-span-1 bg-white/20 backdrop-blur-sm rounded-xl p-4">
                     <h4 class="font-bold text-xs text-slate-400 uppercase tracking-wider mb-3 text-center">Navigasi</h4>
                     <div id="ujian-nav-soal" class="nav-soal"></div>
-                    <button onclick="kumpulkanUjian()" class="btn btn-danger mt-4">📤 Kumpulkan</button>
+                    <button onclick="tampilkanModalKumpul()" class="btn btn-danger mt-4">📤 Kumpulkan</button>
                 </div>
             </div>
             <button onclick="kembaliKeDashboardSiswa()" class="btn btn-outline btn-sm mt-4">← Kembali ke Pilihan Mapel</button>
         </div>
 
-        <!-- GURU: TAMBAH SOAL -->
-        <div id="view-guru-tambah-soal" class="w-full max-w-2xl mx-auto glass-card rounded-2xl p-4 sm:p-8 hidden">
-            <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                    <span class="bg-blue-100/60 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
-                    Tambah Soal
-                </h2>
-                <button onclick="gantiHalaman('view-guru-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
-            </div>
-            <form onsubmit="event.preventDefault(); guruTambahSoal();" class="space-y-4">
-                <div>
-                    <label>Mata Pelajaran</label>
-                    <select id="guru-input-mapel" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm"></select>
+        <!-- ================================================================
+             MODAL KUMPULKAN UJIAN (GLASS THEME)
+             ================================================================ -->
+        <div id="modal-kumpul" class="modal-edit hidden">
+            <div class="modal-box">
+                <span class="modal-icon">📝</span>
+                <h3>Konfirmasi Kumpulkan Ujian</h3>
+                <p class="modal-subtitle">Periksa kembali jawaban Anda sebelum mengumpulkan. Ujian yang sudah dikumpulkan tidak dapat diubah.</p>
+                
+                <div class="modal-body" id="modal-kumpul-body">
+                    <!-- Akan diisi oleh JS -->
                 </div>
-                <div>
-                    <label>Pertanyaan</label>
-                    <textarea id="guru-input-tanya" rows="3" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Tulis pertanyaan..."></textarea>
+                
+                <div class="modal-actions">
+                    <button onclick="tutupModalKumpul()" class="btn btn-outline btn-sm">✖ Batal</button>
+                    <button onclick="kumpulkanUjian()" class="btn btn-danger btn-sm">📤 Ya, Kumpulkan!</button>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div><label>Opsi A</label><input type="text" id="guru-input-opsi-0" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi A"></div>
-                    <div><label>Opsi B</label><input type="text" id="guru-input-opsi-1" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi B"></div>
-                    <div><label>Opsi C</label><input type="text" id="guru-input-opsi-2" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi C"></div>
-                    <div><label>Opsi D</label><input type="text" id="guru-input-opsi-3" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi D"></div>
-                </div>
-                <div>
-                    <label>Kunci Jawaban</label>
-                    <select id="guru-input-kunci" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm">
-                        <option value="0">A</option>
-                        <option value="1">B</option>
-                        <option value="2">C</option>
-                        <option value="3">D</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">💾 Simpan Soal</button>
-            </form>
-        </div>
-
-        <!-- GURU: KELOLA SOAL -->
-        <div id="view-guru-kelola-soal" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
-            <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                    <span class="bg-blue-100/60 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
-                    Kelola Soal
-                </h2>
-                <button onclick="gantiHalaman('view-guru-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
-            </div>
-            <div class="flex flex-wrap gap-2 mb-4">
-                <select id="guru-filter-kelola" class="border border-white/30 rounded-lg px-3 py-1.5 text-sm bg-white/40 backdrop-blur-sm">
-                    <option value="">Semua Mapel (Saya)</option>
-                </select>
-                <button onclick="renderKelolaSoal()" class="btn btn-primary btn-sm">Filter</button>
-                <button onclick="gantiHalaman('view-guru-tambah-soal')" class="btn btn-success btn-sm">+ Tambah Soal</button>
-            </div>
-            <div class="table-wrap border border-white/20 rounded-xl bg-white/20 backdrop-blur-sm">
-                <table>
-                    <thead><tr><th>ID</th><th>Mapel</th><th>Pertanyaan</th><th class="text-center">Kunci</th><th class="text-center">Aksi</th></tr></thead>
-                    <tbody id="guru-tabel-kelola">
-                        <tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ADMIN: KELOLA MAPEL -->
-        <div id="view-admin-kelola-mapel" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
-            <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                    <span class="bg-purple-100/60 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
-                    Kelola Mata Pelajaran
-                </h2>
-                <div class="flex gap-2 flex-wrap">
-                    <button onclick="gantiHalaman('view-admin-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
-                </div>
-            </div>
-            <div class="flex flex-wrap gap-2 mb-4">
-                <button onclick="bukaModalTambahMapel()" class="btn btn-success btn-sm">➕ Tambah Mapel</button>
-                <button onclick="renderKelolaMapel()" class="btn btn-primary btn-sm">↻ Refresh</button>
-            </div>
-            <div class="table-wrap border border-white/20 rounded-xl bg-white/20 backdrop-blur-sm">
-                <table>
-                    <thead><tr><th>ID</th><th>Nama Mapel</th><th>Kode</th><th>Icon</th><th>Jumlah Soal</th><th class="text-center">Aksi</th></tr></thead>
-                    <tbody id="admin-tabel-mapel">
-                        <tr><td colspan="6" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <p class="text-xs text-slate-400 mt-2">⚠️ Menghapus mapel akan menghapus semua soal yang terkait dengan mapel tersebut.</p>
-        </div>
-
-        <!-- ADMIN: KELOLA GURU -->
-        <div id="view-admin-kelola-guru" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
-            <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                    <span class="bg-purple-100/60 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
-                    Kelola Guru & Mapel Pengajaran
-                </h2>
-                <div class="flex gap-2 flex-wrap">
-                    <button onclick="gantiHalaman('view-admin-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
-                    <button onclick="renderKelolaGuru()" class="btn btn-primary btn-sm">↻ Refresh</button>
-                </div>
-            </div>
-            <p class="text-sm text-slate-500 mb-4">Kelola data guru dan mata pelajaran yang diajarkan oleh masing-masing guru.</p>
-            <div class="table-wrap border border-white/20 rounded-xl bg-white/20 backdrop-blur-sm">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nama Guru</th>
-                            <th>Password</th>
-                            <th>Mata Pelajaran Diajarkan</th>
-                            <th class="text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-tabel-guru">
-                        <tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ADMIN: TAMBAH USER -->
-        <div id="view-admin-tambah-user" class="w-full max-w-md mx-auto glass-card rounded-2xl p-4 sm:p-8 hidden">
-            <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                    <span class="bg-purple-100/60 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
-                    Tambah User
-                </h2>
-                <button onclick="gantiHalaman('view-admin-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
-            </div>
-            <form onsubmit="event.preventDefault(); adminTambahUser();" class="space-y-4">
-                <div>
-                    <label>Nama Lengkap</label>
-                    <input type="text" id="admin-user-nama" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Nama user" required>
-                </div>
-                <div>
-                    <label>Role</label>
-                    <select id="admin-user-role" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm">
-                        <option value="siswa">Siswa</option>
-                        <option value="guru">Guru</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Password</label>
-                    <input type="password" id="admin-user-pass" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Password (kosongkan jika siswa)">
-                </div>
-                <div id="guru-mapel-container" class="hidden">
-                    <label>Mata Pelajaran yang Diajarkan</label>
-                    <select id="admin-user-guru-mapel" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" multiple>
-                    </select>
-                    <p class="text-xs text-slate-400 mt-1">Tahan Ctrl untuk memilih lebih dari satu mapel</p>
-                </div>
-                <button type="submit" class="btn btn-success">➕ Tambah User</button>
-            </form>
-        </div>
-
-        <!-- ADMIN: KELOLA SISWA -->
-        <div id="view-admin-kelola-siswa" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
-            <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                    <span class="bg-purple-100/60 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
-                    Kelola Siswa & Reset Ujian
-                </h2>
-                <div class="flex gap-2 flex-wrap">
-                    <button onclick="gantiHalaman('view-admin-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
-                    <button onclick="renderKelolaSiswa()" class="btn btn-primary btn-sm">↻ Refresh</button>
-                </div>
-            </div>
-            <p class="text-sm text-slate-500 mb-4">Kelola data siswa dan reset riwayat ujian mereka agar dapat mengulang asesmen.</p>
-            <div class="table-wrap border border-white/20 rounded-xl bg-white/20 backdrop-blur-sm">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Siswa</th>
-                            <th class="text-center">Total Ujian</th>
-                            <th class="text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-tabel-siswa">
-                        <tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
-                    </tbody>
-                </table>
             </div>
         </div>
 
@@ -1099,7 +992,7 @@
             <div class="modal-box">
                 <h3 id="modal-siswa-nama">Riwayat Ujian</h3>
                 <div id="modal-siswa-content" class="space-y-2"></div>
-                <div class="btn-group mt-4 border-t border-white/20 pt-4">
+                <div class="modal-actions mt-4 border-t border-white/20 pt-4">
                     <button onclick="tutupModalDetailSiswa()" class="btn btn-outline btn-sm">Tutup</button>
                     <button id="btn-reset-all-siswa" class="btn btn-danger btn-sm">🗑️ Reset Semua Ujian</button>
                 </div>
@@ -1126,7 +1019,7 @@
                         </select>
                         <p class="text-xs text-slate-400 mt-1">Tahan Ctrl untuk memilih lebih dari satu mapel</p>
                     </div>
-                    <div class="btn-group mt-4 border-t border-white/20 pt-4">
+                    <div class="modal-actions mt-4 border-t border-white/20 pt-4">
                         <button type="button" onclick="tutupModalEditGuru()" class="btn btn-outline btn-sm">Batal</button>
                         <button type="submit" class="btn btn-primary btn-sm">💾 Simpan</button>
                     </div>
@@ -1940,6 +1833,143 @@
             toast._hide = setTimeout(() => { toast.style.display = 'none'; }, 5000);
         }
 
+        // ================================================================
+        // MODAL KUMPULKAN UJIAN (GLASS THEME)
+        // ================================================================
+        function tampilkanModalKumpul() {
+            const modal = document.getElementById('modal-kumpul');
+            const body = document.getElementById('modal-kumpul-body');
+            
+            // Hitung jawaban
+            let terjawab = 0;
+            let kosong = 0;
+            const total = ujianSiswa.soal.length;
+            
+            ujianSiswa.soal.forEach(soal => {
+                if (ujianSiswa.jawaban[soal.id] !== undefined) {
+                    terjawab++;
+                } else {
+                    kosong++;
+                }
+            });
+            
+            // Hitung nilai sementara
+            let benar = 0;
+            ujianSiswa.soal.forEach(soal => {
+                if (ujianSiswa.jawaban[soal.id] === soal.kunci) benar++;
+            });
+            const nilaiSementara = total > 0 ? Math.round((benar / total) * 100) : 0;
+            
+            // Tentukan warna nilai
+            let nilaiClass = 'value';
+            if (nilaiSementara >= 80) nilaiClass += ' high';
+            else if (nilaiSementara >= 60) nilaiClass += ' medium';
+            else if (nilaiSementara > 0) nilaiClass += ' low';
+            
+            body.innerHTML = `
+                <div class="result-item">
+                    <span class="label">📊 Total Soal</span>
+                    <span class="value">${total}</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">✅ Terjawab</span>
+                    <span class="value high">${terjawab}</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">⬜ Kosong</span>
+                    <span class="value ${kosong > 0 ? 'low' : 'high'}">${kosong}</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">🎯 Nilai Sementara</span>
+                    <span class="${nilaiClass}">${nilaiSementara}</span>
+                </div>
+                ${kosong > 0 ? `<div class="result-item" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);">
+                    <span class="label" style="color: #ef4444;">⚠️ Peringatan</span>
+                    <span class="value low">${kosong} soal belum dijawab!</span>
+                </div>` : ''}
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function tutupModalKumpul() {
+            document.getElementById('modal-kumpul').classList.add('hidden');
+        }
+
+        // ================================================================
+        // KUMPULKAN UJIAN - MODIFIED
+        // ================================================================
+        function kumpulkanUjian(redirectTo = 'view-siswa-dashboard', showAlert = true) {
+            // Tutup modal terlebih dahulu
+            tutupModalKumpul();
+            
+            if (ujianTimerInterval) {
+                clearInterval(ujianTimerInterval);
+                ujianTimerInterval = null;
+            }
+            if (stateSaveInterval) {
+                clearInterval(stateSaveInterval);
+                stateSaveInterval = null;
+            }
+            if (lockCheckInterval) {
+                clearInterval(lockCheckInterval);
+                lockCheckInterval = null;
+            }
+            clearAntiTab();
+
+            let benar = 0;
+            const total = ujianSiswa.soal.length;
+            const mapelNama = ujianSiswa.mapelNama || 'Tidak diketahui';
+            const namaSiswa = ujianSiswa.nama;
+            const mapelId = ujianSiswa.mapelId;
+
+            ujianSiswa.soal.forEach(soal => {
+                if (ujianSiswa.jawaban[soal.id] === soal.kunci) benar++;
+            });
+            const nilai = total > 0 ? Math.round((benar / total) * 100) : 0;
+
+            if (namaSiswa && mapelId) {
+                simpanHasilSiswa(namaSiswa, mapelId, nilai);
+            }
+
+            localStorage.removeItem('cbt_ujian_aktif');
+            localStorage.removeItem('cbt_reload_lock');
+
+            ujianSiswa = {
+                nama: '',
+                mapelId: null,
+                mapelNama: '',
+                soal: [],
+                jawaban: {},
+                ragu: {},
+                indeks: 0,
+                timer: 30 * 60
+            };
+
+            if (showAlert) {
+                alert(`📊 Ujian Selesai!\nMapel: ${mapelNama}\nBenar: ${benar}/${total}\nNilai: ${nilai}\n\n✅ Hasil telah disimpan.`);
+            }
+
+            gantiHalaman(redirectTo);
+        }
+
+        // Override soalNext untuk menggunakan modal
+        const originalSoalNext = soalNext;
+        soalNext = function() {
+            if (ujianSiswa.indeks < ujianSiswa.soal.length - 1) {
+                ujianSiswa.indeks++;
+                renderSoal();
+                renderNavSoal();
+                simpanStateUjian();
+            } else {
+                // Tampilkan modal konfirmasi
+                tampilkanModalKumpul();
+            }
+        };
+
+        // ================================================================
+        // FUNGSI LAINNYA (TETAP SAMA)
+        // ================================================================
         function initAntiTab() {
             clearAntiTab();
             isTabVisible = true;
@@ -1991,60 +2021,6 @@
                 timestamp: Date.now()
             };
             localStorage.setItem('cbt_ujian_aktif', JSON.stringify(state));
-        }
-
-        // ================================================================
-        // KUMPULKAN UJIAN
-        // ================================================================
-        function kumpulkanUjian(redirectTo = 'view-siswa-dashboard', showAlert = true) {
-            if (ujianTimerInterval) {
-                clearInterval(ujianTimerInterval);
-                ujianTimerInterval = null;
-            }
-            if (stateSaveInterval) {
-                clearInterval(stateSaveInterval);
-                stateSaveInterval = null;
-            }
-            if (lockCheckInterval) {
-                clearInterval(lockCheckInterval);
-                lockCheckInterval = null;
-            }
-            clearAntiTab();
-
-            let benar = 0;
-            const total = ujianSiswa.soal.length;
-            const mapelNama = ujianSiswa.mapelNama || 'Tidak diketahui';
-            const namaSiswa = ujianSiswa.nama;
-            const mapelId = ujianSiswa.mapelId;
-
-            ujianSiswa.soal.forEach(soal => {
-                if (ujianSiswa.jawaban[soal.id] === soal.kunci) benar++;
-            });
-            const nilai = total > 0 ? Math.round((benar / total) * 100) : 0;
-
-            if (namaSiswa && mapelId) {
-                simpanHasilSiswa(namaSiswa, mapelId, nilai);
-            }
-
-            localStorage.removeItem('cbt_ujian_aktif');
-            localStorage.removeItem('cbt_reload_lock');
-
-            ujianSiswa = {
-                nama: '',
-                mapelId: null,
-                mapelNama: '',
-                soal: [],
-                jawaban: {},
-                ragu: {},
-                indeks: 0,
-                timer: 30 * 60
-            };
-
-            if (showAlert) {
-                alert(`📊 Ujian Selesai!\nMapel: ${mapelNama}\nBenar: ${benar}/${total}\nNilai: ${nilai}\n\n✅ Hasil telah disimpan.`);
-            }
-
-            gantiHalaman(redirectTo);
         }
 
         // ================================================================
@@ -2113,17 +2089,6 @@
                 renderSoal();
                 renderNavSoal();
                 simpanStateUjian();
-            }
-        }
-
-        function soalNext() {
-            if (ujianSiswa.indeks < ujianSiswa.soal.length - 1) {
-                ujianSiswa.indeks++;
-                renderSoal();
-                renderNavSoal();
-                simpanStateUjian();
-            } else {
-                kumpulkanUjian();
             }
         }
 
@@ -2852,7 +2817,10 @@
         function kembaliKeMenuUtama() {
             if (ujianSiswa.mapelId !== null && document.getElementById('view-ujian') && !document.getElementById('view-ujian').classList.contains('hidden')) {
                 if (confirm('Anda akan keluar dari ujian. Jawaban yang sudah diisi akan dikumpulkan. Lanjutkan?')) {
-                    kumpulkanUjian('view-menu', true);
+                    // Tampilkan modal konfirmasi terlebih dahulu
+                    tampilkanModalKumpul();
+                    // Set redirect after confirm
+                    window._redirectAfterSubmit = 'view-menu';
                 }
                 return;
             }
@@ -2867,7 +2835,8 @@
         function kembaliKeDashboardSiswa() {
             if (ujianSiswa.mapelId !== null && document.getElementById('view-ujian') && !document.getElementById('view-ujian').classList.contains('hidden')) {
                 if (confirm('Anda akan keluar dari ujian. Jawaban yang sudah diisi akan dikumpulkan. Lanjutkan?')) {
-                    kumpulkanUjian('view-siswa-dashboard', true);
+                    tampilkanModalKumpul();
+                    window._redirectAfterSubmit = 'view-siswa-dashboard';
                 }
                 return;
             }
@@ -2877,8 +2846,9 @@
         function logout() {
             if (ujianSiswa.mapelId !== null && document.getElementById('view-ujian') && !document.getElementById('view-ujian').classList.contains('hidden')) {
                 if (confirm('Anda akan logout dari ujian. Jawaban yang sudah diisi akan dikumpulkan. Lanjutkan?')) {
-                    kumpulkanUjian('view-menu', true);
-                    clearSession();
+                    tampilkanModalKumpul();
+                    window._redirectAfterSubmit = 'view-menu';
+                    window._logoutAfterSubmit = true;
                 }
                 return;
             }
@@ -2890,6 +2860,25 @@
             clearSession();
             gantiHalaman('view-menu');
         }
+
+        // Override kumpulkanUjian untuk mendukung redirect setelah submit
+        const originalKumpulkanUjian = kumpulkanUjian;
+        kumpulkanUjian = function(redirectTo, showAlert) {
+            // Jika ada redirect yang disimpan, gunakan itu
+            if (window._redirectAfterSubmit) {
+                redirectTo = window._redirectAfterSubmit;
+                window._redirectAfterSubmit = null;
+            }
+            
+            const logoutAfter = window._logoutAfterSubmit || false;
+            window._logoutAfterSubmit = false;
+            
+            originalKumpulkanUjian(redirectTo, showAlert);
+            
+            if (logoutAfter) {
+                clearSession();
+            }
+        };
 
         // ================================================================
         // KEYBOARD SUPPORT
@@ -2904,6 +2893,7 @@
             if (e.key === 'Escape') {
                 tutupModalDetailSiswa();
                 tutupModalEditGuru();
+                tutupModalKumpul();
             }
             if (e.key === 'ArrowLeft') slidePrev();
             if (e.key === 'ArrowRight') slideNext();
