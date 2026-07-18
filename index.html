@@ -106,6 +106,8 @@
         .btn-warning:hover { background: #d97706; }
         .btn-export { background: #059669; color: white; }
         .btn-export:hover { background: #047857; }
+        .btn-offline { background: #f59e0b; color: white; }
+        .btn-offline:hover { background: #d97706; }
 
         .stat-card {
             background: rgba(255, 255, 255, 0.5);
@@ -387,6 +389,7 @@
         }
         #toast-warning.warning { background: rgba(245, 158, 11, 0.9); border-color: rgba(252, 211, 77, 0.3); }
         #toast-warning.danger { background: rgba(220, 38, 38, 0.9); border-color: rgba(252, 165, 165, 0.3); }
+        #toast-warning.success { background: rgba(16, 185, 129, 0.9); border-color: rgba(52, 211, 153, 0.3); }
         @keyframes slideDown {
             from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -657,6 +660,10 @@
             background: rgba(254, 202, 202, 0.6);
             color: #991b1b;
         }
+        #db-status.offline {
+            background: rgba(254, 243, 199, 0.6);
+            color: #92400e;
+        }
 
         select option {
             background: rgba(255, 255, 255, 0.9);
@@ -699,7 +706,6 @@
             font-size: 16px;
         }
 
-        /* LOADING MINI */
         .loading-mini {
             display: inline-block;
             width: 20px;
@@ -722,6 +728,38 @@
         @keyframes shimmer {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
+        }
+
+        .offline-banner {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 10px;
+            padding: 8px 16px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #92400e;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            margin-bottom: 12px;
+        }
+        .offline-banner.show {
+            display: flex;
+        }
+        .offline-banner .sync-btn {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            color: #92400e;
+            transition: all 0.2s;
+        }
+        .offline-banner .sync-btn:hover {
+            background: rgba(245, 158, 11, 0.3);
         }
     </style>
 </head>
@@ -757,6 +795,13 @@
 
     <!-- MAIN -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6">
+
+        <!-- OFFLINE BANNER -->
+        <div id="offline-banner" class="offline-banner">
+            <span>📡</span>
+            <span><strong>Mode Offline</strong> — Data disimpan di perangkat Anda. Perubahan akan disinkronkan saat koneksi kembali.</span>
+            <button class="sync-btn" onclick="sinkronisasiManual()">🔄 Sinkronisasi Sekarang</button>
+        </div>
 
         <!-- MENU UTAMA -->
         <div id="view-menu" class="w-full max-w-3xl mx-auto glass-card rounded-2xl p-5 sm:p-10 text-center">
@@ -997,6 +1042,7 @@
                 <button onclick="gantiHalaman('view-admin-kelola-mapel')" class="btn btn-primary btn-sm">📚 Kelola Mapel</button>
                 <button onclick="gantiHalaman('view-admin-kelola-guru')" class="btn btn-guru btn-sm">👨‍🏫 Kelola Guru</button>
                 <button onclick="gantiHalaman('view-admin-kelola-siswa')" class="btn btn-warning btn-sm">👥 Kelola Siswa</button>
+                <button onclick="sinkronisasiManual()" class="btn btn-offline btn-sm">🔄 Sinkronisasi</button>
             </div>
 
             <div class="mt-4 border-t border-white/20 pt-4">
@@ -1255,11 +1301,13 @@
             <span>SMK Prama Artha · CBT</span>
             <span class="text-slate-300">|</span>
             <span>Anti-Tab: -3 Menit | Anti-Reload: 5 Menit</span>
+            <span class="text-slate-300">|</span>
+            <span id="footer-mode" class="text-emerald-600">🟢 Online</span>
         </div>
     </footer>
 
     <!-- ============================================================ -->
-    <!-- JAVASCRIPT - SUPABASE VERSION (Tanpa Loading Overlay) -->
+    <!-- JAVASCRIPT - SUPABASE + OFFLINE MODE -->
     <!-- ============================================================ -->
     <script>
         // ================================================================
@@ -1277,101 +1325,115 @@
         let DATA_MAPEL = [];
         let DATA_SOAL = {};
         let DATA_HASIL = [];
+        let isOnline = true;
         let isDataLoaded = false;
+        let pendingSync = false;
+        let syncQueue = [];
 
         // ================================================================
-        // TOAST
+        // OFFLINE STORAGE HELPERS
         // ================================================================
-        function showToast(message, type = 'danger') {
-            const toast = document.getElementById('toast-warning');
-            toast.textContent = message;
-            toast.className = type;
-            toast.style.display = 'block';
-            clearTimeout(toast._hide);
-            toast._hide = setTimeout(() => { toast.style.display = 'none'; }, 4000);
-        }
-
-        function setDbStatus(status, isError = false) {
-            const el = document.getElementById('db-status');
-            el.className = 'text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold shrink-0' + (isError ? ' error' : '');
-            el.textContent = status;
-        }
-
-        // ================================================================
-        // SUPABASE - LOAD DATA
-        // ================================================================
-        async function loadDataFromSupabase() {
-            setDbStatus('⏳ Loading...');
-
+        function saveToLocalStorage() {
             try {
-                const [usersResult, mapelResult, soalResult, hasilResult] = await Promise.all([
-                    supabase.from('users').select('*'),
-                    supabase.from('mapel').select('*'),
-                    supabase.from('soal').select('*'),
-                    supabase.from('hasil_ujian').select('*')
-                ]);
-
-                if (usersResult.error) throw usersResult.error;
-                if (mapelResult.error) throw mapelResult.error;
-                if (soalResult.error) throw soalResult.error;
-                if (hasilResult.error) throw hasilResult.error;
-
-                users = usersResult.data || [];
-                DATA_MAPEL = mapelResult.data || [];
-                DATA_HASIL = hasilResult.data || [];
-
-                DATA_SOAL = {};
-                (soalResult.data || []).forEach(s => {
-                    if (!DATA_SOAL[s.mapel_id]) DATA_SOAL[s.mapel_id] = [];
-                    DATA_SOAL[s.mapel_id].push(s);
-                });
-
-                isDataLoaded = true;
-                setDbStatus('✅ Online');
-                updateUI();
-
-                // Check session
-                const session = localStorage.getItem('cbt_user');
-                if (session) {
-                    try {
-                        const user = JSON.parse(session);
-                        const userData = users.find(u => u.id === user.id);
-                        if (userData) {
-                            currentUser = userData;
-                            updateUI();
-                            if (userData.role === 'siswa') {
-                                document.getElementById('siswa-nama-display').textContent = userData.nama;
-                                document.getElementById('siswa-kelas-display').textContent = userData.kelas || '-';
-                                gantiHalaman('view-siswa-dashboard');
-                            } else if (userData.role === 'guru') {
-                                document.getElementById('guru-nama-display').textContent = userData.nama;
-                                gantiHalaman('view-guru-dashboard');
-                            } else if (userData.role === 'admin') {
-                                document.getElementById('admin-nama-display').textContent = userData.nama;
-                                gantiHalaman('view-admin-dashboard');
-                            }
-                        } else {
-                            localStorage.removeItem('cbt_user');
-                            gantiHalaman('view-menu');
-                        }
-                    } catch (e) {
-                        localStorage.removeItem('cbt_user');
-                        gantiHalaman('view-menu');
-                    }
-                } else {
-                    gantiHalaman('view-menu');
-                }
-            } catch (error) {
-                console.error('Error loading data:', error);
-                setDbStatus('❌ Error', true);
-                showToast('❌ Gagal koneksi ke database!', 'danger');
-                gantiHalaman('view-menu');
+                const data = {
+                    users: users,
+                    mapel: DATA_MAPEL,
+                    soal: DATA_SOAL,
+                    hasil: DATA_HASIL,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('cbt_offline_data', JSON.stringify(data));
+                localStorage.setItem('cbt_offline_timestamp', Date.now().toString());
+            } catch (e) {
+                console.warn('Gagal menyimpan ke localStorage:', e);
             }
         }
 
+        function loadFromLocalStorage() {
+            try {
+                const raw = localStorage.getItem('cbt_offline_data');
+                if (raw) {
+                    const data = JSON.parse(raw);
+                    users = data.users || [];
+                    DATA_MAPEL = data.mapel || [];
+                    DATA_SOAL = data.soal || {};
+                    DATA_HASIL = data.hasil || [];
+                    isDataLoaded = true;
+                    return true;
+                }
+            } catch (e) {
+                console.warn('Gagal memuat dari localStorage:', e);
+            }
+            return false;
+        }
+
+        function getOfflineTimestamp() {
+            return parseInt(localStorage.getItem('cbt_offline_timestamp') || '0');
+        }
+
         // ================================================================
-        // REFRESH DATA
+        // NETWORK STATUS
         // ================================================================
+        function updateNetworkStatus(online) {
+            isOnline = online;
+            const banner = document.getElementById('offline-banner');
+            const status = document.getElementById('db-status');
+            const footerMode = document.getElementById('footer-mode');
+
+            if (online) {
+                banner.classList.remove('show');
+                status.className = 'text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold shrink-0';
+                status.textContent = '✅ Online';
+                footerMode.textContent = '🟢 Online';
+                footerMode.className = 'text-emerald-600';
+            } else {
+                banner.classList.add('show');
+                status.className = 'text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold shrink-0 offline';
+                status.textContent = '📡 Offline';
+                footerMode.textContent = '🟡 Offline';
+                footerMode.className = 'text-yellow-600';
+            }
+        }
+
+        async function checkNetworkAndSync() {
+            try {
+                const response = await fetch(SUPABASE_URL + '/rest/v1/', {
+                    method: 'HEAD',
+                    headers: { 'apikey': SUPABASE_ANON_KEY },
+                    signal: AbortSignal.timeout(5000)
+                });
+                
+                if (response.ok) {
+                    if (!isOnline) {
+                        updateNetworkStatus(true);
+                        showToast('✅ Koneksi pulih! Sinkronisasi data...', 'success');
+                        await sinkronisasiManual();
+                    }
+                    return true;
+                }
+            } catch (e) {
+                if (isOnline) {
+                    updateNetworkStatus(false);
+                    showToast('📡 Koneksi terputus. Mode Offline aktif.', 'warning');
+                }
+                return false;
+            }
+            return false;
+        }
+
+        // ================================================================
+        // SYNC FUNCTIONS
+        // ================================================================
+        async function sinkronisasiManual() {
+            if (isOnline) {
+                showToast('🔄 Menyinkronkan data...', 'warning');
+                await refreshData();
+                showToast('✅ Sinkronisasi selesai!', 'success');
+            } else {
+                showToast('📡 Tidak ada koneksi. Data akan disimpan di perangkat.', 'warning');
+            }
+        }
+
         async function refreshData() {
             try {
                 const [usersResult, mapelResult, soalResult, hasilResult] = await Promise.all([
@@ -1396,12 +1458,117 @@
                     DATA_SOAL[s.mapel_id].push(s);
                 });
 
+                isDataLoaded = true;
+                saveToLocalStorage();
+                updateNetworkStatus(true);
                 updateUI();
-                showToast('✅ Data diperbarui!', 'warning');
+                return true;
             } catch (error) {
                 console.error('Error refreshing data:', error);
-                showToast('❌ Gagal refresh!', 'danger');
+                updateNetworkStatus(false);
+                return false;
             }
+        }
+
+        // ================================================================
+        // LOAD DATA - Online/Offline
+        // ================================================================
+        async function loadDataFromSupabase() {
+            setDbStatus('⏳ Loading...');
+
+            // Coba load dari localStorage dulu
+            const hasLocalData = loadFromLocalStorage();
+
+            if (hasLocalData) {
+                updateUI();
+                setDbStatus('📡 Offline (Cache)');
+                updateNetworkStatus(false);
+                showToast('📡 Mode Offline - Data dari cache lokal', 'warning');
+            }
+
+            // Coba konek ke Supabase
+            try {
+                const response = await fetch(SUPABASE_URL + '/rest/v1/', {
+                    method: 'HEAD',
+                    headers: { 'apikey': SUPABASE_ANON_KEY },
+                    signal: AbortSignal.timeout(5000)
+                });
+
+                if (response.ok) {
+                    await refreshData();
+                    updateNetworkStatus(true);
+                    setDbStatus('✅ Online');
+                    showToast('✅ Terhubung ke server!', 'success');
+                } else {
+                    throw new Error('Server tidak merespon dengan baik');
+                }
+            } catch (e) {
+                console.warn('Koneksi ke Supabase gagal, menggunakan cache lokal');
+                if (!hasLocalData) {
+                    setDbStatus('❌ Error', true);
+                    showToast('❌ Gagal koneksi ke database dan tidak ada cache!', 'danger');
+                    gantiHalaman('view-menu');
+                    return;
+                }
+                setDbStatus('📡 Offline (Cache)');
+                updateNetworkStatus(false);
+            }
+
+            // Proses session
+            const session = localStorage.getItem('cbt_user');
+            if (session) {
+                try {
+                    const user = JSON.parse(session);
+                    const userData = users.find(u => u.id === user.id);
+                    if (userData) {
+                        currentUser = userData;
+                        updateUI();
+                        if (userData.role === 'siswa') {
+                            document.getElementById('siswa-nama-display').textContent = userData.nama;
+                            document.getElementById('siswa-kelas-display').textContent = userData.kelas || '-';
+                            gantiHalaman('view-siswa-dashboard');
+                        } else if (userData.role === 'guru') {
+                            document.getElementById('guru-nama-display').textContent = userData.nama;
+                            gantiHalaman('view-guru-dashboard');
+                        } else if (userData.role === 'admin') {
+                            document.getElementById('admin-nama-display').textContent = userData.nama;
+                            gantiHalaman('view-admin-dashboard');
+                        }
+                    } else {
+                        localStorage.removeItem('cbt_user');
+                        gantiHalaman('view-menu');
+                    }
+                } catch (e) {
+                    localStorage.removeItem('cbt_user');
+                    gantiHalaman('view-menu');
+                }
+            } else {
+                gantiHalaman('view-menu');
+            }
+        }
+
+        // ================================================================
+        // TOAST
+        // ================================================================
+        function showToast(message, type = 'danger') {
+            const toast = document.getElementById('toast-warning');
+            toast.textContent = message;
+            toast.className = type;
+            toast.style.display = 'block';
+            clearTimeout(toast._hide);
+            toast._hide = setTimeout(() => { toast.style.display = 'none'; }, 4000);
+        }
+
+        function setDbStatus(status, isError = false) {
+            const el = document.getElementById('db-status');
+            if (isError) {
+                el.className = 'text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold shrink-0 error';
+            } else if (status.includes('Offline')) {
+                el.className = 'text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold shrink-0 offline';
+            } else {
+                el.className = 'text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold shrink-0';
+            }
+            el.textContent = status;
         }
 
         // ================================================================
@@ -1688,44 +1855,35 @@
             const cached = getHasilSiswaFromCache(nama, kelas);
             if (Object.keys(cached).length > 0) return cached;
             
-            const { data, error } = await supabase
-                .from('hasil_ujian')
-                .select('*')
-                .eq('user_id', user.id);
-            
-            if (error) return {};
-            
-            const hasil = {};
-            data.forEach(h => {
-                hasil[h.mapel_id] = { nilai: h.nilai, tanggal: h.tanggal, kelas: h.kelas };
-            });
-            
-            DATA_HASIL = DATA_HASIL.filter(h => h.user_id !== user.id);
-            DATA_HASIL.push(...data);
-            
-            return hasil;
+            if (isOnline) {
+                try {
+                    const { data, error } = await supabase
+                        .from('hasil_ujian')
+                        .select('*')
+                        .eq('user_id', user.id);
+                    
+                    if (error) return {};
+                    
+                    const hasil = {};
+                    data.forEach(h => {
+                        hasil[h.mapel_id] = { nilai: h.nilai, tanggal: h.tanggal, kelas: h.kelas };
+                    });
+                    
+                    DATA_HASIL = DATA_HASIL.filter(h => h.user_id !== user.id);
+                    DATA_HASIL.push(...data);
+                    saveToLocalStorage();
+                    return hasil;
+                } catch (e) {
+                    return cached;
+                }
+            }
+            return cached;
         }
 
         async function simpanHasilSiswa(nama, mapelId, nilai, kelas) {
             const user = users.find(u => u.nama === nama && u.kelas === kelas);
             if (!user) return;
-            
-            const { error } = await supabase
-                .from('hasil_ujian')
-                .insert({
-                    user_id: user.id,
-                    mapel_id: mapelId,
-                    nilai: nilai,
-                    kelas: kelas || '',
-                    tanggal: new Date().toISOString()
-                });
-            
-            if (error) {
-                console.error('Error saving result:', error);
-                showToast('❌ Gagal menyimpan hasil ujian!', 'danger');
-                return;
-            }
-            
+
             const newEntry = {
                 user_id: user.id,
                 mapel_id: mapelId,
@@ -1733,8 +1891,30 @@
                 kelas: kelas || '',
                 tanggal: new Date().toISOString()
             };
+
             DATA_HASIL = DATA_HASIL.filter(h => !(h.user_id === user.id && h.mapel_id === mapelId));
             DATA_HASIL.push(newEntry);
+            saveToLocalStorage();
+
+            if (isOnline) {
+                try {
+                    const { error } = await supabase
+                        .from('hasil_ujian')
+                        .upsert(newEntry, { onConflict: 'user_id,mapel_id' });
+                    
+                    if (error) {
+                        console.error('Error saving result to Supabase:', error);
+                        showToast('⚠️ Data tersimpan di perangkat. Akan disinkronkan saat online.', 'warning');
+                    } else {
+                        showToast('✅ Hasil ujian tersimpan!', 'success');
+                    }
+                } catch (e) {
+                    console.warn('Gagal simpan ke Supabase, data di cache:', e);
+                    showToast('⚠️ Data tersimpan di perangkat (offline).', 'warning');
+                }
+            } else {
+                showToast('📡 Mode offline - Data tersimpan di perangkat.', 'warning');
+            }
         }
 
         async function isMapelSelesai(nama, mapelId, kelas) {
@@ -2276,18 +2456,63 @@
                 return;
             }
 
-            const { error } = await supabase
-                .from('soal')
-                .insert({
+            if (isOnline) {
+                try {
+                    const { error } = await supabase
+                        .from('soal')
+                        .insert({
+                            mapel_id: mapelId,
+                            tanya: tanya,
+                            opsi: opsi,
+                            kunci: kunci,
+                            kelas: kelas || 'all'
+                        });
+
+                    if (error) {
+                        alert('❌ Gagal menambahkan soal: ' + error.message);
+                        return;
+                    }
+                } catch (e) {
+                    alert('❌ Gagal koneksi ke server. Simpan offline?', 'warning');
+                    // Simpan offline
+                    const newSoal = {
+                        id: Date.now(),
+                        mapel_id: mapelId,
+                        tanya: tanya,
+                        opsi: opsi,
+                        kunci: kunci,
+                        kelas: kelas || 'all'
+                    };
+                    if (!DATA_SOAL[mapelId]) DATA_SOAL[mapelId] = [];
+                    DATA_SOAL[mapelId].push(newSoal);
+                    saveToLocalStorage();
+                    alert('✅ Soal disimpan secara offline. Akan disinkronkan saat online.');
+                    showToast('📡 Soal tersimpan di perangkat (offline).', 'warning');
+                    await refreshData();
+                    renderKelolaSoal();
+                    renderDaftarMapel();
+                    populateMapelDropdowns();
+                    return;
+                }
+            } else {
+                // Offline mode
+                const newSoal = {
+                    id: Date.now(),
                     mapel_id: mapelId,
                     tanya: tanya,
                     opsi: opsi,
                     kunci: kunci,
                     kelas: kelas || 'all'
-                });
-
-            if (error) {
-                alert('❌ Gagal menambahkan soal: ' + error.message);
+                };
+                if (!DATA_SOAL[mapelId]) DATA_SOAL[mapelId] = [];
+                DATA_SOAL[mapelId].push(newSoal);
+                saveToLocalStorage();
+                alert('✅ Soal disimpan secara offline. Akan disinkronkan saat online.');
+                showToast('📡 Soal tersimpan di perangkat (offline).', 'warning');
+                await refreshData();
+                renderKelolaSoal();
+                renderDaftarMapel();
+                populateMapelDropdowns();
                 return;
             }
 
@@ -2533,19 +2758,54 @@
                 return;
             }
 
-            const { error } = await supabase
-                .from('soal')
-                .update({
-                    tanya: tanyaBaru.trim(),
-                    opsi: opsiBaru.map(o => o.trim()),
-                    kunci: kunciInt,
-                    kelas: kelasBaru.trim()
-                })
-                .eq('id', id)
-                .eq('mapel_id', mapelId);
+            if (isOnline) {
+                try {
+                    const { error } = await supabase
+                        .from('soal')
+                        .update({
+                            tanya: tanyaBaru.trim(),
+                            opsi: opsiBaru.map(o => o.trim()),
+                            kunci: kunciInt,
+                            kelas: kelasBaru.trim()
+                        })
+                        .eq('id', id)
+                        .eq('mapel_id', mapelId);
 
-            if (error) {
-                alert('❌ Gagal memperbarui soal: ' + error.message);
+                    if (error) {
+                        alert('❌ Gagal memperbarui soal: ' + error.message);
+                        return;
+                    }
+                } catch (e) {
+                    // Update offline
+                    const soalData = getSoalByMapel(mapelId).find(s => s.id === id);
+                    if (soalData) {
+                        soalData.tanya = tanyaBaru.trim();
+                        soalData.opsi = opsiBaru.map(o => o.trim());
+                        soalData.kunci = kunciInt;
+                        soalData.kelas = kelasBaru.trim();
+                        saveToLocalStorage();
+                        alert('✅ Soal diperbarui secara offline.');
+                    }
+                    await refreshData();
+                    renderKelolaSoal();
+                    renderDaftarMapel();
+                    populateMapelDropdowns();
+                    return;
+                }
+            } else {
+                const soalData = getSoalByMapel(mapelId).find(s => s.id === id);
+                if (soalData) {
+                    soalData.tanya = tanyaBaru.trim();
+                    soalData.opsi = opsiBaru.map(o => o.trim());
+                    soalData.kunci = kunciInt;
+                    soalData.kelas = kelasBaru.trim();
+                    saveToLocalStorage();
+                    alert('✅ Soal diperbarui secara offline.');
+                }
+                await refreshData();
+                renderKelolaSoal();
+                renderDaftarMapel();
+                populateMapelDropdowns();
                 return;
             }
 
@@ -2562,15 +2822,46 @@
             if (!user.mapel || !user.mapel.includes(mapelId)) { alert('Anda tidak memiliki akses untuk mengelola mapel ini!'); return; }
             
             if (!confirm(`Yakin ingin menghapus soal ID ${id}?`)) return;
-            
-            const { error } = await supabase
-                .from('soal')
-                .delete()
-                .eq('id', id)
-                .eq('mapel_id', mapelId);
 
-            if (error) {
-                alert('❌ Gagal menghapus soal: ' + error.message);
+            if (isOnline) {
+                try {
+                    const { error } = await supabase
+                        .from('soal')
+                        .delete()
+                        .eq('id', id)
+                        .eq('mapel_id', mapelId);
+
+                    if (error) {
+                        alert('❌ Gagal menghapus soal: ' + error.message);
+                        return;
+                    }
+                } catch (e) {
+                    // Hapus offline
+                    const soalList = getSoalByMapel(mapelId);
+                    const idx = soalList.findIndex(s => s.id === id);
+                    if (idx !== -1) {
+                        soalList.splice(idx, 1);
+                        saveToLocalStorage();
+                        alert('✅ Soal dihapus secara offline.');
+                    }
+                    await refreshData();
+                    renderKelolaSoal();
+                    renderDaftarMapel();
+                    populateMapelDropdowns();
+                    return;
+                }
+            } else {
+                const soalList = getSoalByMapel(mapelId);
+                const idx = soalList.findIndex(s => s.id === id);
+                if (idx !== -1) {
+                    soalList.splice(idx, 1);
+                    saveToLocalStorage();
+                    alert('✅ Soal dihapus secara offline.');
+                }
+                await refreshData();
+                renderKelolaSoal();
+                renderDaftarMapel();
+                populateMapelDropdowns();
                 return;
             }
 
@@ -2666,20 +2957,43 @@
             const kode = prompt('Masukkan kode mapel (opsional):', '');
             const icon = prompt('Masukkan icon (emoji, contoh: 📐):', '📚');
             
-            const { error } = await supabase
-                .from('mapel')
-                .insert({
+            if (isOnline) {
+                try {
+                    const { error } = await supabase
+                        .from('mapel')
+                        .insert({
+                            nama: nama.trim(),
+                            kode: kode.trim(),
+                            icon: icon || '📚'
+                        });
+
+                    if (error) {
+                        alert('❌ Gagal menambahkan mapel: ' + error.message);
+                        return;
+                    }
+                } catch (e) {
+                    const newMapel = {
+                        id: Date.now(),
+                        nama: nama.trim(),
+                        kode: kode.trim(),
+                        icon: icon || '📚'
+                    };
+                    DATA_MAPEL.push(newMapel);
+                    saveToLocalStorage();
+                    alert('✅ Mapel ditambahkan secara offline.');
+                }
+            } else {
+                const newMapel = {
+                    id: Date.now(),
                     nama: nama.trim(),
                     kode: kode.trim(),
                     icon: icon || '📚'
-                });
-
-            if (error) {
-                alert('❌ Gagal menambahkan mapel: ' + error.message);
-                return;
+                };
+                DATA_MAPEL.push(newMapel);
+                saveToLocalStorage();
+                alert('✅ Mapel ditambahkan secara offline.');
             }
 
-            alert('✅ Mapel berhasil ditambahkan!');
             await refreshData();
             renderKelolaMapel();
             renderAdminMapelPreview();
@@ -2701,21 +3015,42 @@
             const icon = prompt('Edit icon (emoji):', mapel.icon || '📚');
             if (icon === null) return;
 
-            const { error } = await supabase
-                .from('mapel')
-                .update({
-                    nama: nama.trim(),
-                    kode: kode.trim(),
-                    icon: icon || '📚'
-                })
-                .eq('id', id);
+            if (isOnline) {
+                try {
+                    const { error } = await supabase
+                        .from('mapel')
+                        .update({
+                            nama: nama.trim(),
+                            kode: kode.trim(),
+                            icon: icon || '📚'
+                        })
+                        .eq('id', id);
 
-            if (error) {
-                alert('❌ Gagal memperbarui mapel: ' + error.message);
-                return;
+                    if (error) {
+                        alert('❌ Gagal memperbarui mapel: ' + error.message);
+                        return;
+                    }
+                } catch (e) {
+                    const m = DATA_MAPEL.find(m => m.id === id);
+                    if (m) {
+                        m.nama = nama.trim();
+                        m.kode = kode.trim();
+                        m.icon = icon || '📚';
+                        saveToLocalStorage();
+                        alert('✅ Mapel diperbarui secara offline.');
+                    }
+                }
+            } else {
+                const m = DATA_MAPEL.find(m => m.id === id);
+                if (m) {
+                    m.nama = nama.trim();
+                    m.kode = kode.trim();
+                    m.icon = icon || '📚';
+                    saveToLocalStorage();
+                    alert('✅ Mapel diperbarui secara offline.');
+                }
             }
 
-            alert('✅ Mapel berhasil diperbarui!');
             await refreshData();
             renderKelolaMapel();
             renderAdminMapelPreview();
@@ -2732,17 +3067,30 @@
             const jml = getSoalByMapel(id).length;
             if (!confirm(`Yakin ingin menghapus mapel "${mapel.nama}"? ${jml > 0 ? `Mapel ini memiliki ${jml} soal yang akan ikut terhapus.` : ''}`)) return;
 
-            const { error } = await supabase
-                .from('mapel')
-                .delete()
-                .eq('id', id);
+            if (isOnline) {
+                try {
+                    const { error } = await supabase
+                        .from('mapel')
+                        .delete()
+                        .eq('id', id);
 
-            if (error) {
-                alert('❌ Gagal menghapus mapel: ' + error.message);
-                return;
+                    if (error) {
+                        alert('❌ Gagal menghapus mapel: ' + error.message);
+                        return;
+                    }
+                } catch (e) {
+                    DATA_MAPEL = DATA_MAPEL.filter(m => m.id !== id);
+                    delete DATA_SOAL[id];
+                    saveToLocalStorage();
+                    alert('✅ Mapel dihapus secara offline.');
+                }
+            } else {
+                DATA_MAPEL = DATA_MAPEL.filter(m => m.id !== id);
+                delete DATA_SOAL[id];
+                saveToLocalStorage();
+                alert('✅ Mapel dihapus secara offline.');
             }
 
-            alert('✅ Mapel dan semua soalnya berhasil dihapus!');
             await refreshData();
             renderKelolaMapel();
             renderAdminMapelPreview();
@@ -2845,17 +3193,34 @@
             const updateData = { nama: nama, mapel: selectedMapel };
             if (password) updateData.password = password;
 
-            const { error } = await supabase
-                .from('users')
-                .update(updateData)
-                .eq('id', guruId);
+            if (isOnline) {
+                try {
+                    const { error } = await supabase
+                        .from('users')
+                        .update(updateData)
+                        .eq('id', guruId);
 
-            if (error) {
-                alert('❌ Gagal memperbarui guru: ' + error.message);
-                return;
+                    if (error) {
+                        alert('❌ Gagal memperbarui guru: ' + error.message);
+                        return;
+                    }
+                } catch (e) {
+                    const g = users.find(u => u.id === guruId);
+                    if (g) {
+                        Object.assign(g, updateData);
+                        saveToLocalStorage();
+                        alert('✅ Guru diperbarui secara offline.');
+                    }
+                }
+            } else {
+                const g = users.find(u => u.id === guruId);
+                if (g) {
+                    Object.assign(g, updateData);
+                    saveToLocalStorage();
+                    alert('✅ Guru diperbarui secara offline.');
+                }
             }
 
-            alert('✅ Data guru berhasil diperbarui!');
             tutupModalEditGuru();
             await refreshData();
             renderKelolaGuru();
@@ -2884,17 +3249,28 @@
                 return;
             }
 
-            const { error } = await supabase
-                .from('users')
-                .delete()
-                .eq('id', guruId);
+            if (isOnline) {
+                try {
+                    const { error } = await supabase
+                        .from('users')
+                        .delete()
+                        .eq('id', guruId);
 
-            if (error) {
-                alert('❌ Gagal menghapus guru: ' + error.message);
-                return;
+                    if (error) {
+                        alert('❌ Gagal menghapus guru: ' + error.message);
+                        return;
+                    }
+                } catch (e) {
+                    users = users.filter(u => u.id !== guruId);
+                    saveToLocalStorage();
+                    alert('✅ Guru dihapus secara offline.');
+                }
+            } else {
+                users = users.filter(u => u.id !== guruId);
+                saveToLocalStorage();
+                alert('✅ Guru dihapus secara offline.');
             }
 
-            alert('✅ Guru berhasil dihapus!');
             await refreshData();
             adminMuatStats();
             renderKelolaGuru();
@@ -2971,14 +3347,25 @@
                 if (confirm(`⚠️ Yakin ingin mereset SEMUA ujian untuk siswa "${nama}" (${kelas})?`)) {
                     const user = users.find(u => u.nama === nama && u.kelas === kelas);
                     if (user) {
-                        const { error } = await supabase
-                            .from('hasil_ujian')
-                            .delete()
-                            .eq('user_id', user.id);
-                        
-                        if (error) {
-                            alert('❌ Gagal mereset ujian: ' + error.message);
-                            return;
+                        if (isOnline) {
+                            try {
+                                const { error } = await supabase
+                                    .from('hasil_ujian')
+                                    .delete()
+                                    .eq('user_id', user.id);
+                                
+                                if (error) {
+                                    alert('❌ Gagal mereset ujian: ' + error.message);
+                                    return;
+                                }
+                            } catch (e) {
+                                DATA_HASIL = DATA_HASIL.filter(h => h.user_id !== user.id);
+                                saveToLocalStorage();
+                                alert('✅ Ujian direset secara offline.');
+                            }
+                        } else {
+                            DATA_HASIL = DATA_HASIL.filter(h => h.user_id !== user.id);
+                            saveToLocalStorage();
                         }
                         DATA_HASIL = DATA_HASIL.filter(h => h.user_id !== user.id);
                     }
@@ -2999,15 +3386,26 @@
             if (confirm(`Yakin ingin mereset ujian "${namaMapel}" untuk siswa "${nama}" (${kelas})?`)) {
                 const user = users.find(u => u.nama === nama && u.kelas === kelas);
                 if (user) {
-                    const { error } = await supabase
-                        .from('hasil_ujian')
-                        .delete()
-                        .eq('user_id', user.id)
-                        .eq('mapel_id', mapelId);
-                    
-                    if (error) {
-                        alert('❌ Gagal mereset ujian: ' + error.message);
-                        return;
+                    if (isOnline) {
+                        try {
+                            const { error } = await supabase
+                                .from('hasil_ujian')
+                                .delete()
+                                .eq('user_id', user.id)
+                                .eq('mapel_id', mapelId);
+                            
+                            if (error) {
+                                alert('❌ Gagal mereset ujian: ' + error.message);
+                                return;
+                            }
+                        } catch (e) {
+                            DATA_HASIL = DATA_HASIL.filter(h => !(h.user_id === user.id && h.mapel_id === mapelId));
+                            saveToLocalStorage();
+                            alert('✅ Ujian direset secara offline.');
+                        }
+                    } else {
+                        DATA_HASIL = DATA_HASIL.filter(h => !(h.user_id === user.id && h.mapel_id === mapelId));
+                        saveToLocalStorage();
                     }
                     DATA_HASIL = DATA_HASIL.filter(h => !(h.user_id === user.id && h.mapel_id === mapelId));
                 }
@@ -3045,21 +3443,38 @@
                 alert('Nama guru sudah terdaftar!');
                 return;
             }
-            
-            const { data, error } = await supabase
-                .from('users')
-                .insert({
-                    nama: nama,
-                    role: role,
-                    password: pass || '',
-                    mapel: role === 'guru' ? selectedMapel : [],
-                    kelas: role === 'siswa' ? kelas : ''
-                })
-                .select();
 
-            if (error) {
-                alert('❌ Gagal menambahkan user: ' + error.message);
-                return;
+            const newUser = {
+                nama: nama,
+                role: role,
+                password: pass || '',
+                mapel: role === 'guru' ? selectedMapel : [],
+                kelas: role === 'siswa' ? kelas : ''
+            };
+
+            if (isOnline) {
+                try {
+                    const { data, error } = await supabase
+                        .from('users')
+                        .insert(newUser)
+                        .select();
+
+                    if (error) {
+                        alert('❌ Gagal menambahkan user: ' + error.message);
+                        return;
+                    }
+                    if (data) users.push(data[0]);
+                } catch (e) {
+                    newUser.id = Date.now();
+                    users.push(newUser);
+                    saveToLocalStorage();
+                    alert('✅ User ditambahkan secara offline.');
+                }
+            } else {
+                newUser.id = Date.now();
+                users.push(newUser);
+                saveToLocalStorage();
+                alert('✅ User ditambahkan secara offline.');
             }
 
             alert('✅ User berhasil ditambahkan!');
@@ -3139,6 +3554,23 @@
         });
 
         // ================================================================
+        // NETWORK MONITOR
+        // ================================================================
+        window.addEventListener('online', () => {
+            checkNetworkAndSync();
+        });
+
+        window.addEventListener('offline', () => {
+            updateNetworkStatus(false);
+            showToast('📡 Koneksi terputus. Mode Offline aktif.', 'warning');
+        });
+
+        // Periodic network check
+        setInterval(() => {
+            checkNetworkAndSync();
+        }, 30000); // Check every 30 seconds
+
+        // ================================================================
         // KEYBOARD SUPPORT
         // ================================================================
         document.addEventListener('keydown', function(e) {
@@ -3164,9 +3596,11 @@
         // ================================================================
         window.onload = function() {
             loadDataFromSupabase();
+            // Initial network check
+            setTimeout(checkNetworkAndSync, 2000);
         };
 
-        console.log('⚡ CBT Prama Artha - Siap Pakai!');
+        console.log('⚡ CBT Prama Artha - Siap Pakai! (Mode Offline Support)');
     </script>
 </body>
 </html>
