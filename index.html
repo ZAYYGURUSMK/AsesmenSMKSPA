@@ -8,107 +8,81 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* ================================================================
-           CSS VARIABLES FOR THEME
-           ================================================================ */
-        :root {
-            --bg-primary: #f1f5f9;
-            --bg-secondary: #ffffff;
-            --bg-tertiary: #f8fafc;
-            --bg-card: #ffffff;
-            --bg-hover: #f1f5f9;
-            --text-primary: #0f172a;
-            --text-secondary: #1e293b;
-            --text-muted: #64748b;
-            --text-light: #94a3b8;
-            --border-color: #e2e8f0;
-            --shadow-color: rgba(15, 23, 42, 0.1);
-            --shadow-lg: rgba(15, 23, 42, 0.2);
-            --bg-navbar: #ffffff;
-            --bg-input: #ffffff;
-            --bg-slate-50: #f8fafc;
-            --bg-slate-100: #f1f5f9;
-            --bg-slate-200: #e2e8f0;
-            --bg-slate-50-hover: #f1f5f9;
-        }
-
-        [data-theme="dark"] {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-tertiary: #1e293b;
-            --bg-card: #1e293b;
-            --bg-hover: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #e2e8f0;
-            --text-muted: #94a3b8;
-            --text-light: #64748b;
-            --border-color: #334155;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --shadow-lg: rgba(0, 0, 0, 0.5);
-            --bg-navbar: #1e293b;
-            --bg-input: #334155;
-            --bg-slate-50: #1e293b;
-            --bg-slate-100: #334155;
-            --bg-slate-200: #475569;
-            --bg-slate-50-hover: #334155;
-        }
-
-        /* ================================================================
-           GLOBAL STYLES
+           GLASS THEME
            ================================================================ */
         * { -webkit-tap-highlight-color: transparent; }
         
         body { 
             font-family: 'Inter', sans-serif; 
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            transition: background 0.3s ease, color 0.3s ease;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 50%, #f5f0ff 100%);
+            min-height: 100vh;
+            background-attachment: fixed;
         }
-        
+
+        /* Glass effect base */
+        .glass {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(79, 70, 229, 0.08);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(79, 70, 229, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 12px 40px rgba(79, 70, 229, 0.12);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .glass-dark {
+            background: rgba(30, 27, 75, 0.12);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(79, 70, 229, 0.5);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
         .hidden { display: none !important; }
         .card-hover:active { transform: scale(0.97); }
 
-        /* Dark mode toggle button */
-        .theme-toggle {
-            background: var(--bg-slate-100);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 18px;
-            color: var(--text-secondary);
-        }
-        .theme-toggle:hover {
-            background: var(--bg-slate-200);
-            transform: scale(1.05);
-        }
-
-        /* Logo styles */
         .logo-artha {
             display: inline-flex;
             flex-direction: column;
             align-items: center;
             line-height: 1.1;
-            background: var(--bg-tertiary);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: 2px 10px;
             border-radius: 10px;
-            border: 1px solid var(--border-color);
-            transition: background 0.3s ease, border-color 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         .logo-artha .brand {
             font-size: 16px;
             font-weight: 900;
             letter-spacing: 1px;
             background: linear-gradient(135deg, #1e1b4b, #4f46e5);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        [data-theme="dark"] .logo-artha .brand {
-            background: linear-gradient(135deg, #818cf8, #4f46e5);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -120,16 +94,9 @@
             text-transform: uppercase;
             border-top: 1.5px solid #6d28d9;
         }
-        [data-theme="dark"] .logo-artha .tagline {
-            color: #818cf8;
-            border-top-color: #818cf8;
-        }
-
-        .school-name { font-weight: 800; font-size: 14px; color: var(--text-primary); }
+        .school-name { font-weight: 800; font-size: 14px; color: #1e1b4b; }
         .school-name span { color: #4f46e5; }
-        [data-theme="dark"] .school-name span { color: #818cf8; }
 
-        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -152,9 +119,7 @@
         .btn-danger { background: #ef4444; color: white; }
         .btn-danger:hover { background: #dc2626; }
         .btn-outline { background: transparent; color: #4f46e5; border: 2px solid #4f46e5; }
-        [data-theme="dark"] .btn-outline { color: #818cf8; border-color: #818cf8; }
-        .btn-outline:hover { background: #eef2ff; }
-        [data-theme="dark"] .btn-outline:hover { background: #334155; }
+        .btn-outline:hover { background: rgba(79, 70, 229, 0.08); }
         .btn-sm { padding: 6px 12px; font-size: 11px; width: auto; }
         .btn-guru { background: #2563eb; color: white; }
         .btn-guru:hover { background: #1d4ed8; }
@@ -165,26 +130,26 @@
         .btn-export { background: #059669; color: white; }
         .btn-export:hover { background: #047857; }
 
-        /* Cards & Containers */
         .stat-card {
-            background: var(--bg-card);
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: 14px;
             padding: 12px 14px;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             text-align: center;
-            transition: background 0.3s ease, border-color 0.3s ease;
         }
         .stat-card .label { 
             font-size: 9px; 
             font-weight: 600; 
             text-transform: uppercase; 
-            color: var(--text-light); 
+            color: #94a3b8; 
             display: block; 
         }
         .stat-card .value { 
             font-size: 22px; 
             font-weight: 800; 
-            color: var(--text-primary); 
+            color: #0f172a; 
             line-height: 1.2; 
             margin-top: 2px; 
         }
@@ -192,34 +157,34 @@
         .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .table-wrap table { min-width: 500px; width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; }
         .table-wrap th { 
-            background: var(--bg-slate-50); 
+            background: rgba(248, 250, 252, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             font-size: 9px; 
             font-weight: 700; 
             text-transform: uppercase; 
-            color: var(--text-muted); 
+            color: #64748b; 
             padding: 8px 10px; 
-            border-bottom: 2px solid var(--border-color); 
+            border-bottom: 2px solid rgba(226, 232, 240, 0.3); 
             white-space: nowrap; 
         }
         .table-wrap td { 
             padding: 8px 10px; 
-            border-bottom: 1px solid var(--border-color); 
-            color: var(--text-secondary); 
+            border-bottom: 1px solid rgba(241, 245, 249, 0.3); 
+            color: #1e293b; 
             vertical-align: middle; 
         }
 
         .badge-role { font-size: 9px; padding: 2px 10px; border-radius: 20px; font-weight: 600; display: inline-block; }
-        .badge-role.admin { background: #ede9fe; color: #6d28d9; }
-        .badge-role.guru { background: #dbeafe; color: #1d4ed8; }
-        .badge-role.siswa { background: #d1fae5; color: #065f46; }
-        [data-theme="dark"] .badge-role.admin { background: #4c1d95; color: #a78bfa; }
-        [data-theme="dark"] .badge-role.guru { background: #1e3a5f; color: #60a5fa; }
-        [data-theme="dark"] .badge-role.siswa { background: #064e3b; color: #34d399; }
+        .badge-role.admin { background: rgba(237, 233, 254, 0.7); color: #6d28d9; }
+        .badge-role.guru { background: rgba(219, 234, 254, 0.7); color: #1d4ed8; }
+        .badge-role.siswa { background: rgba(209, 250, 229, 0.7); color: #065f46; }
 
-        /* Navbar */
         .navbar {
-            background: var(--bg-navbar);
-            border-bottom: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
             padding: 0 12px;
             height: 54px;
             display: flex;
@@ -228,7 +193,6 @@
             position: sticky;
             top: 0;
             z-index: 40;
-            transition: background 0.3s ease, border-color 0.3s ease;
         }
         .navbar .left { display: flex; align-items: center; gap: 8px; min-width: 0; }
         .navbar .right { flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
@@ -236,22 +200,20 @@
         .user-badge {
             font-size: 10px;
             font-weight: 600;
-            color: var(--text-secondary);
-            background: var(--bg-slate-100);
+            color: #1e293b;
+            background: rgba(241, 245, 249, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: 4px 12px;
             border-radius: 20px;
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: background 0.3s ease, color 0.3s ease;
         }
         .user-badge .role { text-transform: uppercase; font-size: 8px; padding: 1px 6px; border-radius: 10px; font-weight: 700; }
-        .user-badge .role.admin { background: #ede9fe; color: #6d28d9; }
-        .user-badge .role.guru { background: #dbeafe; color: #1d4ed8; }
-        .user-badge .role.siswa { background: #d1fae5; color: #065f46; }
-        [data-theme="dark"] .user-badge .role.admin { background: #4c1d95; color: #a78bfa; }
-        [data-theme="dark"] .user-badge .role.guru { background: #1e3a5f; color: #60a5fa; }
-        [data-theme="dark"] .user-badge .role.siswa { background: #064e3b; color: #34d399; }
+        .user-badge .role.admin { background: rgba(237, 233, 254, 0.7); color: #6d28d9; }
+        .user-badge .role.guru { background: rgba(219, 234, 254, 0.7); color: #1d4ed8; }
+        .user-badge .role.siswa { background: rgba(209, 250, 229, 0.7); color: #065f46; }
         .user-badge .logout-btn { font-size: 10px; color: #ef4444; cursor: pointer; background: none; border: none; padding: 0 4px; }
         .user-badge .logout-btn:hover { color: #dc2626; }
 
@@ -272,33 +234,33 @@
             .table-wrap th, .table-wrap td { padding: 5px 6px; }
             .btn { font-size: 12px; padding: 8px 14px; }
             .user-badge { font-size: 9px; padding: 3px 8px; }
-            .theme-toggle { width: 32px; height: 32px; font-size: 16px; }
         }
 
-        /* Login Card */
         .login-card { max-width: 380px; margin: 0 auto; }
         .login-card input { 
             width: 100%; 
-            border: 1px solid var(--border-color); 
+            border: 1px solid rgba(226, 232, 240, 0.3); 
             border-radius: 12px; 
             padding: 12px 16px; 
             font-size: 16px; 
-            background: var(--bg-input); 
-            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             transition: all 0.15s; 
             font-family: inherit; 
             text-align: center; 
+            color: #0f172a;
         }
         .login-card input:focus { 
             outline: none; 
-            ring: 2px solid #4f46e5; 
-            border-color: transparent; 
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(79, 70, 229, 0.5);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
-        .login-card input::placeholder { color: var(--text-light); }
         .login-card label { 
             font-size: 12px; 
             font-weight: 600; 
-            color: var(--text-muted); 
+            color: #475569; 
             display: block; 
             margin-bottom: 6px; 
             letter-spacing: 0.5px; 
@@ -310,67 +272,68 @@
             margin-top: 6px; 
             display: none; 
             text-align: center; 
-            background: #fef2f2; 
+            background: rgba(254, 242, 242, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: 8px 12px; 
             border-radius: 8px; 
         }
-        [data-theme="dark"] .login-card .error-msg { background: #7f1d1d; color: #fca5a5; }
-        .login-card .hint { font-size: 11px; color: var(--text-light); text-align: center; margin-top: 4px; }
+        .login-card .hint { font-size: 11px; color: #94a3b8; text-align: center; margin-top: 4px; }
 
         .login-icon { font-size: 48px; display: block; text-align: center; margin-bottom: 4px; }
-        .login-title { font-size: 20px; font-weight: 700; color: var(--text-primary); text-align: center; }
-        .login-sub { font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 20px; }
+        .login-title { font-size: 20px; font-weight: 700; color: #0f172a; text-align: center; }
+        .login-sub { font-size: 13px; color: #64748b; text-align: center; margin-bottom: 20px; }
 
-        /* Page Header */
-        .page-header { display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px; }
+        .page-header { display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid rgba(226, 232, 240, 0.3); padding-bottom: 12px; margin-bottom: 16px; }
         @media (min-width: 640px) { .page-header { flex-direction: row; align-items: center; justify-content: space-between; } }
 
-        /* Timer */
-        .timer-box { background: #fef2f2; border: 1px solid #fca5a5; padding: 8px 16px; border-radius: 12px; text-align: center; min-width: 80px; }
-        [data-theme="dark"] .timer-box { background: #7f1d1d; border-color: #f87171; }
+        .timer-box { background: rgba(254, 242, 242, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(252, 165, 165, 0.3); padding: 8px 16px; border-radius: 12px; text-align: center; min-width: 80px; }
         .timer-box .label { font-size: 8px; text-transform: uppercase; color: #ef4444; font-weight: 700; letter-spacing: 0.5px; display: block; }
-        [data-theme="dark"] .timer-box .label { color: #fca5a5; }
         .timer-box .time { font-size: 20px; font-weight: 800; color: #dc2626; font-family: monospace; }
-        [data-theme="dark"] .timer-box .time { color: #f87171; }
 
-        /* Soal */
         .soal-item { 
-            background: var(--bg-card); 
-            border: 1px solid var(--border-color); 
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.3); 
             border-radius: 12px; 
             padding: 16px; 
-            margin-bottom: 12px;
-            transition: background 0.3s ease, border-color 0.3s ease;
+            margin-bottom: 12px; 
         }
         .soal-item .nomor { 
             font-size: 11px; 
             font-weight: 700; 
             color: #4f46e5; 
-            background: #eef2ff; 
+            background: rgba(238, 242, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: 2px 10px; 
             border-radius: 10px; 
             display: inline-block; 
         }
-        [data-theme="dark"] .soal-item .nomor { background: #4c1d95; color: #a78bfa; }
-        .soal-item .pertanyaan { font-weight: 600; font-size: 14px; margin: 8px 0; color: var(--text-primary); }
+        .soal-item .pertanyaan { font-weight: 600; font-size: 14px; margin: 8px 0; color: #0f172a; }
         .soal-item .opsi { 
             display: flex; 
             align-items: center; 
             gap: 10px; 
             padding: 8px 12px; 
             border-radius: 8px; 
-            border: 1px solid var(--border-color); 
+            border: 1px solid rgba(226, 232, 240, 0.3); 
             margin-bottom: 6px; 
             cursor: pointer; 
             transition: all 0.15s; 
-            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.3);
         }
         .soal-item .opsi:active { transform: scale(0.98); }
-        .soal-item .opsi.selected { border-color: #4f46e5; background: #eef2ff; }
-        [data-theme="dark"] .soal-item .opsi.selected { background: #334155; border-color: #818cf8; }
+        .soal-item .opsi.selected { 
+            border-color: #4f46e5; 
+            background: rgba(238, 242, 255, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
         .soal-item .opsi input[type="radio"] { width: 16px; height: 16px; accent-color: #4f46e5; flex-shrink: 0; }
+        .soal-item .opsi .teks { font-size: 13px; color: #1e293b; }
 
-        /* Nav Soal */
         .nav-soal { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
         .nav-soal button { 
             aspect-ratio: 1; 
@@ -380,74 +343,78 @@
             border-radius: 8px; 
             font-size: 12px; 
             font-weight: 600; 
-            border: 1px solid var(--border-color); 
-            background: var(--bg-card); 
-            color: var(--text-secondary);
+            border: 1px solid rgba(226, 232, 240, 0.3); 
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             cursor: pointer; 
             transition: all 0.15s; 
+            color: #1e293b;
         }
         .nav-soal button:active { transform: scale(0.92); }
         .nav-soal button.aktif { background: #4f46e5; color: white; border-color: #4f46e5; }
         .nav-soal button.dijawab { background: #10b981; color: white; border-color: #10b981; }
         .nav-soal button.ragu { background: #f59e0b; color: white; border-color: #f59e0b; }
 
-        /* Mapel Card */
         .mapel-card {
-            background: var(--bg-card);
-            border: 2px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 16px;
             padding: 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             position: relative;
         }
         .mapel-card:active { transform: scale(0.96); }
-        .mapel-card:hover { border-color: #4f46e5; box-shadow: 0 4px 12px var(--shadow-color); }
-        .mapel-card.disabled { opacity: 0.7; cursor: not-allowed; filter: grayscale(0.3); border-color: var(--border-color); }
-        .mapel-card.disabled:hover { border-color: var(--border-color); box-shadow: none; }
+        .mapel-card:hover { 
+            background: rgba(255, 255, 255, 0.65);
+            border-color: rgba(79, 70, 229, 0.3);
+            box-shadow: 0 8px 32px rgba(79, 70, 229, 0.08);
+        }
+        .mapel-card.disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(0.2); }
+        .mapel-card.disabled:hover { border-color: rgba(255, 255, 255, 0.3); box-shadow: none; }
         .mapel-card .icon { font-size: 32px; display: block; margin-bottom: 8px; }
-        .mapel-card .nama { font-weight: 700; font-size: 16px; color: var(--text-primary); }
-        .mapel-card .kode { font-size: 12px; color: var(--text-light); }
-        .mapel-card .soal-count { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+        .mapel-card .nama { font-weight: 700; font-size: 16px; color: #0f172a; }
+        .mapel-card .kode { font-size: 12px; color: #94a3b8; }
+        .mapel-card .soal-count { font-size: 11px; color: #64748b; margin-top: 4px; }
         .mapel-card .status { font-size: 11px; font-weight: 600; margin-top: 6px; padding: 2px 12px; border-radius: 20px; display: inline-block; }
-        .mapel-card .status.tersedia { background: #d1fae5; color: #065f46; }
-        [data-theme="dark"] .mapel-card .status.tersedia { background: #064e3b; color: #34d399; }
-        .mapel-card .status.kosong { background: #fef2f2; color: #991b1b; }
-        [data-theme="dark"] .mapel-card .status.kosong { background: #7f1d1d; color: #fca5a5; }
-        .mapel-card .status.selesai { background: #fef3c7; color: #92400e; }
-        [data-theme="dark"] .mapel-card .status.selesai { background: #78350f; color: #fbbf24; }
+        .mapel-card .status.tersedia { background: rgba(209, 250, 229, 0.6); color: #065f46; }
+        .mapel-card .status.kosong { background: rgba(254, 242, 242, 0.6); color: #991b1b; }
+        .mapel-card .status.selesai { background: rgba(254, 243, 199, 0.6); color: #92400e; }
         .mapel-card .nilai-badge { position: absolute; top: 8px; right: 8px; background: #4f46e5; color: white; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 20px; }
         .mapel-card .nilai-badge.skor { background: #10b981; }
 
-        /* Toast */
         #toast-warning {
             position: fixed;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: #dc2626;
+            background: rgba(220, 38, 38, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             color: white;
             padding: 12px 24px;
             border-radius: 12px;
             font-weight: 700;
             font-size: 14px;
             z-index: 9999;
-            box-shadow: 0 8px 30px rgba(220, 38, 38, 0.4);
-            border: 1px solid #fca5a5;
+            box-shadow: 0 8px 30px rgba(220, 38, 38, 0.3);
+            border: 1px solid rgba(252, 165, 165, 0.3);
             text-align: center;
             max-width: 90%;
             display: none;
             animation: slideDown 0.3s ease;
         }
-        #toast-warning.warning { background: #f59e0b; border-color: #fcd34d; }
-        #toast-warning.danger { background: #dc2626; border-color: #fca5a5; }
+        #toast-warning.warning { background: rgba(245, 158, 11, 0.9); border-color: rgba(252, 211, 77, 0.3); }
+        #toast-warning.danger { background: rgba(220, 38, 38, 0.9); border-color: rgba(252, 165, 165, 0.3); }
         @keyframes slideDown {
             from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
-        /* Modal */
         .modal-edit {
             position: fixed;
             inset: 0;
@@ -456,38 +423,43 @@
             align-items: center;
             justify-content: center;
             padding: 16px;
-            background: rgba(15,23,42,0.5);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
         .modal-edit .modal-box {
-            background: var(--bg-card);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border-radius: 20px;
             max-width: 500px;
             width: 100%;
             padding: 24px;
-            box-shadow: 0 20px 60px var(--shadow-lg);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
             max-height: 90vh;
             overflow-y: auto;
-            transition: background 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        .modal-edit .modal-box h3 { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; text-align: center; }
-        .modal-edit .modal-box label { font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px; text-align: left; }
+        .modal-edit .modal-box h3 { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 16px; text-align: center; }
+        .modal-edit .modal-box label { font-size: 12px; font-weight: 600; color: #475569; display: block; margin-bottom: 4px; text-align: left; }
         .modal-edit .modal-box input, .modal-edit .modal-box select, .modal-edit .modal-box textarea {
             width: 100%;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(226, 232, 240, 0.3);
             border-radius: 10px;
             padding: 8px 12px;
             font-size: 14px;
             margin-bottom: 12px;
             font-family: inherit;
-            background: var(--bg-input);
-            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #0f172a;
         }
         .modal-edit .modal-box input:focus, .modal-edit .modal-box select:focus, .modal-edit .modal-box textarea:focus {
             outline: none;
-            ring: 2px solid #4f46e5;
-            border-color: transparent;
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(79, 70, 229, 0.5);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
         .modal-edit .modal-box .btn-group { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
         .modal-edit .modal-box .btn-group .btn { width: auto; }
@@ -496,20 +468,20 @@
             justify-content: space-between;
             align-items: center;
             padding: 8px 12px;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(226, 232, 240, 0.3);
             border-radius: 8px;
             margin-bottom: 6px;
+            background: rgba(255, 255, 255, 0.3);
         }
-        .modal-edit .modal-box .history-item .info { font-size: 13px; color: var(--text-secondary); }
+        .modal-edit .modal-box .history-item .info { font-size: 13px; color: #1e293b; }
         .modal-edit .modal-box .history-item .info .mapel { font-weight: 600; }
         .modal-edit .modal-box .history-item .info .nilai { font-weight: 700; color: #4f46e5; }
-        [data-theme="dark"] .modal-edit .modal-box .history-item .info .nilai { color: #818cf8; }
-        .modal-edit .modal-box .history-item .info .tgl { font-size: 10px; color: var(--text-light); }
-        .modal-edit .modal-box .empty-state { text-align: center; color: var(--text-light); padding: 20px 0; }
+        .modal-edit .modal-box .history-item .info .tgl { font-size: 10px; color: #94a3b8; }
+        .modal-edit .modal-box .empty-state { text-align: center; color: #94a3b8; padding: 20px 0; }
 
         .mapel-tag {
             display: inline-block;
-            background: #eef2ff;
+            background: rgba(238, 242, 255, 0.6);
             color: #4f46e5;
             font-size: 9px;
             padding: 1px 8px;
@@ -517,7 +489,6 @@
             font-weight: 600;
             margin: 1px 2px;
         }
-        [data-theme="dark"] .mapel-tag { background: #4c1d95; color: #a78bfa; }
 
         .export-options {
             display: flex;
@@ -526,12 +497,14 @@
             align-items: center;
         }
         .export-options select {
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(226, 232, 240, 0.3);
             border-radius: 8px;
             padding: 6px 12px;
             font-size: 12px;
-            background: var(--bg-input);
-            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #1e293b;
         }
 
         .slide-nav {
@@ -545,22 +518,20 @@
         .slide-nav button {
             padding: 8px 16px;
             border-radius: 10px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-card);
+            border: 1px solid rgba(226, 232, 240, 0.3);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             font-weight: 600;
             font-size: 13px;
             cursor: pointer;
             transition: all 0.15s;
-            color: var(--text-secondary);
+            color: #475569;
         }
         .slide-nav button:hover:not(:disabled) {
-            background: var(--bg-slate-50-hover);
-            border-color: #4f46e5;
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(79, 70, 229, 0.3);
             color: #4f46e5;
-        }
-        [data-theme="dark"] .slide-nav button:hover:not(:disabled) {
-            border-color: #818cf8;
-            color: #818cf8;
         }
         .slide-nav button:disabled {
             opacity: 0.4;
@@ -568,7 +539,7 @@
         }
         .slide-nav .page-info {
             font-size: 13px;
-            color: var(--text-light);
+            color: #94a3b8;
             font-weight: 500;
             min-width: 60px;
             text-align: center;
@@ -582,7 +553,7 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: var(--border-color);
+            background: rgba(226, 232, 240, 0.5);
             transition: all 0.2s;
             cursor: pointer;
         }
@@ -591,82 +562,65 @@
             width: 24px;
             border-radius: 4px;
         }
-        [data-theme="dark"] .slide-nav .dot.active { background: #818cf8; }
 
-        /* Footer */
         footer {
-            background: var(--bg-navbar);
-            border-top: 1px solid var(--border-color);
-            transition: background 0.3s ease, border-color 0.3s ease;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
         }
         footer .logo-artha {
-            background: var(--bg-slate-50);
-        }
-        [data-theme="dark"] footer .logo-artha {
-            background: #334155;
+            background: rgba(255, 255, 255, 0.2);
         }
         footer .logo-artha .brand {
             font-size: 10px;
         }
         footer .logo-artha .tagline-alt {
             font-size: 6px;
-            color: #818cf8;
-            border-left-color: var(--border-color);
+            color: #6d28d9;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
             padding-left: 4px;
         }
 
-        /* Lock container */
         #lock-container {
-            background: #fef3c7;
-            border-color: #fcd34d;
-        }
-        [data-theme="dark"] #lock-container {
-            background: #78350f;
-            border-color: #fbbf24;
+            background: rgba(254, 243, 199, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(252, 211, 77, 0.3);
         }
         #lock-container .text-yellow-800 { color: #92400e; }
-        [data-theme="dark"] #lock-container .text-yellow-800 { color: #fbbf24; }
         #lock-container .text-yellow-700 { color: #b45309; }
-        [data-theme="dark"] #lock-container .text-yellow-700 { color: #fcd34d; }
         #lock-container .text-yellow-600 { color: #d97706; }
-        [data-theme="dark"] #lock-container .text-yellow-600 { color: #f59e0b; }
 
-        /* Main containers */
-        .bg-white, .bg-slate-50, .bg-slate-100 {
-            transition: background 0.3s ease, border-color 0.3s ease;
-        }
-
-        /* Text colors */
-        .text-slate-900, .text-slate-800, .text-slate-700, .text-slate-600, .text-slate-500, .text-slate-400 {
-            transition: color 0.3s ease;
-        }
-
-        .border-slate-100, .border-slate-200 {
-            transition: border-color 0.3s ease;
-        }
-
-        /* Status badge */
-        #db-status {
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        /* Nav home button */
         #btn-home {
-            background: var(--bg-slate-50);
-            border-color: var(--border-color);
-            color: var(--text-secondary);
+            background: rgba(241, 245, 249, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.3);
+            color: #475569;
             transition: all 0.3s ease;
         }
         #btn-home:hover {
-            background: var(--bg-slate-100);
+            background: rgba(255, 255, 255, 0.7);
             color: #4f46e5;
+            border-color: rgba(79, 70, 229, 0.3);
         }
-        [data-theme="dark"] #btn-home:hover { color: #818cf8; }
 
-        /* Select dropdown in dark mode */
+        #db-status {
+            background: rgba(209, 250, 229, 0.6);
+            color: #065f46;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
         select option {
-            background: var(--bg-card);
-            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.9);
+            color: #0f172a;
+        }
+
+        /* Theme toggle button - simple, no dark mode */
+        .theme-toggle {
+            display: none;
         }
     </style>
 </head>
@@ -683,12 +637,9 @@
                 <span class="tagline">BERKARYA</span>
             </div>
             <span class="school-name hidden sm:inline">SMK <span>Prama Artha</span></span>
-            <span id="db-status" class="text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-800 shrink-0">Online</span>
+            <span id="db-status" class="text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold shrink-0">Online</span>
         </div>
         <div class="right">
-            <button onclick="toggleTheme()" class="theme-toggle" id="theme-toggle" title="Toggle Dark/Light Mode">
-                🌙
-            </button>
             <div id="user-badge" class="user-badge hidden">
                 <span id="user-name">User</span>
                 <span id="user-role" class="role">role</span>
@@ -707,51 +658,51 @@
     <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6">
 
         <!-- MENU UTAMA -->
-        <div id="view-menu" class="w-full max-w-3xl mx-auto bg-card rounded-2xl shadow-lg border border-border p-5 sm:p-10 text-center">
+        <div id="view-menu" class="w-full max-w-3xl mx-auto glass-card rounded-2xl p-5 sm:p-10 text-center">
             <div class="flex flex-col items-center gap-2 mb-3">
-                <div class="logo-artha bg-indigo-50 dark:bg-indigo-950 px-4 py-2 rounded-2xl border-2 border-indigo-200 dark:border-indigo-800 shadow-md">
+                <div class="logo-artha bg-white/40 px-4 py-2 rounded-2xl border border-white/30 shadow-lg">
                     <span class="brand text-2xl sm:text-4xl">ARTHA JAYA</span>
                     <span class="tagline text-xs sm:text-sm tracking-[4px] sm:tracking-[8px]">BERKARYA</span>
                 </div>
-                <h2 class="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100">SMK <span class="text-indigo-600 dark:text-indigo-400">Prama Artha</span></h2>
-                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xs">Silakan pilih peran Anda</p>
+                <h2 class="text-xl sm:text-3xl font-extrabold text-slate-900">SMK <span class="text-indigo-600">Prama Artha</span></h2>
+                <p class="text-xs sm:text-sm text-slate-500 max-w-xs">Silakan pilih peran Anda</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
-                <button onclick="gantiHalaman('view-siswa-login')" class="card-hover bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-400 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 dark:active:bg-slate-700 transition">
-                    <div class="bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 p-3 rounded-xl shrink-0">
+                <button onclick="gantiHalaman('view-siswa-login')" class="card-hover glass-card rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:scale-95 transition">
+                    <div class="bg-emerald-50/60 text-emerald-600 p-3 rounded-xl shrink-0">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                     </div>
                     <div>
-                        <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-200">Siswa</h3>
-                        <p class="text-slate-400 dark:text-slate-500 text-xs">Pilih mapel ujian</p>
+                        <h3 class="font-bold text-base sm:text-lg text-slate-800">Siswa</h3>
+                        <p class="text-slate-400 text-xs">Pilih mapel ujian</p>
                     </div>
                 </button>
 
-                <button onclick="gantiHalaman('view-guru-login')" class="card-hover bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 dark:active:bg-slate-700 transition">
-                    <div class="bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 p-3 rounded-xl shrink-0">
+                <button onclick="gantiHalaman('view-guru-login')" class="card-hover glass-card rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:scale-95 transition">
+                    <div class="bg-blue-50/60 text-blue-600 p-3 rounded-xl shrink-0">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                     </div>
                     <div>
-                        <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-200">Guru</h3>
-                        <p class="text-slate-400 dark:text-slate-500 text-xs">Password</p>
+                        <h3 class="font-bold text-base sm:text-lg text-slate-800">Guru</h3>
+                        <p class="text-slate-400 text-xs">Password</p>
                     </div>
                 </button>
 
-                <button onclick="gantiHalaman('view-admin-login')" class="card-hover bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 hover:border-purple-500 dark:hover:border-purple-400 rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:bg-slate-50 dark:active:bg-slate-700 transition">
-                    <div class="bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 p-3 rounded-xl shrink-0">
+                <button onclick="gantiHalaman('view-admin-login')" class="card-hover glass-card rounded-2xl p-4 flex items-center gap-3 sm:flex-col sm:items-center text-left sm:text-center active:scale-95 transition">
+                    <div class="bg-purple-50/60 text-purple-600 p-3 rounded-xl shrink-0">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     </div>
                     <div>
-                        <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-200">Admin</h3>
-                        <p class="text-slate-400 dark:text-slate-500 text-xs">Password</p>
+                        <h3 class="font-bold text-base sm:text-lg text-slate-800">Admin</h3>
+                        <p class="text-slate-400 text-xs">Password</p>
                     </div>
                 </button>
             </div>
         </div>
 
         <!-- LOGIN SISWA -->
-        <div id="view-siswa-login" class="w-full max-w-md mx-auto bg-card rounded-2xl shadow-lg border border-border p-6 sm:p-8 hidden login-card">
+        <div id="view-siswa-login" class="w-full max-w-md mx-auto glass-card rounded-2xl p-6 sm:p-8 hidden login-card">
             <span class="login-icon">🧑‍🎓</span>
             <div class="login-title">Masuk sebagai Siswa</div>
             <div class="login-sub">Cukup masukkan nama lengkap Anda</div>
@@ -768,7 +719,7 @@
         </div>
 
         <!-- LOGIN GURU -->
-        <div id="view-guru-login" class="w-full max-w-md mx-auto bg-card rounded-2xl shadow-lg border border-border p-6 sm:p-8 hidden login-card">
+        <div id="view-guru-login" class="w-full max-w-md mx-auto glass-card rounded-2xl p-6 sm:p-8 hidden login-card">
             <span class="login-icon">👨‍🏫</span>
             <div class="login-title">Login Guru</div>
             <div class="login-sub">Masukkan password untuk masuk</div>
@@ -785,7 +736,7 @@
         </div>
 
         <!-- LOGIN ADMIN -->
-        <div id="view-admin-login" class="w-full max-w-md mx-auto bg-card rounded-2xl shadow-lg border border-border p-6 sm:p-8 hidden login-card">
+        <div id="view-admin-login" class="w-full max-w-md mx-auto glass-card rounded-2xl p-6 sm:p-8 hidden login-card">
             <span class="login-icon">🛡️</span>
             <div class="login-title">Login Admin</div>
             <div class="login-sub">Masukkan password untuk masuk</div>
@@ -802,27 +753,27 @@
         </div>
 
         <!-- DASHBOARD SISWA -->
-        <div id="view-siswa-dashboard" class="w-full bg-card rounded-2xl shadow-lg border border-border p-4 sm:p-8 hidden">
+        <div id="view-siswa-dashboard" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
             <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <span class="bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 text-[10px] px-2 py-0.5 rounded-full">SISWA</span>
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-emerald-100/60 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full">SISWA</span>
                     Pilih Mata Pelajaran
                 </h2>
                 <div class="flex gap-2 flex-wrap">
-                    <span class="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full flex items-center gap-1">
+                    <span class="text-xs text-slate-500 bg-white/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1">
                         👤 <span id="siswa-nama-display">-</span>
                     </span>
                     <button onclick="logout()" class="btn btn-danger btn-sm">Logout</button>
                 </div>
             </div>
 
-            <div id="lock-container" class="hidden bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-4">
-                <p class="text-yellow-800 dark:text-yellow-300 font-bold">⏳ Anda telah me-reload halaman.</p>
-                <p class="text-yellow-700 dark:text-yellow-400">Harap tunggu <span id="lock-countdown">5:00</span> sebelum dapat melanjutkan ujian.</p>
-                <p class="text-sm text-yellow-600 dark:text-yellow-500 mt-2">Waktu ujian tetap berjalan selama masa tunggu.</p>
+            <div id="lock-container" class="hidden rounded-lg p-4 mb-4">
+                <p class="text-yellow-800 font-bold">⏳ Anda telah me-reload halaman.</p>
+                <p class="text-yellow-700">Harap tunggu <span id="lock-countdown">5:00</span> sebelum dapat melanjutkan ujian.</p>
+                <p class="text-sm text-yellow-600 mt-2">Waktu ujian tetap berjalan selama masa tunggu.</p>
             </div>
 
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Silakan pilih mata pelajaran yang akan Anda ujikan. Mapel yang sudah selesai tidak dapat diulang.</p>
+            <p class="text-sm text-slate-500 mb-4">Silakan pilih mata pelajaran yang akan Anda ujikan. Mapel yang sudah selesai tidak dapat diulang.</p>
 
             <div id="siswa-slide-container">
                 <div id="siswa-daftar-mapel" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -836,21 +787,21 @@
                 </div>
             </div>
 
-            <div class="mt-6 border-t border-border pt-4">
-                <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-2">📋 Riwayat Ujian Selesai</h3>
-                <div id="siswa-riwayat" class="text-sm text-slate-600 dark:text-slate-400"></div>
+            <div class="mt-6 border-t border-white/20 pt-4">
+                <h3 class="font-bold text-sm text-slate-900 mb-2">📋 Riwayat Ujian Selesai</h3>
+                <div id="siswa-riwayat" class="text-sm text-slate-600"></div>
             </div>
         </div>
 
         <!-- DASHBOARD GURU -->
-        <div id="view-guru-dashboard" class="w-full bg-card rounded-2xl shadow-lg border border-border p-4 sm:p-8 hidden">
+        <div id="view-guru-dashboard" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
             <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <span class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-blue-100/60 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
                     Panel Pengajar
                 </h2>
                 <div class="flex gap-2 flex-wrap">
-                    <span class="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full flex items-center gap-1">
+                    <span class="text-xs text-slate-500 bg-white/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1">
                         👤 <span id="guru-nama">Budi Santoso</span>
                     </span>
                     <button onclick="logout()" class="btn btn-danger btn-sm">Logout</button>
@@ -863,9 +814,9 @@
             </div>
             
             <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100">📊 Hasil Ujian Siswa (Mapel yang Diajarkan)</h3>
+                <h3 class="font-bold text-sm text-slate-900">📊 Hasil Ujian Siswa (Mapel yang Diajarkan)</h3>
                 <div class="export-options">
-                    <select id="guru-export-mapel" class="border border-border rounded-lg px-3 py-1.5 text-sm bg-input text-secondary">
+                    <select id="guru-export-mapel" class="border border-white/30 rounded-lg px-3 py-1.5 text-sm bg-white/40 backdrop-blur-sm">
                         <option value="all">Semua Mapel</option>
                     </select>
                     <button onclick="exportHasilGuru()" class="btn btn-export btn-sm">
@@ -874,11 +825,11 @@
                 </div>
             </div>
             
-            <div class="table-wrap border border-border rounded-xl bg-card">
+            <div class="table-wrap border border-white/20 rounded-xl bg-white/20 backdrop-blur-sm">
                 <table>
                     <thead><tr><th>No</th><th>Nama</th><th>Mapel</th><th class="text-center">Nilai</th></tr></thead>
                     <tbody id="guru-tabel-hasil">
-                        <tr><td colspan="4" class="text-center py-4 text-slate-400 dark:text-slate-500 text-xs">Memuat data...</td></tr>
+                        <tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -889,14 +840,14 @@
         </div>
 
         <!-- DASHBOARD ADMIN -->
-        <div id="view-admin-dashboard" class="w-full bg-card rounded-2xl shadow-lg border border-border p-4 sm:p-8 hidden">
+        <div id="view-admin-dashboard" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
             <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <span class="bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-purple-100/60 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
                     Pusat Kendali Sistem
                 </h2>
                 <div class="flex gap-2 flex-wrap">
-                    <span class="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full flex items-center gap-1">
+                    <span class="text-xs text-slate-500 bg-white/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1">
                         👤 <span id="admin-nama">Admin Utama</span>
                     </span>
                     <button onclick="logout()" class="btn btn-danger btn-sm">Logout</button>
@@ -916,23 +867,23 @@
                 <button onclick="gantiHalaman('view-admin-kelola-siswa')" class="btn btn-warning btn-sm">👥 Kelola Siswa</button>
             </div>
 
-            <div class="mt-4 border-t border-border pt-4">
-                <h3 class="font-bold text-sm text-slate-900 dark:text-slate-100 mb-2">📚 Daftar Mata Pelajaran</h3>
+            <div class="mt-4 border-t border-white/20 pt-4">
+                <h3 class="font-bold text-sm text-slate-900 mb-2">📚 Daftar Mata Pelajaran</h3>
                 <div id="admin-daftar-mapel" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                 </div>
             </div>
         </div>
 
         <!-- HALAMAN UJIAN -->
-        <div id="view-ujian" class="w-full bg-card rounded-2xl shadow-lg border border-border p-4 sm:p-8 hidden">
+        <div id="view-ujian" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
             <div class="page-header">
                 <div>
-                    <h2 class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                        <span class="bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 text-[10px] px-2 py-0.5 rounded-full">UJIAN</span>
+                    <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                        <span class="bg-emerald-100/60 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full">UJIAN</span>
                         <span id="ujian-mapel">-</span>
                     </h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Peserta: <span id="ujian-nama">-</span></p>
-                    <p id="tab-warning" class="text-xs text-rose-500 dark:text-rose-400 font-semibold hidden">⚠️ Jangan tinggalkan tab ini!</p>
+                    <p class="text-xs text-slate-500">Peserta: <span id="ujian-nama">-</span></p>
+                    <p id="tab-warning" class="text-xs text-rose-500 font-semibold hidden">⚠️ Jangan tinggalkan tab ini!</p>
                 </div>
                 <div class="timer-box">
                     <span class="label">Sisa Waktu</span>
@@ -943,13 +894,13 @@
             <div class="flex flex-col lg:grid lg:grid-cols-4 gap-4">
                 <div class="lg:col-span-3">
                     <div id="ujian-soal-container"></div>
-                    <div class="flex justify-between items-center gap-2 mt-4 pt-3 border-t border-border">
+                    <div class="flex justify-between items-center gap-2 mt-4 pt-3 border-t border-white/20">
                         <button onclick="soalPrev()" id="btn-soal-prev" class="btn btn-outline btn-sm">⬅ Sebelumnya</button>
                         <button onclick="soalNext()" id="btn-soal-next" class="btn btn-primary btn-sm">Berikutnya ➡</button>
                     </div>
                 </div>
-                <div class="lg:col-span-1 bg-slate-50 dark:bg-slate-800 rounded-xl p-4">
-                    <h4 class="font-bold text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3 text-center">Navigasi</h4>
+                <div class="lg:col-span-1 bg-white/20 backdrop-blur-sm rounded-xl p-4">
+                    <h4 class="font-bold text-xs text-slate-400 uppercase tracking-wider mb-3 text-center">Navigasi</h4>
                     <div id="ujian-nav-soal" class="nav-soal"></div>
                     <button onclick="kumpulkanUjian()" class="btn btn-danger mt-4">📤 Kumpulkan</button>
                 </div>
@@ -958,10 +909,10 @@
         </div>
 
         <!-- GURU: TAMBAH SOAL -->
-        <div id="view-guru-tambah-soal" class="w-full max-w-2xl mx-auto bg-card rounded-2xl shadow-lg border border-border p-4 sm:p-8 hidden">
+        <div id="view-guru-tambah-soal" class="w-full max-w-2xl mx-auto glass-card rounded-2xl p-4 sm:p-8 hidden">
             <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <span class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-blue-100/60 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
                     Tambah Soal
                 </h2>
                 <button onclick="gantiHalaman('view-guru-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
@@ -969,21 +920,21 @@
             <form onsubmit="event.preventDefault(); guruTambahSoal();" class="space-y-4">
                 <div>
                     <label>Mata Pelajaran</label>
-                    <select id="guru-input-mapel" class="border border-border rounded-lg p-2 w-full bg-input text-secondary"></select>
+                    <select id="guru-input-mapel" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm"></select>
                 </div>
                 <div>
                     <label>Pertanyaan</label>
-                    <textarea id="guru-input-tanya" rows="3" class="border border-border rounded-lg p-2 w-full bg-input text-secondary" placeholder="Tulis pertanyaan..."></textarea>
+                    <textarea id="guru-input-tanya" rows="3" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Tulis pertanyaan..."></textarea>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div><label>Opsi A</label><input type="text" id="guru-input-opsi-0" class="border border-border rounded-lg p-2 w-full bg-input text-secondary" placeholder="Opsi A"></div>
-                    <div><label>Opsi B</label><input type="text" id="guru-input-opsi-1" class="border border-border rounded-lg p-2 w-full bg-input text-secondary" placeholder="Opsi B"></div>
-                    <div><label>Opsi C</label><input type="text" id="guru-input-opsi-2" class="border border-border rounded-lg p-2 w-full bg-input text-secondary" placeholder="Opsi C"></div>
-                    <div><label>Opsi D</label><input type="text" id="guru-input-opsi-3" class="border border-border rounded-lg p-2 w-full bg-input text-secondary" placeholder="Opsi D"></div>
+                    <div><label>Opsi A</label><input type="text" id="guru-input-opsi-0" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi A"></div>
+                    <div><label>Opsi B</label><input type="text" id="guru-input-opsi-1" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi B"></div>
+                    <div><label>Opsi C</label><input type="text" id="guru-input-opsi-2" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi C"></div>
+                    <div><label>Opsi D</label><input type="text" id="guru-input-opsi-3" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi D"></div>
                 </div>
                 <div>
                     <label>Kunci Jawaban</label>
-                    <select id="guru-input-kunci" class="border border-border rounded-lg p-2 w-full bg-input text-secondary">
+                    <select id="guru-input-kunci" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm">
                         <option value="0">A</option>
                         <option value="1">B</option>
                         <option value="2">C</option>
@@ -995,36 +946,36 @@
         </div>
 
         <!-- GURU: KELOLA SOAL -->
-        <div id="view-guru-kelola-soal" class="w-full bg-card rounded-2xl shadow-lg border border-border p-4 sm:p-8 hidden">
+        <div id="view-guru-kelola-soal" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
             <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <span class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-blue-100/60 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
                     Kelola Soal
                 </h2>
                 <button onclick="gantiHalaman('view-guru-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
             </div>
             <div class="flex flex-wrap gap-2 mb-4">
-                <select id="guru-filter-kelola" class="border border-border rounded-lg px-3 py-1.5 text-sm bg-input text-secondary">
+                <select id="guru-filter-kelola" class="border border-white/30 rounded-lg px-3 py-1.5 text-sm bg-white/40 backdrop-blur-sm">
                     <option value="">Semua Mapel (Saya)</option>
                 </select>
                 <button onclick="renderKelolaSoal()" class="btn btn-primary btn-sm">Filter</button>
                 <button onclick="gantiHalaman('view-guru-tambah-soal')" class="btn btn-success btn-sm">+ Tambah Soal</button>
             </div>
-            <div class="table-wrap border border-border rounded-xl bg-card">
+            <div class="table-wrap border border-white/20 rounded-xl bg-white/20 backdrop-blur-sm">
                 <table>
                     <thead><tr><th>ID</th><th>Mapel</th><th>Pertanyaan</th><th class="text-center">Kunci</th><th class="text-center">Aksi</th></tr></thead>
                     <tbody id="guru-tabel-kelola">
-                        <tr><td colspan="5" class="text-center py-4 text-slate-400 dark:text-slate-500 text-xs">Memuat data...</td></tr>
+                        <tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
         <!-- ADMIN: KELOLA MAPEL -->
-        <div id="view-admin-kelola-mapel" class="w-full bg-card rounded-2xl shadow-lg border border-border p-4 sm:p-8 hidden">
+        <div id="view-admin-kelola-mapel" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
             <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <span class="bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-purple-100/60 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
                     Kelola Mata Pelajaran
                 </h2>
                 <div class="flex gap-2 flex-wrap">
@@ -1035,22 +986,22 @@
                 <button onclick="bukaModalTambahMapel()" class="btn btn-success btn-sm">➕ Tambah Mapel</button>
                 <button onclick="renderKelolaMapel()" class="btn btn-primary btn-sm">↻ Refresh</button>
             </div>
-            <div class="table-wrap border border-border rounded-xl bg-card">
+            <div class="table-wrap border border-white/20 rounded-xl bg-white/20 backdrop-blur-sm">
                 <table>
                     <thead><tr><th>ID</th><th>Nama Mapel</th><th>Kode</th><th>Icon</th><th>Jumlah Soal</th><th class="text-center">Aksi</th></tr></thead>
                     <tbody id="admin-tabel-mapel">
-                        <tr><td colspan="6" class="text-center py-4 text-slate-400 dark:text-slate-500 text-xs">Memuat data...</td></tr>
+                        <tr><td colspan="6" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
                     </tbody>
                 </table>
             </div>
-            <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">⚠️ Menghapus mapel akan menghapus semua soal yang terkait dengan mapel tersebut.</p>
+            <p class="text-xs text-slate-400 mt-2">⚠️ Menghapus mapel akan menghapus semua soal yang terkait dengan mapel tersebut.</p>
         </div>
 
         <!-- ADMIN: KELOLA GURU -->
-        <div id="view-admin-kelola-guru" class="w-full bg-card rounded-2xl shadow-lg border border-border p-4 sm:p-8 hidden">
+        <div id="view-admin-kelola-guru" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
             <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <span class="bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-purple-100/60 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
                     Kelola Guru & Mapel Pengajaran
                 </h2>
                 <div class="flex gap-2 flex-wrap">
@@ -1058,8 +1009,8 @@
                     <button onclick="renderKelolaGuru()" class="btn btn-primary btn-sm">↻ Refresh</button>
                 </div>
             </div>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Kelola data guru dan mata pelajaran yang diajarkan oleh masing-masing guru.</p>
-            <div class="table-wrap border border-border rounded-xl bg-card">
+            <p class="text-sm text-slate-500 mb-4">Kelola data guru dan mata pelajaran yang diajarkan oleh masing-masing guru.</p>
+            <div class="table-wrap border border-white/20 rounded-xl bg-white/20 backdrop-blur-sm">
                 <table>
                     <thead>
                         <tr>
@@ -1071,17 +1022,17 @@
                         </tr>
                     </thead>
                     <tbody id="admin-tabel-guru">
-                        <tr><td colspan="5" class="text-center py-4 text-slate-400 dark:text-slate-500 text-xs">Memuat data...</td></tr>
+                        <tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
         <!-- ADMIN: TAMBAH USER -->
-        <div id="view-admin-tambah-user" class="w-full max-w-md mx-auto bg-card rounded-2xl shadow-lg border border-border p-4 sm:p-8 hidden">
+        <div id="view-admin-tambah-user" class="w-full max-w-md mx-auto glass-card rounded-2xl p-4 sm:p-8 hidden">
             <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <span class="bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-purple-100/60 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
                     Tambah User
                 </h2>
                 <button onclick="gantiHalaman('view-admin-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
@@ -1089,11 +1040,11 @@
             <form onsubmit="event.preventDefault(); adminTambahUser();" class="space-y-4">
                 <div>
                     <label>Nama Lengkap</label>
-                    <input type="text" id="admin-user-nama" class="border border-border rounded-lg p-2 w-full bg-input text-secondary" placeholder="Nama user" required>
+                    <input type="text" id="admin-user-nama" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Nama user" required>
                 </div>
                 <div>
                     <label>Role</label>
-                    <select id="admin-user-role" class="border border-border rounded-lg p-2 w-full bg-input text-secondary">
+                    <select id="admin-user-role" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm">
                         <option value="siswa">Siswa</option>
                         <option value="guru">Guru</option>
                         <option value="admin">Admin</option>
@@ -1101,31 +1052,32 @@
                 </div>
                 <div>
                     <label>Password</label>
-                    <input type="password" id="admin-user-pass" class="border border-border rounded-lg p-2 w-full bg-input text-secondary" placeholder="Password (kosongkan jika siswa)">
+                    <input type="password" id="admin-user-pass" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Password (kosongkan jika siswa)">
                 </div>
                 <div id="guru-mapel-container" class="hidden">
                     <label>Mata Pelajaran yang Diajarkan</label>
-                    <select id="admin-user-guru-mapel" class="border border-border rounded-lg p-2 w-full bg-input text-secondary" multiple>
+                    <select id="admin-user-guru-mapel" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" multiple>
                     </select>
-                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Tahan Ctrl untuk memilih lebih dari satu mapel</p>
+                    <p class="text-xs text-slate-400 mt-1">Tahan Ctrl untuk memilih lebih dari satu mapel</p>
                 </div>
                 <button type="submit" class="btn btn-success">➕ Tambah User</button>
             </form>
         </div>
 
         <!-- ADMIN: KELOLA SISWA -->
-        <div id="view-admin-kelola-siswa" class="w-full bg-card rounded-2xl shadow-lg border border-border p-4 sm:p-8 hidden">
+        <div id="view-admin-kelola-siswa" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
             <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <span class="bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
-                    Kelola Siswa & Reset Ujian                </h2>
+                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="bg-purple-100/60 text-purple-700 text-[10px] px-2 py-0.5 rounded-full">ADMIN</span>
+                    Kelola Siswa & Reset Ujian
+                </h2>
                 <div class="flex gap-2 flex-wrap">
                     <button onclick="gantiHalaman('view-admin-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
                     <button onclick="renderKelolaSiswa()" class="btn btn-primary btn-sm">↻ Refresh</button>
                 </div>
             </div>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Kelola data siswa dan reset riwayat ujian mereka agar dapat mengulang asesmen.</p>
-            <div class="table-wrap border border-border rounded-xl bg-card">
+            <p class="text-sm text-slate-500 mb-4">Kelola data siswa dan reset riwayat ujian mereka agar dapat mengulang asesmen.</p>
+            <div class="table-wrap border border-white/20 rounded-xl bg-white/20 backdrop-blur-sm">
                 <table>
                     <thead>
                         <tr>
@@ -1136,7 +1088,7 @@
                         </tr>
                     </thead>
                     <tbody id="admin-tabel-siswa">
-                        <tr><td colspan="4" class="text-center py-4 text-slate-400 dark:text-slate-500 text-xs">Memuat data...</td></tr>
+                        <tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1147,7 +1099,7 @@
             <div class="modal-box">
                 <h3 id="modal-siswa-nama">Riwayat Ujian</h3>
                 <div id="modal-siswa-content" class="space-y-2"></div>
-                <div class="btn-group mt-4 border-t border-border pt-4">
+                <div class="btn-group mt-4 border-t border-white/20 pt-4">
                     <button onclick="tutupModalDetailSiswa()" class="btn btn-outline btn-sm">Tutup</button>
                     <button id="btn-reset-all-siswa" class="btn btn-danger btn-sm">🗑️ Reset Semua Ujian</button>
                 </div>
@@ -1162,19 +1114,19 @@
                     <input type="hidden" id="edit-guru-id">
                     <div>
                         <label>Nama Guru</label>
-                        <input type="text" id="edit-guru-nama" class="border border-border rounded-lg p-2 w-full bg-input text-secondary" required>
+                        <input type="text" id="edit-guru-nama" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" required>
                     </div>
                     <div>
                         <label>Password Baru (kosongkan jika tidak diubah)</label>
-                        <input type="text" id="edit-guru-password" class="border border-border rounded-lg p-2 w-full bg-input text-secondary" placeholder="Kosongkan untuk tetap menggunakan password lama">
+                        <input type="text" id="edit-guru-password" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Kosongkan untuk tetap menggunakan password lama">
                     </div>
                     <div>
                         <label>Mata Pelajaran yang Diajarkan</label>
-                        <select id="edit-guru-mapel" class="border border-border rounded-lg p-2 w-full bg-input text-secondary" multiple>
+                        <select id="edit-guru-mapel" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" multiple>
                         </select>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Tahan Ctrl untuk memilih lebih dari satu mapel</p>
+                        <p class="text-xs text-slate-400 mt-1">Tahan Ctrl untuk memilih lebih dari satu mapel</p>
                     </div>
-                    <div class="btn-group mt-4 border-t border-border pt-4">
+                    <div class="btn-group mt-4 border-t border-white/20 pt-4">
                         <button type="button" onclick="tutupModalEditGuru()" class="btn btn-outline btn-sm">Batal</button>
                         <button type="submit" class="btn btn-primary btn-sm">💾 Simpan</button>
                     </div>
@@ -1185,14 +1137,14 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="py-2 text-center text-[9px] sm:text-xs text-slate-400 dark:text-slate-500 font-medium shrink-0">
+    <footer class="py-2 text-center text-[9px] sm:text-xs text-slate-500 font-medium shrink-0">
         <div class="flex flex-wrap items-center justify-center gap-1">
             <span class="logo-artha inline-flex flex-row items-center gap-1 px-2 py-0.5 rounded">
-                <span class="brand text-xs font-extrabold text-indigo-800 dark:text-indigo-400">ARTHA JAYA</span>
-                <span class="tagline-alt text-[6px] text-indigo-400 dark:text-indigo-500 border-l border-indigo-200 dark:border-indigo-700 pl-1">BERKARYA</span>
+                <span class="brand text-xs font-extrabold text-indigo-800">ARTHA JAYA</span>
+                <span class="tagline-alt text-[6px] text-indigo-400 border-l border-white/30 pl-1">BERKARYA</span>
             </span>
             <span>SMK Prama Artha · CBT</span>
-            <span class="text-slate-300 dark:text-slate-600">|</span>
+            <span class="text-slate-300">|</span>
             <span>Anti-Tab: -3 Menit | Anti-Reload: Harus Tunggu 5 Menit</span>
         </div>
     </footer>
@@ -1201,37 +1153,6 @@
     <!-- JAVASCRIPT -->
     <!-- ============================================================ -->
     <script>
-        // ================================================================
-        // THEME MANAGEMENT
-        // ================================================================
-        function toggleTheme() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeIcon(newTheme);
-        }
-
-        function updateThemeIcon(theme) {
-            const btn = document.getElementById('theme-toggle');
-            if (theme === 'dark') {
-                btn.innerHTML = '☀️';
-                btn.title = 'Switch to Light Mode';
-            } else {
-                btn.innerHTML = '🌙';
-                btn.title = 'Switch to Dark Mode';
-            }
-        }
-
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
-            document.documentElement.setAttribute('data-theme', theme);
-            updateThemeIcon(theme);
-        }
-
         // ================================================================
         // KONFIGURASI
         // ================================================================
@@ -1633,7 +1554,7 @@
             const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
             
             if (totalPages === 0 || items.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center text-slate-400 dark:text-slate-500 py-8">Belum ada mata pelajaran tersedia.</div>';
+                container.innerHTML = '<div class="col-span-full text-center text-slate-400 py-8">Belum ada mata pelajaran tersedia.</div>';
                 updateSlideNav(0, 0);
                 return;
             }
@@ -1706,7 +1627,7 @@
             const container = document.getElementById('siswa-riwayat');
             const keys = Object.keys(data);
             if (keys.length === 0) {
-                container.innerHTML = '<p class="text-slate-400 dark:text-slate-500 text-xs">Belum ada ujian yang diselesaikan.</p>';
+                container.innerHTML = '<p class="text-slate-400 text-xs">Belum ada ujian yang diselesaikan.</p>';
                 return;
             }
             let html = '<ul class="list-disc list-inside text-xs space-y-1">';
@@ -1864,7 +1785,7 @@
             tbody.innerHTML = '';
 
             if (guruList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-400 dark:text-slate-500 text-xs">Belum ada guru terdaftar.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Belum ada guru terdaftar.</td></tr>';
                 return;
             }
 
@@ -1878,15 +1799,15 @@
                     <tr>
                         <td>${guru.id}</td>
                         <td class="font-semibold">${guru.nama}</td>
-                        <td><span class="text-xs font-mono bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded">${guru.password || '-'}</span></td>
+                        <td><span class="text-xs font-mono bg-white/30 backdrop-blur-sm px-2 py-0.5 rounded">${guru.password || '-'}</span></td>
                         <td>
                             <div class="flex flex-wrap gap-1">
-                                ${mapelTags || '<span class="text-slate-400 dark:text-slate-500 text-xs">Belum ada mapel</span>'}
+                                ${mapelTags || '<span class="text-slate-400 text-xs">Belum ada mapel</span>'}
                             </div>
                         </td>
                         <td class="text-center">
-                            <button onclick="bukaEditGuru(${guru.id})" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-xs font-medium px-2 py-1 rounded border border-blue-100 dark:border-blue-900 hover:bg-blue-50 dark:hover:bg-blue-950 transition">✏️ Edit</button>
-                            <button onclick="hapusGuru(${guru.id})" class="text-rose-500 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300 text-xs font-medium px-2 py-1 rounded border border-rose-100 dark:border-rose-900 hover:bg-rose-50 dark:hover:bg-rose-950 transition">🗑️ Hapus</button>
+                            <button onclick="bukaEditGuru(${guru.id})" class="text-blue-500 hover:text-blue-700 text-xs font-medium px-2 py-1 rounded border border-blue-100/30 hover:bg-blue-50/30 transition">✏️ Edit</button>
+                            <button onclick="hapusGuru(${guru.id})" class="text-rose-500 hover:text-rose-700 text-xs font-medium px-2 py-1 rounded border border-rose-100/30 hover:bg-rose-50/30 transition">🗑️ Hapus</button>
                         </td>
                     </tr>
                 `;
@@ -2452,7 +2373,7 @@
             });
             
             if (semuaHasil.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-400 dark:text-slate-500 text-xs">Belum ada hasil ujian untuk mapel yang Anda ajarkan.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">Belum ada hasil ujian untuk mapel yang Anda ajarkan.</td></tr>';
                 return;
             }
             
@@ -2463,7 +2384,7 @@
                         <td>${idx + 1}</td>
                         <td>${item.nama}</td>
                         <td>${item.mapelNama}</td>
-                        <td class="text-center"><span class="bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold px-2 py-0.5 rounded-full text-xs">${item.nilai}</span></td>
+                        <td class="text-center"><span class="bg-blue-50/60 text-blue-700 font-bold px-2 py-0.5 rounded-full text-xs">${item.nilai}</span></td>
                     </tr>
                 `;
             });
@@ -2558,7 +2479,7 @@
             }
 
             if (semuaSoal.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-400 dark:text-slate-500 text-xs">Belum ada soal untuk mapel yang Anda ajarkan.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-400 text-xs">Belum ada soal untuk mapel yang Anda ajarkan.</td></tr>';
                 return;
             }
 
@@ -2571,10 +2492,10 @@
                         <td>${soal.id}</td>
                         <td>${soal.mapelNama}</td>
                         <td class="max-w-[200px] truncate">${soal.tanya}</td>
-                        <td class="text-center"><span class="bg-indigo-50 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full text-xs font-bold">${kunciHuruf[soal.kunci]}</span></td>
+                        <td class="text-center"><span class="bg-indigo-50/60 text-indigo-700 px-2 py-0.5 rounded-full text-xs font-bold">${kunciHuruf[soal.kunci]}</span></td>
                         <td class="text-center">
-                            <button onclick="bukaEditSoal(${soal.id}, ${soal.mapelId})" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-xs font-medium px-2 py-1 rounded border border-blue-100 dark:border-blue-900 hover:bg-blue-50 dark:hover:bg-blue-950 transition">✏️ Edit</button>
-                            <button onclick="hapusSoal(${soal.id}, ${soal.mapelId})" class="text-rose-500 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300 text-xs font-medium px-2 py-1 rounded border border-rose-100 dark:border-rose-900 hover:bg-rose-50 dark:hover:bg-rose-950 transition">🗑️ Hapus</button>
+                            <button onclick="bukaEditSoal(${soal.id}, ${soal.mapelId})" class="text-blue-500 hover:text-blue-700 text-xs font-medium px-2 py-1 rounded border border-blue-100/30 hover:bg-blue-50/30 transition">✏️ Edit</button>
+                            <button onclick="hapusSoal(${soal.id}, ${soal.mapelId})" class="text-rose-500 hover:text-rose-700 text-xs font-medium px-2 py-1 rounded border border-rose-100/30 hover:bg-rose-50/30 transition">🗑️ Hapus</button>
                         </td>
                     </tr>
                 `;
@@ -2670,16 +2591,16 @@
             const container = document.getElementById('admin-daftar-mapel');
             container.innerHTML = '';
             if (DATA_MAPEL.length === 0) {
-                container.innerHTML = '<p class="text-slate-400 dark:text-slate-500 text-xs col-span-full">Belum ada mapel.</p>';
+                container.innerHTML = '<p class="text-slate-400 text-xs col-span-full">Belum ada mapel.</p>';
                 return;
             }
             DATA_MAPEL.forEach(m => {
                 const jml = getSoalByMapel(m.id).length;
                 container.innerHTML += `
-                    <div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 text-center border border-slate-200 dark:border-slate-700">
+                    <div class="bg-white/30 backdrop-blur-sm rounded-lg p-3 text-center border border-white/20">
                         <span class="text-2xl block">${m.icon || '📚'}</span>
-                        <div class="font-semibold text-sm text-slate-900 dark:text-slate-100">${m.nama}</div>
-                        <div class="text-xs text-slate-400 dark:text-slate-500">${m.kode || ''} • ${jml} soal</div>
+                        <div class="font-semibold text-sm text-slate-800">${m.nama}</div>
+                        <div class="text-xs text-slate-400">${m.kode || ''} • ${jml} soal</div>
                     </div>
                 `;
             });
@@ -2694,7 +2615,7 @@
             tbody.innerHTML = '';
 
             if (DATA_MAPEL.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-slate-400 dark:text-slate-500 text-xs">Belum ada mapel.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-slate-400 text-xs">Belum ada mapel.</td></tr>';
                 return;
             }
 
@@ -2708,8 +2629,8 @@
                         <td class="text-center text-2xl">${m.icon || '📚'}</td>
                         <td class="text-center">${jml}</td>
                         <td class="text-center">
-                            <button onclick="bukaEditMapel(${m.id})" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-xs font-medium px-2 py-1 rounded border border-blue-100 dark:border-blue-900 hover:bg-blue-50 dark:hover:bg-blue-950 transition">✏️ Edit</button>
-                            <button onclick="hapusMapelAdmin(${m.id})" class="text-rose-500 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300 text-xs font-medium px-2 py-1 rounded border border-rose-100 dark:border-rose-900 hover:bg-rose-50 dark:hover:bg-rose-950 transition">🗑️ Hapus</button>
+                            <button onclick="bukaEditMapel(${m.id})" class="text-blue-500 hover:text-blue-700 text-xs font-medium px-2 py-1 rounded border border-blue-100/30 hover:bg-blue-50/30 transition">✏️ Edit</button>
+                            <button onclick="hapusMapelAdmin(${m.id})" class="text-rose-500 hover:text-rose-700 text-xs font-medium px-2 py-1 rounded border border-rose-100/30 hover:bg-rose-50/30 transition">🗑️ Hapus</button>
                         </td>
                     </tr>
                 `;
@@ -2843,7 +2764,7 @@
             tbody.innerHTML = '';
 
             if (siswa.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-400 dark:text-slate-500 text-xs">Belum ada siswa terdaftar.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-400 text-xs">Belum ada siswa terdaftar.</td></tr>';
                 return;
             }
 
@@ -2992,9 +2913,6 @@
         // INISIALISASI
         // ================================================================
         window.onload = function() {
-            // Load theme first
-            loadTheme();
-            
             loadUsersFromStorage();
             loadMapelFromStorage();
             loadSoalFromStorage();
