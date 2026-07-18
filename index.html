@@ -862,7 +862,7 @@
             <form onsubmit="event.preventDefault(); loginSiswa();" class="space-y-4">
                 <div>
                     <label>📝 Nama Lengkap</label>
-                    <input type="text" id="siswa-nama-input" placeholder="Contoh: Andi Wijaya" value="Andi Wijaya">
+                    <input type="text" id="siswa-nama-input" placeholder="Contoh: Andi Wijaya" value="">
                     <div class="hint">Masukkan nama sesuai absen</div>
                 </div>
                 <div>
@@ -903,7 +903,7 @@
             <form onsubmit="event.preventDefault(); loginGuru();" class="space-y-4">
                 <div>
                     <label>🔑 Password Guru</label>
-                    <input type="password" id="guru-password" placeholder="Masukkan password" value="Guru123">
+                    <input type="password" id="guru-password" placeholder="Masukkan password" value="">
                     <div class="hint">Default: Guru123</div>
                 </div>
                 <div id="guru-error" class="error-msg">⚠️ Password salah! Coba lagi.</div>
@@ -920,7 +920,7 @@
             <form onsubmit="event.preventDefault(); loginAdmin();" class="space-y-4">
                 <div>
                     <label>🔑 Password Admin</label>
-                    <input type="password" id="admin-password" placeholder="Masukkan password" value="Admin123">
+                    <input type="password" id="admin-password" placeholder="Masukkan password" value="">
                     <div class="hint">Default: Admin123</div>
                 </div>
                 <div id="admin-error" class="error-msg">⚠️ Password salah! Coba lagi.</div>
@@ -1472,8 +1472,8 @@
         // ================================================================
         // SUPABASE CONFIG - GANTI DENGAN MILIK ANDA
         // ================================================================
-        const SUPABASE_URL = 'https://rsfepmlqbcpnqnavhesw.supabase.co'; // Ganti dengan URL Supabase Anda
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZmVwbWxxYmNwbnFuYXZoZXN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDQzMDYsImV4cCI6MjA5OTYyMDMwNn0.jRbCyr19TBrQjtjD76kQQFIdqjh4isZ3clxCXQ6xK5g'; // Ganti dengan Anon Key Supabase Anda
+        const SUPABASE_URL = 'https://rsfepmlqbcpnqnavhesw.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZmVwbWxxYmNwbnFuYXZoZXN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDQzMDYsImV4cCI6MjA5OTYyMDMwNn0.jRbCyr19TBrQjtjD76kQQFIdqjh4isZ3clxCXQ6xK5g';
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ================================================================
@@ -1483,6 +1483,7 @@
         let users = [];
         let DATA_MAPEL = [];
         let DATA_SOAL = {};
+        let DATA_HASIL = []; // cache hasil ujian
         let isLoading = false;
 
         // ================================================================
@@ -1514,19 +1515,22 @@
             showLoading();
 
             try {
-                // Load semua data secara paralel untuk lebih cepat
-                const [usersResult, mapelResult, soalResult] = await Promise.all([
+                // Load semua data secara paralel
+                const [usersResult, mapelResult, soalResult, hasilResult] = await Promise.all([
                     supabase.from('users').select('*'),
                     supabase.from('mapel').select('*'),
-                    supabase.from('soal').select('*')
+                    supabase.from('soal').select('*'),
+                    supabase.from('hasil_ujian').select('*')
                 ]);
 
                 if (usersResult.error) throw usersResult.error;
                 if (mapelResult.error) throw mapelResult.error;
                 if (soalResult.error) throw soalResult.error;
+                if (hasilResult.error) throw hasilResult.error;
 
                 users = usersResult.data || [];
                 DATA_MAPEL = mapelResult.data || [];
+                DATA_HASIL = hasilResult.data || [];
 
                 // Group soal by mapel_id
                 DATA_SOAL = {};
@@ -1578,21 +1582,24 @@
             isLoading = false;
         }
 
-        // Fungsi refresh data cepat (tanpa loading overlay penuh)
+        // Fungsi refresh data cepat
         async function refreshData() {
             try {
-                const [usersResult, mapelResult, soalResult] = await Promise.all([
+                const [usersResult, mapelResult, soalResult, hasilResult] = await Promise.all([
                     supabase.from('users').select('*'),
                     supabase.from('mapel').select('*'),
-                    supabase.from('soal').select('*')
+                    supabase.from('soal').select('*'),
+                    supabase.from('hasil_ujian').select('*')
                 ]);
 
                 if (usersResult.error) throw usersResult.error;
                 if (mapelResult.error) throw mapelResult.error;
                 if (soalResult.error) throw soalResult.error;
+                if (hasilResult.error) throw hasilResult.error;
 
                 users = usersResult.data || [];
                 DATA_MAPEL = mapelResult.data || [];
+                DATA_HASIL = hasilResult.data || [];
 
                 DATA_SOAL = {};
                 (soalResult.data || []).forEach(s => {
@@ -1893,12 +1900,31 @@
         }
 
         // ================================================================
-        // SISWA: HASIL UJIAN
+        // SISWA: HASIL UJIAN - Menggunakan DATA_HASIL cache
         // ================================================================
+        function getHasilSiswaFromCache(nama, kelas) {
+            const user = users.find(u => u.nama === nama && u.kelas === kelas);
+            if (!user) return {};
+            
+            const hasil = {};
+            DATA_HASIL.forEach(h => {
+                if (h.user_id === user.id) {
+                    hasil[h.mapel_id] = { nilai: h.nilai, tanggal: h.tanggal, kelas: h.kelas };
+                }
+            });
+            return hasil;
+        }
+
+        // Untuk mendapatkan data terbaru dari DB
         async function getHasilSiswa(nama, kelas) {
             const user = users.find(u => u.nama === nama && u.kelas === kelas);
             if (!user) return {};
             
+            // Cek cache dulu
+            const cached = getHasilSiswaFromCache(nama, kelas);
+            if (Object.keys(cached).length > 0) return cached;
+            
+            // Jika tidak ada di cache, ambil dari DB
             const { data, error } = await supabase
                 .from('hasil_ujian')
                 .select('*')
@@ -1910,6 +1936,11 @@
             data.forEach(h => {
                 hasil[h.mapel_id] = { nilai: h.nilai, tanggal: h.tanggal, kelas: h.kelas };
             });
+            
+            // Update cache
+            DATA_HASIL = DATA_HASIL.filter(h => h.user_id !== user.id);
+            DATA_HASIL.push(...data);
+            
             return hasil;
         }
 
@@ -1930,7 +1961,19 @@
             if (error) {
                 console.error('Error saving result:', error);
                 showToast('❌ Gagal menyimpan hasil ujian!', 'danger');
+                return;
             }
+            
+            // Update cache
+            const newEntry = {
+                user_id: user.id,
+                mapel_id: mapelId,
+                nilai: nilai,
+                kelas: kelas || '',
+                tanggal: new Date().toISOString()
+            };
+            DATA_HASIL = DATA_HASIL.filter(h => !(h.user_id === user.id && h.mapel_id === mapelId));
+            DATA_HASIL.push(newEntry);
         }
 
         async function isMapelSelesai(nama, mapelId, kelas) {
@@ -2857,7 +2900,7 @@
         }
 
         // ================================================================
-        // ADMIN: STATISTIK & MAPEL
+        // ADMIN: STATISTIK
         // ================================================================
         function adminMuatStats() {
             document.getElementById('admin-stat-users').innerText = users.length;
@@ -2868,7 +2911,13 @@
                 totalSoal += getSoalByMapel(m.id).length;
             });
             document.getElementById('admin-stat-soal').innerText = totalSoal;
-            document.getElementById('admin-stat-ujian').innerText = '48';
+            
+            // Hitung total ujian dari DATA_HASIL (unique user + mapel)
+            const uniqueUjian = new Set();
+            DATA_HASIL.forEach(h => {
+                uniqueUjian.add(h.user_id + '_' + h.mapel_id);
+            });
+            document.getElementById('admin-stat-ujian').innerText = uniqueUjian.size;
         }
 
         function renderAdminMapelPreview() {
@@ -3211,9 +3260,9 @@
                 return;
             }
 
-            siswa.forEach(async (s, idx) => {
-                const hasil = await getHasilSiswa(s.nama, s.kelas);
-                const totalUjian = Object.keys(hasil).length;
+            siswa.forEach((s, idx) => {
+                const userHasil = DATA_HASIL.filter(h => h.user_id === s.id);
+                const totalUjian = userHasil.length;
 
                 tbody.innerHTML += `
                     <tr>
@@ -3271,11 +3320,15 @@
                             alert('❌ Gagal mereset ujian: ' + error.message);
                             return;
                         }
+                        
+                        // Update cache
+                        DATA_HASIL = DATA_HASIL.filter(h => h.user_id !== user.id);
                     }
                     alert('✅ Semua ujian untuk siswa "' + nama + '" (' + kelas + ') telah direset.');
                     tutupModalDetailSiswa();
                     renderKelolaSiswa();
                     renderDaftarMapel();
+                    adminMuatStats();
                 }
             };
 
@@ -3298,11 +3351,15 @@
                         alert('❌ Gagal mereset ujian: ' + error.message);
                         return;
                     }
+                    
+                    // Update cache
+                    DATA_HASIL = DATA_HASIL.filter(h => !(h.user_id === user.id && h.mapel_id === mapelId));
                 }
                 alert('✅ Ujian "' + namaMapel + '" untuk siswa "' + nama + '" (' + kelas + ') telah direset.');
                 bukaDetailSiswa(nama, kelas);
                 renderKelolaSiswa();
                 renderDaftarMapel();
+                adminMuatStats();
             }
         }
 
@@ -3450,10 +3507,6 @@
         // INISIALISASI
         // ================================================================
         window.onload = function() {
-            // Ganti dengan URL dan Key Supabase Anda
-            // const SUPABASE_URL = 'https://your-project-id.supabase.co';
-            // const SUPABASE_ANON_KEY = 'your-anon-key';
-            
             loadDataFromSupabase();
         };
     </script>
