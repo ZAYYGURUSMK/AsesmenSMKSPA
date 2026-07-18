@@ -71,6 +71,8 @@
         .btn-admin:hover { background: #6d28d9; }
         .btn-warning { background: #f59e0b; color: white; }
         .btn-warning:hover { background: #d97706; }
+        .btn-home { background: #0f172a; color: white; }
+        .btn-home:hover { background: #1e293b; }
 
         .stat-card {
             background: white;
@@ -281,6 +283,24 @@
         .modal-edit .modal-box .history-item .info .nilai { font-weight: 700; color: #4f46e5; }
         .modal-edit .modal-box .history-item .info .tgl { font-size: 10px; color: #94a3b8; }
         .modal-edit .modal-box .empty-state { text-align: center; color: #94a3b8; padding: 20px 0; }
+
+        .btn-home-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #0f172a;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-home-header:hover { background: #e2e8f0; }
+        .btn-home-header:active { transform: scale(0.95); }
+        .btn-home-header svg { width: 16px; height: 16px; }
     </style>
 </head>
 <body>
@@ -299,17 +319,17 @@
             <span id="db-status" class="text-[8px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-800 shrink-0">Online</span>
         </div>
         <div class="right">
+            <button onclick="kembaliKeMenuUtama()" id="btn-home" class="btn-home-header">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span class="hidden sm:inline">Home</span>
+            </button>
             <div id="user-badge" class="user-badge hidden">
                 <span id="user-name">User</span>
                 <span id="user-role" class="role">role</span>
                 <button onclick="logout()" class="logout-btn">✕</button>
             </div>
-            <button onclick="kembaliKeMenuUtama()" id="btn-home" class="flex items-center space-x-1 text-xs font-medium text-slate-600 hover:text-indigo-600 transition border border-slate-200 px-2.5 py-1.5 rounded-lg bg-slate-50 active:scale-95">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                <span class="hidden sm:inline">Menu</span>
-            </button>
         </div>
     </nav>
 
@@ -1033,7 +1053,9 @@
             if (stateSaveInterval) { clearInterval(stateSaveInterval); stateSaveInterval = null; }
             clearAntiTab();
             localStorage.removeItem('cbt_ujian_aktif');
-            localStorage.removeItem('cbt_reload_lock'); // hapus lock
+            localStorage.removeItem('cbt_reload_lock');
+            // Hapus session agar kembali ke menu utama tanpa login
+            clearSession();
             gantiHalaman('view-menu');
         }
 
