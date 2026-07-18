@@ -7,9 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ================================================================
-           GLASS THEME
-           ================================================================ */
         * { -webkit-tap-highlight-color: transparent; }
         
         body { 
@@ -394,9 +391,6 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
-        /* ================================================================
-           GLASS MODAL - ALL POPUPS
-           ================================================================ */
         .modal-edit {
             position: fixed;
             inset: 0;
@@ -980,9 +974,7 @@
             <button onclick="kembaliKeDashboardSiswa()" class="btn btn-outline btn-sm mt-4">← Kembali ke Pilihan Mapel</button>
         </div>
 
-        <!-- ================================================================
-           GLASS MODAL - ALERT (Custom Replacement)
-           ================================================================ -->
+        <!-- MODAL ALERT -->
         <div id="modal-alert" class="modal-edit hidden">
             <div class="modal-box">
                 <span class="modal-icon" id="alert-icon">ℹ️</span>
@@ -994,7 +986,7 @@
             </div>
         </div>
 
-        <!-- GLASS MODAL - CONFIRM (Custom Replacement) -->
+        <!-- MODAL CONFIRM -->
         <div id="modal-confirm" class="modal-edit hidden">
             <div class="modal-box">
                 <span class="modal-icon" id="confirm-icon">❓</span>
@@ -1013,10 +1005,7 @@
                 <span class="modal-icon">📝</span>
                 <h3>Konfirmasi Kumpulkan Ujian</h3>
                 <p class="modal-subtitle">Periksa kembali jawaban Anda sebelum mengumpulkan. Ujian yang sudah dikumpulkan tidak dapat diubah.</p>
-                
-                <div class="modal-body" id="modal-kumpul-body">
-                </div>
-                
+                <div class="modal-body" id="modal-kumpul-body"></div>
                 <div class="modal-actions">
                     <button onclick="tutupModalKumpul()" class="btn btn-outline btn-sm">✖ Batal</button>
                     <button onclick="kumpulkanUjian()" class="btn btn-danger btn-sm">📤 Ya, Kumpulkan!</button>
@@ -1341,7 +1330,7 @@
     <!-- ============================================================ -->
     <script>
         // ================================================================
-        // HELPER FUNCTION: Get First Name (untuk header saja)
+        // HELPER FUNCTIONS
         // ================================================================
         function getFirstName(fullName) {
             if (!fullName) return '';
@@ -1350,7 +1339,7 @@
         }
 
         // ================================================================
-        // GLASS ALERT & CONFIRM - REPLACEMENT FOR NATIVE alert() & confirm()
+        // GLASS ALERT & CONFIRM
         // ================================================================
         let alertResolve = null;
         let confirmResolve = null;
@@ -1391,7 +1380,6 @@
             }
         }
 
-        // Override native alert dan confirm
         window.alert = function(message) {
             return glassAlert('Informasi', message, 'ℹ️');
         };
@@ -1576,9 +1564,10 @@
 
         function getSoalByMapel(mapelId) { return DATA_SOAL[mapelId] || []; }
 
+        // 🔥 PERUBAHAN: Filter soal berdasarkan kelas
         function getSoalByMapelAndKelas(mapelId, kelas) {
             const soal = DATA_SOAL[mapelId] || [];
-            if (kelas === 'all') return soal;
+            if (kelas === 'all' || !kelas) return soal;
             return soal.filter(s => s.kelas === 'all' || s.kelas === kelas);
         }
 
@@ -1591,23 +1580,35 @@
         function tambahSoal(mapelId, tanya, opsi, kunci, kelas) {
             if (!DATA_SOAL[mapelId]) DATA_SOAL[mapelId] = [];
             const newId = getNextSoalId(mapelId);
-            DATA_SOAL[mapelId].push({ id: newId, tanya, opsi, kunci, kelas: kelas || 'all' });
+            DATA_SOAL[mapelId].push({ 
+                id: newId, 
+                tanya, 
+                opsi, 
+                kunci, 
+                kelas: kelas || 'all' 
+            });
             saveSoalToStorage();
         }
 
         function editSoalById(id, mapelId, tanya, opsi, kunci, kelas) {
             const list = DATA_SOAL[mapelId] || [];
             const idx = list.findIndex(s => s.id === id);
-            if (idx !== -1) { list[idx] = { id, tanya, opsi, kunci, kelas: kelas || 'all' };
-                saveSoalToStorage(); return true; }
+            if (idx !== -1) { 
+                list[idx] = { id, tanya, opsi, kunci, kelas: kelas || 'all' };
+                saveSoalToStorage(); 
+                return true; 
+            }
             return false;
         }
 
         function hapusSoalById(id, mapelId) {
             const list = DATA_SOAL[mapelId] || [];
             const filtered = list.filter(s => s.id !== id);
-            if (filtered.length !== list.length) { DATA_SOAL[mapelId] = filtered;
-                saveSoalToStorage(); return true; }
+            if (filtered.length !== list.length) { 
+                DATA_SOAL[mapelId] = filtered;
+                saveSoalToStorage(); 
+                return true; 
+            }
             return false;
         }
 
@@ -1759,7 +1760,6 @@
                 return;
             }
             
-            // Update kelas siswa jika berbeda
             if (user.kelas !== kelas) {
                 user.kelas = kelas;
                 saveUsersToStorage();
@@ -1809,7 +1809,7 @@
         }
 
         // ================================================================
-        // SISWA: HASIL UJIAN (dengan kelas)
+        // SISWA: HASIL UJIAN
         // ================================================================
         function getHasilSiswa(nama) {
             const key = 'cbt_hasil_' + nama;
@@ -1855,6 +1855,7 @@
         let slideCurrentPage = 0;
         const ITEMS_PER_PAGE = 3;
 
+        // 🔥 PERUBAHAN: Filter mapel berdasarkan kelas
         function renderDaftarMapel() {
             const user = getSession();
             if (!user) return;
@@ -1867,10 +1868,16 @@
 
             let mapelItems = [];
             DATA_MAPEL.forEach(mapel => {
+                // Ambil soal berdasarkan kelas siswa
                 const soal = getSoalByMapelAndKelas(mapel.id, user.kelas || 'all');
                 const jumlah = soal.length;
                 const selesai = isMapelSelesai(user.nama, mapel.id);
                 const nilai = getNilaiMapel(user.nama, mapel.id);
+
+                // 🔥 PERUBAHAN: Jika tidak ada soal untuk kelas ini, SKIP (tidak ditampilkan)
+                if (jumlah === 0 && !selesai) {
+                    return; // Lanjut ke mapel berikutnya
+                }
 
                 let statusText, statusClass, disabledClass = '',
                     onClick = `pilihMapel(${mapel.id})`;
@@ -1881,10 +1888,7 @@
                     disabledClass = 'disabled';
                     onClick = `alert('Anda sudah menyelesaikan ujian ${mapel.nama} dengan nilai ${nilai}. Tidak dapat mengulang.');`;
                 } else if (jumlah === 0) {
-                    statusText = '❌ Kosong';
-                    statusClass = 'kosong';
-                    disabledClass = 'disabled';
-                    onClick = `alert('Belum ada soal untuk mapel ini di kelas Anda.');`;
+                    return; // Seharusnya tidak sampai sini
                 } else {
                     statusText = `${jumlah} soal tersedia`;
                     statusClass = 'tersedia';
@@ -1916,7 +1920,7 @@
             const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
             
             if (totalPages === 0 || items.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center text-slate-400 py-8">Belum ada mata pelajaran tersedia untuk kelas Anda.</div>';
+                container.innerHTML = '<div class="col-span-full text-center text-slate-400 py-8">Belum ada mata pelajaran yang ditugaskan untuk kelas Anda.</div>';
                 updateSlideNav(0, 0);
                 return;
             }
@@ -2268,6 +2272,7 @@
             }
         }
 
+        // 🔥 PERUBAHAN: Pilih mapel dengan filter kelas
         function pilihMapel(mapelId) {
             const user = getSession();
             if (!user) return;
@@ -2284,6 +2289,7 @@
             const mapel = DATA_MAPEL.find(m => m.id === mapelId);
             if (!mapel) return;
 
+            // Ambil soal berdasarkan kelas siswa
             const soal = getSoalByMapelAndKelas(mapelId, user.kelas || 'all');
             if (soal.length === 0) {
                 alert('❌ Belum ada soal untuk mapel ini di kelas Anda. Silakan pilih mapel lain.');
