@@ -847,7 +847,7 @@
                 </h2>
                 <div class="flex gap-2 flex-wrap">
                     <span class="text-xs text-slate-500 bg-white/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1">
-                        👤 <span id="guru-nama">-</span>
+                        👤 <span id="guru-nama-display">-</span>
                     </span>
                     <button onclick="logout()" class="btn btn-danger btn-sm">Logout</button>
                 </div>
@@ -893,7 +893,7 @@
                 </h2>
                 <div class="flex gap-2 flex-wrap">
                     <span class="text-xs text-slate-500 bg-white/30 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1">
-                        👤 <span id="admin-nama">-</span>
+                        👤 <span id="admin-nama-display">-</span>
                     </span>
                     <button onclick="logout()" class="btn btn-danger btn-sm">Logout</button>
                 </div>
@@ -1181,6 +1181,15 @@
     <!-- JAVASCRIPT -->
     <!-- ============================================================ -->
     <script>
+        // ================================================================
+        // HELPER FUNCTION: Get First Name
+        // ================================================================
+        function getFirstName(fullName) {
+            if (!fullName) return '';
+            const parts = fullName.trim().split(' ');
+            return parts[0];
+        }
+
         // ================================================================
         // GLASS ALERT & CONFIRM - REPLACEMENT FOR NATIVE alert() & confirm()
         // ================================================================
@@ -1486,9 +1495,12 @@
             const badge = document.getElementById('user-badge');
             const nameEl = document.getElementById('user-name');
             const roleEl = document.getElementById('user-role');
+            
             if (user) {
                 badge.classList.remove('hidden');
-                nameEl.textContent = user.nama || user.role;
+                // Tampilkan hanya nama depan (first name)
+                const firstName = getFirstName(user.nama);
+                nameEl.textContent = firstName || user.role;
                 roleEl.textContent = user.role;
                 roleEl.className = 'role ' + user.role;
             } else {
@@ -1582,6 +1594,7 @@
             
             setSession('siswa', user.nama, user.id);
             document.getElementById('siswa-nama-display').textContent = user.nama;
+            updateUI();
             gantiHalaman('view-siswa-dashboard');
         }
 
@@ -1593,7 +1606,8 @@
             if (user) {
                 errorEl.style.display = 'none';
                 setSession('guru', user.nama, user.id);
-                document.getElementById('guru-nama').textContent = user.nama;
+                document.getElementById('guru-nama-display').textContent = getFirstName(user.nama);
+                updateUI();
                 gantiHalaman('view-guru-dashboard');
             } else {
                 errorEl.style.display = 'block';
@@ -1610,7 +1624,8 @@
             if (user) {
                 errorEl.style.display = 'none';
                 setSession('admin', user.nama, user.id);
-                document.getElementById('admin-nama').textContent = user.nama;
+                document.getElementById('admin-nama-display').textContent = getFirstName(user.nama);
+                updateUI();
                 gantiHalaman('view-admin-dashboard');
             } else {
                 errorEl.style.display = 'block';
@@ -1990,7 +2005,6 @@
                 timer: 30 * 60
             };
 
-            // Tampilkan hasil dengan modal glass
             await alert(`📊 Ujian Selesai!\n\n📚 Mapel: ${mapelNama}\n✅ Benar: ${benar}/${total}\n🎯 Nilai: ${nilai}\n\n✅ Hasil telah disimpan.`);
 
             gantiHalaman(redirectTo);
@@ -2815,7 +2829,7 @@
                 session.nama = nama;
                 session.mapel = selectedMapel;
                 localStorage.setItem('cbt_user', JSON.stringify(session));
-                document.getElementById('guru-nama').textContent = nama;
+                document.getElementById('guru-nama-display').textContent = getFirstName(nama);
                 updateUI();
             }
         }
@@ -3103,11 +3117,11 @@
                         gantiHalaman('view-siswa-dashboard');
                         return;
                     } else if (user.role === 'guru') {
-                        document.getElementById('guru-nama').textContent = user.nama || 'Budi Santoso';
+                        document.getElementById('guru-nama-display').textContent = getFirstName(user.nama);
                         gantiHalaman('view-guru-dashboard');
                         return;
                     } else if (user.role === 'admin') {
-                        document.getElementById('admin-nama').textContent = user.nama || 'Admin Utama';
+                        document.getElementById('admin-nama-display').textContent = getFirstName(user.nama);
                         gantiHalaman('view-admin-dashboard');
                         return;
                     }
