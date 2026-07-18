@@ -695,18 +695,7 @@
             font-size: 16px;
         }
 
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(79, 70, 229, 0.2);
-            border-radius: 50%;
-            border-top-color: #4f46e5;
-            animation: spin 0.8s ease-in-out infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        /* LOADING STYLES */
         .loading-overlay {
             position: fixed;
             inset: 0;
@@ -724,11 +713,54 @@
             border-radius: 16px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.3);
+            max-width: 90%;
         }
-        .loading-overlay .loading-box p {
+        .loading-overlay .loading-box .loading-icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+        .loading-overlay .loading-box .loading-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        .loading-overlay .loading-box .loading-subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(79, 70, 229, 0.15);
+            border-radius: 50%;
+            border-top-color: #4f46e5;
+            animation: spin 0.8s ease-in-out infinite;
+        }
+        .loading-progress {
+            width: 100%;
+            max-width: 200px;
+            height: 4px;
+            background: rgba(79, 70, 229, 0.15);
+            border-radius: 2px;
             margin-top: 12px;
-            color: #475569;
-            font-weight: 500;
+            overflow: hidden;
+        }
+        .loading-progress .bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4f46e5, #818cf8);
+            border-radius: 2px;
+            animation: progressAnim 2s ease-in-out infinite;
+            width: 30%;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes progressAnim {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(400%); }
         }
     </style>
 </head>
@@ -737,8 +769,13 @@
     <!-- LOADING OVERLAY -->
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-box">
+            <div class="loading-icon">📚</div>
+            <div class="loading-title">Memuat Data</div>
+            <div class="loading-subtitle">Mohon tunggu sebentar...</div>
             <div class="loading-spinner"></div>
-            <p>Memuat data...</p>
+            <div class="loading-progress">
+                <div class="bar"></div>
+            </div>
         </div>
     </div>
 
@@ -1433,10 +1470,10 @@
     <!-- ============================================================ -->
     <script>
         // ================================================================
-        // SUPABASE CONFIG
+        // SUPABASE CONFIG - GANTI DENGAN MILIK ANDA
         // ================================================================
-        const SUPABASE_URL = 'https://rsfepmlqbcpnqnavhesw.supabase.co'; // Ganti dengan URL Supabase Anda
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZmVwbWxxYmNwbnFuYXZoZXN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNDQzMDYsImV4cCI6MjA5OTYyMDMwNn0.jRbCyr19TBrQjtjD76kQQFIdqjh4isZ3clxCXQ6xK5g'; // Ganti dengan Anon Key Supabase Anda
+        const SUPABASE_URL = 'https://your-project-url.supabase.co'; // Ganti dengan URL Supabase Anda
+        const SUPABASE_ANON_KEY = 'your-anon-key'; // Ganti dengan Anon Key Supabase Anda
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ================================================================
@@ -1446,9 +1483,10 @@
         let users = [];
         let DATA_MAPEL = [];
         let DATA_SOAL = {};
+        let isLoading = false;
 
         // ================================================================
-        // LOADING / TOAST
+        // LOADING FUNCTIONS
         // ================================================================
         function showLoading() {
             document.getElementById('loading-overlay').classList.remove('hidden');
@@ -1465,6 +1503,107 @@
             toast.style.display = 'block';
             clearTimeout(toast._hide);
             toast._hide = setTimeout(() => { toast.style.display = 'none'; }, 5000);
+        }
+
+        // ================================================================
+        // SUPABASE - OPTIMIZED DATA LOADING
+        // ================================================================
+        async function loadDataFromSupabase() {
+            if (isLoading) return;
+            isLoading = true;
+            showLoading();
+
+            try {
+                // Load semua data secara paralel untuk lebih cepat
+                const [usersResult, mapelResult, soalResult] = await Promise.all([
+                    supabase.from('users').select('*'),
+                    supabase.from('mapel').select('*'),
+                    supabase.from('soal').select('*')
+                ]);
+
+                if (usersResult.error) throw usersResult.error;
+                if (mapelResult.error) throw mapelResult.error;
+                if (soalResult.error) throw soalResult.error;
+
+                users = usersResult.data || [];
+                DATA_MAPEL = mapelResult.data || [];
+
+                // Group soal by mapel_id
+                DATA_SOAL = {};
+                (soalResult.data || []).forEach(s => {
+                    if (!DATA_SOAL[s.mapel_id]) DATA_SOAL[s.mapel_id] = [];
+                    DATA_SOAL[s.mapel_id].push(s);
+                });
+
+                // Update UI
+                updateUI();
+
+                // Check session
+                const session = localStorage.getItem('cbt_user');
+                if (session) {
+                    try {
+                        const user = JSON.parse(session);
+                        const userData = users.find(u => u.id === user.id);
+                        if (userData) {
+                            currentUser = userData;
+                            updateUI();
+                            if (userData.role === 'siswa') {
+                                document.getElementById('siswa-nama-display').textContent = userData.nama;
+                                document.getElementById('siswa-kelas-display').textContent = userData.kelas || '-';
+                                gantiHalaman('view-siswa-dashboard');
+                            } else if (userData.role === 'guru') {
+                                document.getElementById('guru-nama-display').textContent = userData.nama;
+                                gantiHalaman('view-guru-dashboard');
+                            } else if (userData.role === 'admin') {
+                                document.getElementById('admin-nama-display').textContent = userData.nama;
+                                gantiHalaman('view-admin-dashboard');
+                            }
+                        } else {
+                            localStorage.removeItem('cbt_user');
+                            gantiHalaman('view-menu');
+                        }
+                    } catch (e) {
+                        localStorage.removeItem('cbt_user');
+                        gantiHalaman('view-menu');
+                    }
+                } else {
+                    gantiHalaman('view-menu');
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showToast('❌ Gagal memuat data dari database!', 'danger');
+                gantiHalaman('view-menu');
+            }
+            hideLoading();
+            isLoading = false;
+        }
+
+        // Fungsi refresh data cepat (tanpa loading overlay penuh)
+        async function refreshData() {
+            try {
+                const [usersResult, mapelResult, soalResult] = await Promise.all([
+                    supabase.from('users').select('*'),
+                    supabase.from('mapel').select('*'),
+                    supabase.from('soal').select('*')
+                ]);
+
+                if (usersResult.error) throw usersResult.error;
+                if (mapelResult.error) throw mapelResult.error;
+                if (soalResult.error) throw soalResult.error;
+
+                users = usersResult.data || [];
+                DATA_MAPEL = mapelResult.data || [];
+
+                DATA_SOAL = {};
+                (soalResult.data || []).forEach(s => {
+                    if (!DATA_SOAL[s.mapel_id]) DATA_SOAL[s.mapel_id] = [];
+                    DATA_SOAL[s.mapel_id].push(s);
+                });
+
+                updateUI();
+            } catch (error) {
+                console.error('Error refreshing data:', error);
+            }
         }
 
         // ================================================================
@@ -1529,82 +1668,6 @@
         window.confirm = function(message) {
             return glassConfirm('Konfirmasi', message, '❓');
         };
-
-        // ================================================================
-        // SUPABASE - DATA LOADING
-        // ================================================================
-        async function loadDataFromSupabase() {
-            showLoading();
-            try {
-                // Load users
-                const { data: usersData, error: usersError } = await supabase
-                    .from('users')
-                    .select('*');
-                if (usersError) throw usersError;
-                users = usersData || [];
-
-                // Load mapel
-                const { data: mapelData, error: mapelError } = await supabase
-                    .from('mapel')
-                    .select('*');
-                if (mapelError) throw mapelError;
-                DATA_MAPEL = mapelData || [];
-
-                // Load soal
-                const { data: soalData, error: soalError } = await supabase
-                    .from('soal')
-                    .select('*');
-                if (soalError) throw soalError;
-                
-                // Group soal by mapel_id
-                DATA_SOAL = {};
-                (soalData || []).forEach(s => {
-                    if (!DATA_SOAL[s.mapel_id]) DATA_SOAL[s.mapel_id] = [];
-                    DATA_SOAL[s.mapel_id].push(s);
-                });
-
-                // Update UI
-                updateUI();
-                
-                // Check session
-                const session = localStorage.getItem('cbt_user');
-                if (session) {
-                    try {
-                        const user = JSON.parse(session);
-                        const userData = users.find(u => u.id === user.id);
-                        if (userData) {
-                            currentUser = userData;
-                            updateUI();
-                            // Redirect based on role
-                            if (userData.role === 'siswa') {
-                                document.getElementById('siswa-nama-display').textContent = userData.nama;
-                                document.getElementById('siswa-kelas-display').textContent = userData.kelas || '-';
-                                gantiHalaman('view-siswa-dashboard');
-                            } else if (userData.role === 'guru') {
-                                document.getElementById('guru-nama-display').textContent = userData.nama;
-                                gantiHalaman('view-guru-dashboard');
-                            } else if (userData.role === 'admin') {
-                                document.getElementById('admin-nama-display').textContent = userData.nama;
-                                gantiHalaman('view-admin-dashboard');
-                            }
-                        } else {
-                            localStorage.removeItem('cbt_user');
-                            gantiHalaman('view-menu');
-                        }
-                    } catch(e) {
-                        localStorage.removeItem('cbt_user');
-                        gantiHalaman('view-menu');
-                    }
-                } else {
-                    gantiHalaman('view-menu');
-                }
-            } catch (error) {
-                console.error('Error loading data:', error);
-                showToast('❌ Gagal memuat data dari database!', 'danger');
-                gantiHalaman('view-menu');
-            }
-            hideLoading();
-        }
 
         // ================================================================
         // SESSION MANAGEMENT
@@ -2492,7 +2555,7 @@
             .forEach(id => document.getElementById(id).value = '');
             document.getElementById('guru-input-kunci').value = '0';
 
-            await loadDataFromSupabase();
+            await refreshData();
             renderHasilGuru();
             renderKelolaSoal();
             populateMapelDropdowns();
@@ -2755,7 +2818,7 @@
             }
 
             alert('✅ Soal berhasil diperbarui!');
-            await loadDataFromSupabase();
+            await refreshData();
             renderKelolaSoal();
             renderDaftarMapel();
             populateMapelDropdowns();
@@ -2787,7 +2850,7 @@
             }
 
             alert('✅ Soal berhasil dihapus!');
-            await loadDataFromSupabase();
+            await refreshData();
             renderKelolaSoal();
             renderDaftarMapel();
             populateMapelDropdowns();
@@ -2888,7 +2951,7 @@
             }
 
             alert('✅ Mapel berhasil ditambahkan!');
-            await loadDataFromSupabase();
+            await refreshData();
             renderKelolaMapel();
             renderAdminMapelPreview();
             adminMuatStats();
@@ -2924,7 +2987,7 @@
             }
 
             alert('✅ Mapel berhasil diperbarui!');
-            await loadDataFromSupabase();
+            await refreshData();
             renderKelolaMapel();
             renderAdminMapelPreview();
             adminMuatStats();
@@ -2951,7 +3014,7 @@
             }
 
             alert('✅ Mapel dan semua soalnya berhasil dihapus!');
-            await loadDataFromSupabase();
+            await refreshData();
             renderKelolaMapel();
             renderAdminMapelPreview();
             adminMuatStats();
@@ -3082,7 +3145,7 @@
 
             alert('✅ Data guru berhasil diperbarui!');
             tutupModalEditGuru();
-            await loadDataFromSupabase();
+            await refreshData();
             renderKelolaGuru();
             renderHasilGuru();
             populateMapelDropdowns();
@@ -3120,7 +3183,7 @@
             }
 
             alert('✅ Guru berhasil dihapus!');
-            await loadDataFromSupabase();
+            await refreshData();
             adminMuatStats();
             renderKelolaGuru();
             renderKelolaSiswa();
@@ -3289,7 +3352,7 @@
             alert('✅ User berhasil ditambahkan!');
             document.getElementById('admin-user-nama').value = '';
             document.getElementById('admin-user-pass').value = '';
-            await loadDataFromSupabase();
+            await refreshData();
             adminMuatStats();
             renderKelolaSiswa();
             renderKelolaGuru();
@@ -3387,6 +3450,10 @@
         // INISIALISASI
         // ================================================================
         window.onload = function() {
+            // Ganti dengan URL dan Key Supabase Anda
+            // const SUPABASE_URL = 'https://your-project-id.supabase.co';
+            // const SUPABASE_ANON_KEY = 'your-anon-key';
+            
             loadDataFromSupabase();
         };
     </script>
