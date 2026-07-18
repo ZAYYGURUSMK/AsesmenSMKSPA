@@ -1182,7 +1182,7 @@
     <!-- ============================================================ -->
     <script>
         // ================================================================
-        // HELPER FUNCTION: Get First Name
+        // HELPER FUNCTION: Get First Name (untuk header saja)
         // ================================================================
         function getFirstName(fullName) {
             if (!fullName) return '';
@@ -1498,7 +1498,7 @@
             
             if (user) {
                 badge.classList.remove('hidden');
-                // Tampilkan hanya nama depan (first name)
+                // HEADER: Tampilkan hanya nama depan (first name) saja
                 const firstName = getFirstName(user.nama);
                 nameEl.textContent = firstName || user.role;
                 roleEl.textContent = user.role;
@@ -1593,6 +1593,7 @@
             }
             
             setSession('siswa', user.nama, user.id);
+            // DASHBOARD SISWA: Tampilkan nama lengkap
             document.getElementById('siswa-nama-display').textContent = user.nama;
             updateUI();
             gantiHalaman('view-siswa-dashboard');
@@ -1606,7 +1607,8 @@
             if (user) {
                 errorEl.style.display = 'none';
                 setSession('guru', user.nama, user.id);
-                document.getElementById('guru-nama-display').textContent = getFirstName(user.nama);
+                // DASHBOARD GURU: Tampilkan nama lengkap
+                document.getElementById('guru-nama-display').textContent = user.nama;
                 updateUI();
                 gantiHalaman('view-guru-dashboard');
             } else {
@@ -1624,7 +1626,8 @@
             if (user) {
                 errorEl.style.display = 'none';
                 setSession('admin', user.nama, user.id);
-                document.getElementById('admin-nama-display').textContent = getFirstName(user.nama);
+                // DASHBOARD ADMIN: Tampilkan nama lengkap
+                document.getElementById('admin-nama-display').textContent = user.nama;
                 updateUI();
                 gantiHalaman('view-admin-dashboard');
             } else {
@@ -2251,7 +2254,7 @@
         }
 
         // ================================================================
-        // GURU: TAMBAH SOAL & KELOLA
+        // GURU: TAMBAH SOAL & KELOLA (dengan filter mapel guru)
         // ================================================================
         function guruTambahSoal() {
             const mapelId = parseInt(document.getElementById('guru-input-mapel').value);
@@ -2405,7 +2408,7 @@
         }
 
         // ================================================================
-        // GURU: KELOLA SOAL
+        // GURU: KELOLA SOAL (hanya mapel yang diajarkan)
         // ================================================================
         function renderKelolaSoal() {
             const user = getSession();
@@ -2829,7 +2832,8 @@
                 session.nama = nama;
                 session.mapel = selectedMapel;
                 localStorage.setItem('cbt_user', JSON.stringify(session));
-                document.getElementById('guru-nama-display').textContent = getFirstName(nama);
+                // DASHBOARD GURU: Tampilkan nama lengkap
+                document.getElementById('guru-nama-display').textContent = nama;
                 updateUI();
             }
         }
@@ -3117,11 +3121,11 @@
                         gantiHalaman('view-siswa-dashboard');
                         return;
                     } else if (user.role === 'guru') {
-                        document.getElementById('guru-nama-display').textContent = getFirstName(user.nama);
+                        document.getElementById('guru-nama-display').textContent = user.nama || 'Budi Santoso';
                         gantiHalaman('view-guru-dashboard');
                         return;
                     } else if (user.role === 'admin') {
-                        document.getElementById('admin-nama-display').textContent = getFirstName(user.nama);
+                        document.getElementById('admin-nama-display').textContent = user.nama || 'Admin Utama';
                         gantiHalaman('view-admin-dashboard');
                         return;
                     }
