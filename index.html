@@ -662,7 +662,6 @@
             display: none;
         }
 
-        /* Search input style */
         .search-input {
             background: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(10px);
@@ -1088,114 +1087,6 @@
             </div>
         </div>
 
-        <!-- GURU: TAMBAH SOAL -->
-        <div id="view-guru-tambah-soal" class="w-full max-w-2xl mx-auto glass-card rounded-2xl p-4 sm:p-8 hidden">
-            <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                    <span class="bg-blue-100/60 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
-                    Tambah Soal
-                </h2>
-                <button onclick="gantiHalaman('view-guru-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
-            </div>
-            <form onsubmit="event.preventDefault(); guruTambahSoal();" class="space-y-4">
-                <div>
-                    <label>Mata Pelajaran</label>
-                    <select id="guru-input-mapel" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm"></select>
-                </div>
-                <div>
-                    <label>Kelas</label>
-                    <select id="guru-input-kelas" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm">
-                        <option value="all">Semua Kelas</option>
-                        <option value="X-RPL 1">X-RPL 1</option>
-                        <option value="X-RPL 2">X-RPL 2</option>
-                        <option value="XI-RPL 1">XI-RPL 1</option>
-                        <option value="XI-RPL 2">XI-RPL 2</option>
-                        <option value="XII-RPL 1">XII-RPL 1</option>
-                        <option value="XII-RPL 2">XII-RPL 2</option>
-                        <option value="X-TKJ 1">X-TKJ 1</option>
-                        <option value="X-TKJ 2">X-TKJ 2</option>
-                        <option value="XI-TKJ 1">XI-TKJ 1</option>
-                        <option value="XI-TKJ 2">XI-TKJ 2</option>
-                        <option value="XII-TKJ 1">XII-TKJ 1</option>
-                        <option value="XII-TKJ 2">XII-TKJ 2</option>
-                        <option value="X-MM 1">X-MM 1</option>
-                        <option value="X-MM 2">X-MM 2</option>
-                        <option value="XI-MM 1">XI-MM 1</option>
-                        <option value="XI-MM 2">XI-MM 2</option>
-                        <option value="XII-MM 1">XII-MM 1</option>
-                        <option value="XII-MM 2">XII-MM 2</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Pertanyaan</label>
-                    <textarea id="guru-input-tanya" rows="3" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Tulis pertanyaan..."></textarea>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div><label>Opsi A</label><input type="text" id="guru-input-opsi-0" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi A"></div>
-                    <div><label>Opsi B</label><input type="text" id="guru-input-opsi-1" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi B"></div>
-                    <div><label>Opsi C</label><input type="text" id="guru-input-opsi-2" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi C"></div>
-                    <div><label>Opsi D</label><input type="text" id="guru-input-opsi-3" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm" placeholder="Opsi D"></div>
-                </div>
-                <div>
-                    <label>Kunci Jawaban</label>
-                    <select id="guru-input-kunci" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm">
-                        <option value="0">A</option>
-                        <option value="1">B</option>
-                        <option value="2">C</option>
-                        <option value="3">D</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">💾 Simpan Soal</button>
-            </form>
-        </div>
-
-        <!-- GURU: KELOLA SOAL -->
-        <div id="view-guru-kelola-soal" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
-            <div class="page-header">
-                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                    <span class="bg-blue-100/60 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">GURU</span>
-                    Kelola Soal
-                </h2>
-                <button onclick="gantiHalaman('view-guru-dashboard')" class="btn btn-outline btn-sm">← Kembali</button>
-            </div>
-            <div class="flex flex-wrap gap-2 mb-4">
-                <select id="guru-filter-kelola" class="border border-white/30 rounded-lg px-3 py-1.5 text-sm bg-white/40 backdrop-blur-sm">
-                    <option value="">Semua Mapel (Saya)</option>
-                </select>
-                <select id="guru-filter-kelas" class="border border-white/30 rounded-lg px-3 py-1.5 text-sm bg-white/40 backdrop-blur-sm">
-                    <option value="">Semua Kelas</option>
-                    <option value="X-RPL 1">X-RPL 1</option>
-                    <option value="X-RPL 2">X-RPL 2</option>
-                    <option value="XI-RPL 1">XI-RPL 1</option>
-                    <option value="XI-RPL 2">XI-RPL 2</option>
-                    <option value="XII-RPL 1">XII-RPL 1</option>
-                    <option value="XII-RPL 2">XII-RPL 2</option>
-                    <option value="X-TKJ 1">X-TKJ 1</option>
-                    <option value="X-TKJ 2">X-TKJ 2</option>
-                    <option value="XI-TKJ 1">XI-TKJ 1</option>
-                    <option value="XI-TKJ 2">XI-TKJ 2</option>
-                    <option value="XII-TKJ 1">XII-TKJ 1</option>
-                    <option value="XII-TKJ 2">XII-TKJ 2</option>
-                    <option value="X-MM 1">X-MM 1</option>
-                    <option value="X-MM 2">X-MM 2</option>
-                    <option value="XI-MM 1">XI-MM 1</option>
-                    <option value="XI-MM 2">XI-MM 2</option>
-                    <option value="XII-MM 1">XII-MM 1</option>
-                    <option value="XII-MM 2">XII-MM 2</option>
-                </select>
-                <button onclick="renderKelolaSoal()" class="btn btn-primary btn-sm">Filter</button>
-                <button onclick="gantiHalaman('view-guru-tambah-soal')" class="btn btn-success btn-sm">+ Tambah Soal</button>
-            </div>
-            <div class="table-wrap border border-white/20 rounded-xl bg-white/20 backdrop-blur-sm">
-                <table>
-                    <thead><tr><th>ID</th><th>Mapel</th><th>Kelas</th><th>Pertanyaan</th><th class="text-center">Kunci</th><th class="text-center">Aksi</th></tr></thead>
-                    <tbody id="guru-tabel-kelola">
-                        <tr><td colspan="6" class="text-center py-4 text-slate-400 text-xs">Memuat data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
         <!-- ADMIN: TAMBAH USER -->
         <div id="view-admin-tambah-user" class="w-full max-w-md mx-auto glass-card rounded-2xl p-4 sm:p-8 hidden">
             <div class="page-header">
@@ -1215,7 +1106,7 @@
                     <select id="admin-user-role" class="border border-white/30 rounded-lg p-2 w-full bg-white/40 backdrop-blur-sm">
                         <option value="siswa">Siswa</option>
                         <option value="guru">Guru</option>
-                        <option value="admin">Admin</option>
+                        <!-- 🔥 ROLE ADMIN DIHAPUS -->
                     </select>
                 </div>
                 <div id="siswa-kelas-field" class="hidden">
@@ -1281,7 +1172,7 @@
             <p class="text-xs text-slate-400 mt-2">⚠️ Menghapus mapel akan menghapus semua soal yang terkait dengan mapel tersebut.</p>
         </div>
 
-        <!-- ADMIN: KELOLA GURU (DENGAN FITUR PENCARIAN) -->
+        <!-- ADMIN: KELOLA GURU -->
         <div id="view-admin-kelola-guru" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
             <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -1295,7 +1186,6 @@
             </div>
             <p class="text-sm text-slate-500 mb-4">Kelola data guru dan mata pelajaran yang diajarkan oleh masing-masing guru.</p>
             
-            <!-- 🔥 FITUR PENCARIAN -->
             <div class="flex flex-wrap items-center gap-3 mb-4">
                 <div class="search-wrapper">
                     <span class="search-icon">🔍</span>
@@ -1323,7 +1213,7 @@
             </div>
         </div>
 
-        <!-- ADMIN: KELOLA SISWA (DENGAN FITUR PENCARIAN) -->
+        <!-- ADMIN: KELOLA SISWA -->
         <div id="view-admin-kelola-siswa" class="w-full glass-card rounded-2xl p-4 sm:p-8 hidden">
             <div class="page-header">
                 <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -1337,7 +1227,6 @@
             </div>
             <p class="text-sm text-slate-500 mb-4">Kelola data siswa dan reset riwayat ujian mereka agar dapat mengulang asesmen.</p>
             
-            <!-- 🔥 FITUR PENCARIAN -->
             <div class="flex flex-wrap items-center gap-3 mb-4">
                 <div class="search-wrapper">
                     <span class="search-icon">🔍</span>
@@ -1453,10 +1342,10 @@
         const PASSWORDS = { guru: 'Guru123', admin: 'Admin123' };
 
         // ================================================================
-        // DEFAULT USERS
+        // DEFAULT USERS - 🔥 ADMIN DIGANTI MENJADI Prama Artha
         // ================================================================
         const DEFAULT_USERS = [
-            { id: 1, nama: 'Admin Utama', role: 'admin', password: 'Admin123', mapel: [], kelas: '' },
+            { id: 1, nama: 'Prama Artha', role: 'admin', password: 'Admin123', mapel: [], kelas: '' },
             { id: 2, nama: 'Budi Santoso', role: 'guru', password: 'Guru123', mapel: [1, 2], kelas: '' },
             { id: 3, nama: 'Siti Rahayu', role: 'guru', password: 'Guru123', mapel: [3, 4], kelas: '' },
             { id: 4, nama: 'Andi Wijaya', role: 'siswa', password: '', mapel: [], kelas: 'X-RPL 1' },
@@ -1729,8 +1618,7 @@
             
             if (user) {
                 badge.classList.remove('hidden');
-                const firstName = getFirstName(user.nama);
-                nameEl.textContent = firstName || user.role;
+                nameEl.textContent = user.nama || user.role;
                 roleEl.textContent = user.role;
                 roleEl.className = 'role ' + user.role;
             } else {
@@ -2991,18 +2879,16 @@
         });
 
         // ================================================================
-        // ADMIN: KELOLA GURU (DENGAN FITUR PENCARIAN)
+        // ADMIN: KELOLA GURU
         // ================================================================
         function renderKelolaGuru() {
             loadUsersFromStorage();
             loadMapelFromStorage();
             
-            // 🔥 Ambil keyword pencarian
             const searchQuery = document.getElementById('search-guru')?.value.toLowerCase().trim() || '';
             
             let guruList = getGuruList();
             
-            // 🔥 Filter berdasarkan nama
             if (searchQuery) {
                 guruList = guruList.filter(guru => 
                     guru.nama.toLowerCase().includes(searchQuery)
@@ -3140,17 +3026,15 @@
         }
 
         // ================================================================
-        // ADMIN: KELOLA SISWA (DENGAN FITUR PENCARIAN)
+        // ADMIN: KELOLA SISWA
         // ================================================================
         function renderKelolaSiswa() {
             loadUsersFromStorage();
             
-            // 🔥 Ambil keyword pencarian
             const searchQuery = document.getElementById('search-siswa')?.value.toLowerCase().trim() || '';
             
             let siswa = getSiswa();
             
-            // 🔥 Filter berdasarkan nama
             if (searchQuery) {
                 siswa = siswa.filter(s => 
                     s.nama.toLowerCase().includes(searchQuery)
@@ -3257,8 +3141,14 @@
             
             if (!nama) { alert('Nama tidak boleh kosong!'); return; }
             
-            if (users.some(u => u.nama.toLowerCase() === nama.toLowerCase() && u.kelas === kelas && u.role === 'siswa')) {
+            // 🔥 CEK DUPLIKAT HANYA UNTUK SISWA DAN GURU (ADMIN TIDAK BISA DITAMBAH)
+            if (role === 'siswa' && users.some(u => u.nama.toLowerCase() === nama.toLowerCase() && u.kelas === kelas && u.role === 'siswa')) {
                 alert('Nama sudah terdaftar di kelas ini!');
+                return;
+            }
+            
+            if (role === 'guru' && users.some(u => u.nama.toLowerCase() === nama.toLowerCase() && u.role === 'guru')) {
+                alert('Nama guru sudah terdaftar!');
                 return;
             }
             
@@ -3424,7 +3314,7 @@
                         gantiHalaman('view-guru-dashboard');
                         return;
                     } else if (user.role === 'admin') {
-                        document.getElementById('admin-nama-display').textContent = user.nama || 'Admin Utama';
+                        document.getElementById('admin-nama-display').textContent = user.nama || 'Prama Artha';
                         gantiHalaman('view-admin-dashboard');
                         return;
                     }
