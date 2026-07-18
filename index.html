@@ -1509,7 +1509,7 @@
     </footer>
 
     <!-- ============================================================ -->
-    <!-- JAVASCRIPT - 100% LOCAL STORAGE + EXPORT EXCEL MINIMALIS -->
+    <!-- JAVASCRIPT - 100% LOCAL STORAGE + EXPORT EXCEL PROFESIONAL -->
     <!-- ============================================================ -->
     <script>
         // ================================================================
@@ -1691,13 +1691,20 @@
         }
 
         // ================================================================
-        // EXPORT EXCEL MINIMALIS - UKURAN LEBIH BESAR & NYAMAN
+        // EXPORT EXCEL PROFESIONAL - TEMA ELEGAN & MODERN
         // ================================================================
         function exportToExcel(data, filename = 'hasil_ujian') {
             if (!data || data.length === 0) {
                 alert('Tidak ada data untuk diekspor!');
                 return;
             }
+
+            // Hitung statistik
+            const nilaiList = data.map(d => d.nilai);
+            const total = nilaiList.length;
+            const rataRata = total > 0 ? Math.round(nilaiList.reduce((a,b) => a + b, 0) / total) : 0;
+            const tertinggi = total > 0 ? Math.max(...nilaiList) : 0;
+            const terendah = total > 0 ? Math.min(...nilaiList) : 0;
 
             let html = `
             <html xmlns:o="urn:schemas-microsoft-com:office:office" 
@@ -1720,131 +1727,203 @@
                 </xml>
                 <![endif]-->
                 <style>
-                    /* ===== MINIMALIS THEME - UKURAN BESAR ===== */
+                    /* ===== PROFESSIONAL THEME ===== */
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    
                     body {
                         font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-                        padding: 40px 50px;
+                        padding: 35px 45px;
                         background: #ffffff;
-                        color: #1e293b;
-                        font-size: 14px;
+                        color: #1a1a2e;
                     }
                     
+                    /* ---- HEADER ---- */
                     .header {
                         text-align: center;
-                        margin-bottom: 35px;
+                        margin-bottom: 30px;
                         padding-bottom: 20px;
-                        border-bottom: 4px solid #4f46e5;
+                        border-bottom: 3px solid #1a1a2e;
+                        position: relative;
+                    }
+                    .header .top-bar {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 8px;
                     }
                     .header .school {
-                        font-size: 14px;
-                        color: #94a3b8;
+                        font-size: 11px;
+                        color: #6c6c8a;
                         text-transform: uppercase;
                         letter-spacing: 3px;
                         font-weight: 600;
                     }
+                    .header .badge {
+                        background: #e8e8f0;
+                        padding: 4px 16px;
+                        border-radius: 20px;
+                        font-size: 10px;
+                        color: #4a4a6a;
+                        font-weight: 600;
+                        letter-spacing: 1px;
+                    }
                     .header h1 {
-                        font-size: 30px;
+                        font-size: 28px;
                         font-weight: 700;
-                        color: #0f172a;
+                        color: #1a1a2e;
                         margin: 6px 0 4px 0;
                         letter-spacing: 1px;
                     }
+                    .header h1 span {
+                        color: #4f46e5;
+                    }
                     .header .sub {
-                        font-size: 16px;
-                        color: #64748b;
+                        font-size: 14px;
+                        color: #6c6c8a;
                         font-weight: 400;
                     }
                     .header .date {
-                        font-size: 13px;
-                        color: #94a3b8;
+                        font-size: 12px;
+                        color: #8a8aaa;
                         margin-top: 4px;
+                        font-weight: 300;
                     }
                     
+                    /* ---- TABLE ---- */
                     table {
                         border-collapse: collapse;
                         width: 100%;
-                        font-size: 14px;
-                        margin-top: 20px;
+                        font-size: 13px;
+                        margin-top: 18px;
                     }
                     table th {
-                        background-color: #4f46e5;
+                        background: #1a1a2e;
                         color: #ffffff;
-                        font-weight: 700;
-                        padding: 14px 18px;
+                        font-weight: 600;
+                        padding: 12px 16px;
                         text-align: left;
-                        border: 1px solid #4f46e5;
+                        border: none;
                         text-transform: uppercase;
-                        font-size: 12px;
-                        letter-spacing: 1px;
+                        font-size: 10px;
+                        letter-spacing: 1.2px;
                     }
                     table td {
-                        padding: 12px 18px;
-                        border: 1px solid #e2e8f0;
-                        color: #1e293b;
-                        font-size: 14px;
+                        padding: 10px 16px;
+                        border-bottom: 1px solid #e8e8f0;
+                        color: #1a1a2e;
+                        font-size: 13px;
+                    }
+                    table tr:last-child td {
+                        border-bottom: 2px solid #1a1a2e;
                     }
                     table tr:nth-child(even) td {
-                        background-color: #f8fafc;
+                        background-color: #f8f8fc;
                     }
                     table tr:hover td {
-                        background-color: #eef2ff;
+                        background-color: #edecff;
                     }
                     
+                    /* ---- NILAI ---- */
                     .nilai {
                         font-weight: 700;
                         text-align: center;
-                        font-size: 16px;
+                        font-size: 15px;
+                        padding: 4px 10px;
+                        border-radius: 4px;
+                        display: inline-block;
+                        min-width: 40px;
                     }
-                    .nilai.tinggi { color: #10b981; }
-                    .nilai.sedang { color: #f59e0b; }
-                    .nilai.rendah { color: #ef4444; }
+                    .nilai.tinggi { 
+                        color: #10b981;
+                        background: rgba(16, 185, 129, 0.1);
+                    }
+                    .nilai.sedang { 
+                        color: #f59e0b;
+                        background: rgba(245, 158, 11, 0.1);
+                    }
+                    .nilai.rendah { 
+                        color: #ef4444;
+                        background: rgba(239, 68, 68, 0.1);
+                    }
                     
+                    /* ---- FOOTER ---- */
                     .footer {
-                        margin-top: 25px;
-                        padding-top: 18px;
-                        border-top: 2px solid #e2e8f0;
+                        margin-top: 20px;
+                        padding-top: 16px;
+                        border-top: 2px solid #e8e8f0;
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
                         flex-wrap: wrap;
-                        gap: 15px;
+                        gap: 12px;
                     }
                     .footer .stats {
                         display: flex;
-                        gap: 30px;
-                        font-size: 14px;
-                        color: #475569;
+                        gap: 28px;
+                        font-size: 13px;
+                        color: #4a4a6a;
                     }
-                    .footer .stats strong {
-                        color: #0f172a;
-                        font-weight: 700;
+                    .footer .stats .stat-item {
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                    }
+                    .footer .stats .stat-item .icon {
                         font-size: 16px;
                     }
-                    .footer .copyright {
-                        font-size: 12px;
-                        color: #94a3b8;
+                    .footer .stats .stat-item .label {
+                        font-weight: 400;
+                        color: #8a8aaa;
                     }
-                    .footer .label-stat {
+                    .footer .stats .stat-item .value {
+                        font-weight: 700;
+                        color: #1a1a2e;
+                        font-size: 15px;
+                    }
+                    .footer .copyright {
+                        font-size: 11px;
+                        color: #8a8aaa;
+                        font-weight: 300;
+                    }
+                    .footer .copyright strong {
+                        color: #4a4a6a;
                         font-weight: 600;
-                        color: #64748b;
                     }
                     
-                    /* Ukuran kolom */
-                    .col-no { text-align: center; width: 45px; }
-                    .col-nama { min-width: 180px; }
-                    .col-kelas { width: 130px; }
-                    .col-mapel { min-width: 160px; }
-                    .col-nilai { text-align: center; width: 80px; }
-                    .col-tgl { text-align: center; width: 120px; }
+                    /* ---- COLUMN WIDTHS ---- */
+                    .col-no { text-align: center; width: 40px; }
+                    .col-nama { min-width: 160px; }
+                    .col-kelas { width: 110px; }
+                    .col-mapel { min-width: 150px; }
+                    .col-nilai { text-align: center; width: 90px; }
+                    .col-tgl { text-align: center; width: 110px; color: #8a8aaa; font-size: 12px; }
+                    
+                    /* ---- GRADE INDICATOR ---- */
+                    .grade-indicator {
+                        display: inline-block;
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 50%;
+                        margin-right: 6px;
+                        vertical-align: middle;
+                    }
+                    .grade-indicator.A { background: #10b981; }
+                    .grade-indicator.B { background: #34d399; }
+                    .grade-indicator.C { background: #fbbf24; }
+                    .grade-indicator.D { background: #f59e0b; }
+                    .grade-indicator.E { background: #ef4444; }
                 </style>
             </head>
             <body>
                 <div class="header">
-                    <div class="school">SMK Prama Artha</div>
-                    <h1>LAPORAN HASIL UJIAN</h1>
-                    <div class="sub">Sistem Computer Based Test (CBT)</div>
-                    <div class="date">Dicetak: ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })} 
-                    ${new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
+                    <div class="top-bar">
+                        <div class="school">SMK Prama Artha</div>
+                        <div class="badge">CBT SYSTEM</div>
+                    </div>
+                    <h1>LAPORAN <span>HASIL UJIAN</span></h1>
+                    <div class="sub">Computer Based Test (CBT)</div>
+                    <div class="date">📅 Dicetak: ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })} 
+                    • ${new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
                 </div>
                 
                 <table>
@@ -1862,10 +1941,24 @@
             `;
 
             data.forEach((item, idx) => {
-                let nilaiClass = 'nilai';
-                if (item.nilai >= 80) nilaiClass += ' tinggi';
-                else if (item.nilai >= 60) nilaiClass += ' sedang';
-                else nilaiClass += ' rendah';
+                let gradeClass = 'nilai';
+                let gradeIndicator = 'A';
+                if (item.nilai >= 85) { 
+                    gradeClass += ' tinggi';
+                    gradeIndicator = 'A';
+                } else if (item.nilai >= 75) { 
+                    gradeClass += ' tinggi';
+                    gradeIndicator = 'B';
+                } else if (item.nilai >= 65) { 
+                    gradeClass += ' sedang';
+                    gradeIndicator = 'C';
+                } else if (item.nilai >= 50) { 
+                    gradeClass += ' sedang';
+                    gradeIndicator = 'D';
+                } else { 
+                    gradeClass += ' rendah';
+                    gradeIndicator = 'E';
+                }
 
                 const tgl = item.tanggal ? new Date(item.tanggal).toLocaleDateString('id-ID', { 
                     day: '2-digit', month: 'short', year: 'numeric' 
@@ -1877,17 +1970,14 @@
                         <td class="col-nama">${item.nama}</td>
                         <td class="col-kelas">${item.kelas}</td>
                         <td class="col-mapel">${item.mapelNama}</td>
-                        <td class="${nilaiClass}">${item.nilai}</td>
-                        <td class="col-tgl" style="color:#94a3b8;font-size:12px;">${tgl}</td>
+                        <td class="col-nilai">
+                            <span class="grade-indicator ${gradeIndicator}"></span>
+                            <span class="${gradeClass}">${item.nilai}</span>
+                        </td>
+                        <td class="col-tgl">${tgl}</td>
                     </tr>
                 `;
             });
-
-            const nilaiList = data.map(d => d.nilai);
-            const total = nilaiList.length;
-            const rataRata = total > 0 ? Math.round(nilaiList.reduce((a,b) => a + b, 0) / total) : 0;
-            const tertinggi = total > 0 ? Math.max(...nilaiList) : 0;
-            const terendah = total > 0 ? Math.min(...nilaiList) : 0;
 
             html += `
                     </tbody>
@@ -1895,13 +1985,29 @@
                 
                 <div class="footer">
                     <div class="stats">
-                        <span><span class="label-stat">📊 Total</span> <strong>${total}</strong> siswa</span>
-                        <span><span class="label-stat">📈 Rata-rata</span> <strong>${rataRata}</strong></span>
-                        <span><span class="label-stat">🏆 Tertinggi</span> <strong>${tertinggi}</strong></span>
-                        <span><span class="label-stat">📉 Terendah</span> <strong>${terendah}</strong></span>
+                        <div class="stat-item">
+                            <span class="icon">📊</span>
+                            <span class="label">Total</span>
+                            <span class="value">${total}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="icon">📈</span>
+                            <span class="label">Rata-rata</span>
+                            <span class="value">${rataRata}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="icon">🏆</span>
+                            <span class="label">Tertinggi</span>
+                            <span class="value">${tertinggi}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="icon">📉</span>
+                            <span class="label">Terendah</span>
+                            <span class="value">${terendah}</span>
+                        </div>
                     </div>
                     <div class="copyright">
-                        &copy; ${new Date().getFullYear()} SMK Prama Artha · Data dari localStorage
+                        &copy; ${new Date().getFullYear()} <strong>SMK Prama Artha</strong> · Data dari localStorage
                     </div>
                 </div>
             </body>
