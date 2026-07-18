@@ -504,7 +504,7 @@
                 <button onclick="gantiHalaman('view-admin-tambah-user')" class="btn btn-success btn-sm">➕ Tambah User</button>
                 <button onclick="gantiHalaman('view-admin-kelola-mapel')" class="btn btn-primary btn-sm">📚 Kelola Mapel</button>
                 <button onclick="gantiHalaman('view-admin-kelola-siswa')" class="btn btn-warning btn-sm">👥 Kelola Siswa</button>
-                <button onclick="if(confirm('⚠️ Reset semua data sistem?')) alert('Data berhasil direset')" class="btn btn-danger btn-sm">🗑️ Reset Semua</button>
+                <!-- TOMBOL RESET SEMUA TELAH DIHAPUS -->
             </div>
 
             <div class="mt-4 border-t border-slate-100 pt-4">
@@ -747,8 +747,8 @@
         // ================================================================
         const DEFAULT_USERS = [
             { id: 1, nama: 'Admin Utama', role: 'admin', password: 'Admin123', mapel: [] },
-            { id: 2, nama: 'Budi Santoso', role: 'guru', password: 'Guru123', mapel: [1, 2] }, // Mengajar Matematika & Bahasa Indonesia
-            { id: 3, nama: 'Siti Rahayu', role: 'guru', password: 'Guru123', mapel: [3, 4] }, // Mengajar Bahasa Inggris & IPA
+            { id: 2, nama: 'Budi Santoso', role: 'guru', password: 'Guru123', mapel: [1, 2] },
+            { id: 3, nama: 'Siti Rahayu', role: 'guru', password: 'Guru123', mapel: [3, 4] },
             { id: 4, nama: 'Andi Wijaya', role: 'siswa', password: '', mapel: [] },
             { id: 5, nama: 'Dewi Lestari', role: 'siswa', password: '', mapel: [] },
         ];
@@ -780,7 +780,6 @@
             
             if (!nama) { alert('Nama tidak boleh kosong!'); return; }
             
-            // Cek duplikat nama
             if (users.some(u => u.nama.toLowerCase() === nama.toLowerCase())) {
                 alert('Nama sudah terdaftar!');
                 return;
@@ -1116,7 +1115,6 @@
                 document.getElementById('siswa-nama-input').focus(); return; }
             errorEl.style.display = 'none';
             
-            // Cek apakah siswa terdaftar
             const user = users.find(u => u.nama.toLowerCase() === nama.toLowerCase() && u.role === 'siswa');
             if (!user) {
                 alert('Nama siswa tidak terdaftar. Silahkan hubungi admin.');
@@ -1677,7 +1675,7 @@
         }
 
         // ================================================================
-        // GURU: TAMBAH SOAL & KELOLA (DENGAN FILTER MAPEL GURU)
+        // GURU: TAMBAH SOAL & KELOLA
         // ================================================================
         function guruTambahSoal() {
             const mapelId = parseInt(document.getElementById('guru-input-mapel').value);
@@ -1714,7 +1712,6 @@
             const tbody = document.getElementById('guru-tabel-hasil');
             const guruMapel = user.mapel || [];
             
-            // Kumpulkan semua hasil ujian dari semua siswa
             let semuaHasil = [];
             const siswaList = getSiswa();
             
@@ -1722,7 +1719,6 @@
                 const hasil = getHasilSiswa(siswa.nama);
                 Object.keys(hasil).forEach(mapelId => {
                     const mapelIdNum = parseInt(mapelId);
-                    // Hanya tampilkan mapel yang diajarkan oleh guru ini
                     if (guruMapel.includes(mapelIdNum)) {
                         const mapel = getMapelById(mapelIdNum);
                         semuaHasil.push({
@@ -1736,10 +1732,8 @@
                 });
             });
             
-            // Urutkan berdasarkan nama
             semuaHasil.sort((a, b) => a.nama.localeCompare(b.nama) || a.mapelId - b.mapelId);
             
-            // Hitung statistik
             const nilaiList = semuaHasil.map(h => h.nilai);
             const totalSiswa = new Set(semuaHasil.map(h => h.nama)).size;
             const rataRata = nilaiList.length > 0 ? Math.round(nilaiList.reduce((a,b) => a + b, 0) / nilaiList.length) : 0;
@@ -1779,7 +1773,6 @@
             const filterSelect = document.getElementById('guru-filter-kelola');
             filterSelect.innerHTML = '<option value="">Semua Mapel (Saya)</option>';
             
-            // Hanya tampilkan mapel yang diajarkan oleh guru ini
             const guruMapel = user.mapel || [];
             DATA_MAPEL.forEach(m => {
                 if (guruMapel.includes(m.id)) {
@@ -1790,7 +1783,6 @@
 
             let semuaSoal = [];
             DATA_MAPEL.forEach(m => {
-                // Hanya ambil soal dari mapel yang diajarkan
                 if (guruMapel.includes(m.id)) {
                     const soal = getSoalByMapel(m.id);
                     soal.forEach(s => {
@@ -1834,7 +1826,6 @@
                 return;
             }
             
-            // Cek apakah guru berhak mengelola mapel ini
             if (!user.mapel || !user.mapel.includes(mapelId)) {
                 alert('Anda tidak memiliki akses untuk mengelola mapel ini!');
                 return;
@@ -1880,7 +1871,6 @@
                 return;
             }
             
-            // Cek apakah guru berhak mengelola mapel ini
             if (!user.mapel || !user.mapel.includes(mapelId)) {
                 alert('Anda tidak memiliki akses untuk mengelola mapel ini!');
                 return;
@@ -2008,7 +1998,6 @@
             const jml = getSoalByMapel(id).length;
             if (!confirm(`Yakin ingin menghapus mapel "${mapel.nama}"? ${jml > 0 ? `Mapel ini memiliki ${jml} soal yang akan ikut terhapus.` : ''}`)) return;
 
-            // Hapus mapel dari daftar guru yang mengajar
             users.forEach(u => {
                 if (u.role === 'guru' && u.mapel) {
                     u.mapel = u.mapel.filter(m => m !== id);
@@ -2035,7 +2024,6 @@
             if (!select) return;
             select.innerHTML = '';
             
-            // Untuk guru, hanya tampilkan mapel yang diajarkan
             if (user && user.role === 'guru') {
                 const guruMapel = user.mapel || [];
                 DATA_MAPEL.forEach(m => {
@@ -2044,7 +2032,6 @@
                     }
                 });
             } else {
-                // Untuk admin atau lainnya, tampilkan semua
                 DATA_MAPEL.forEach(m => {
                     select.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
                 });
@@ -2059,7 +2046,6 @@
                 select.innerHTML += `<option value="${m.id}">${m.nama}</option>`;
             });
             
-            // Tampilkan/hide dropdown mapel berdasarkan role
             const roleSelect = document.getElementById('admin-user-role');
             const container = document.getElementById('guru-mapel-container');
             if (roleSelect.value === 'guru') {
@@ -2069,7 +2055,6 @@
             }
         }
 
-        // Event listener untuk role change pada tambah user
         document.addEventListener('DOMContentLoaded', function() {
             const roleSelect = document.getElementById('admin-user-role');
             if (roleSelect) {
@@ -2085,7 +2070,7 @@
         });
 
         // ================================================================
-        // ADMIN: KELOLA SISWA (RESET)
+        // ADMIN: KELOLA SISWA
         // ================================================================
         function renderKelolaSiswa() {
             loadUsersFromStorage();
