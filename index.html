@@ -7,9 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ================================================================
-           GLASS THEME
-           ================================================================ */
         * { -webkit-tap-highlight-color: transparent; }
         
         body { 
@@ -1341,6 +1338,11 @@
             return parts[0];
         }
 
+        // 🔥 PERUBAHAN: Buat key unik untuk hasil ujian (nama + kelas)
+        function getHasilKey(nama, kelas) {
+            return (nama + '_' + kelas).toLowerCase().replace(/\s+/g, '_');
+        }
+
         // ================================================================
         // GLASS ALERT & CONFIRM
         // ================================================================
@@ -1567,14 +1569,12 @@
 
         function getSoalByMapel(mapelId) { return DATA_SOAL[mapelId] || []; }
 
-        // 🔥 PERUBAHAN: Filter soal berdasarkan kelas
         function getSoalByMapelAndKelas(mapelId, kelas) {
             const soal = DATA_SOAL[mapelId] || [];
             if (kelas === 'all' || !kelas) return soal;
             return soal.filter(s => s.kelas === 'all' || s.kelas === kelas);
         }
 
-        // 🔥 PERUBAHAN: Cek apakah mapel memiliki soal untuk kelas tertentu
         function hasSoalForKelas(mapelId, kelas) {
             const soal = getSoalByMapelAndKelas(mapelId, kelas);
             return soal.length > 0;
@@ -1763,15 +1763,16 @@
             }
             errorEl.style.display = 'none';
             
-            const user = users.find(u => u.nama.toLowerCase() === nama.toLowerCase() && u.role === 'siswa');
-            if (!user) {
-                alert('❌ Nama siswa tidak terdaftar. Silahkan hubungi admin.');
-                return;
-            }
+            // 🔥 PERUBAHAN: Cek user berdasarkan nama dan kelas (case insensitive)
+            const user = users.find(u => 
+                u.role === 'siswa' && 
+                u.nama.toLowerCase() === nama.toLowerCase() && 
+                u.kelas === kelas
+            );
             
-            if (user.kelas !== kelas) {
-                user.kelas = kelas;
-                saveUsersToStorage();
+            if (!user) {
+                alert('❌ Nama siswa tidak terdaftar di kelas ini. Silahkan hubungi admin.');
+                return;
             }
             
             setSession('siswa', user.nama, user.id, kelas);
@@ -1818,43 +1819,43 @@
         }
 
         // ================================================================
-        // SISWA: HASIL UJIAN
+        // SISWA: HASIL UJIAN (dengan key unik nama + kelas)
         // ================================================================
-        function getHasilSiswa(nama) {
-            const key = 'cbt_hasil_' + nama;
+        function getHasilSiswa(nama, kelas) {
+            const key = 'cbt_hasil_' + getHasilKey(nama, kelas);
             const stored = localStorage.getItem(key);
             if (stored) { try { return JSON.parse(stored); } catch (e) { return {}; } }
             return {};
         }
 
         function simpanHasilSiswa(nama, mapelId, nilai, kelas) {
-            const key = 'cbt_hasil_' + nama;
-            const data = getHasilSiswa(nama);
+            const key = 'cbt_hasil_' + getHasilKey(nama, kelas);
+            const data = getHasilSiswa(nama, kelas);
             data[mapelId] = { nilai, tanggal: new Date().toLocaleString('id-ID'), kelas: kelas || '' };
             localStorage.setItem(key, JSON.stringify(data));
         }
 
-        function isMapelSelesai(nama, mapelId) {
-            const data = getHasilSiswa(nama);
+        function isMapelSelesai(nama, mapelId, kelas) {
+            const data = getHasilSiswa(nama, kelas);
             return data.hasOwnProperty(mapelId);
         }
 
-        function getNilaiMapel(nama, mapelId) {
-            const data = getHasilSiswa(nama);
+        function getNilaiMapel(nama, mapelId, kelas) {
+            const data = getHasilSiswa(nama, kelas);
             if (data[mapelId]) return data[mapelId].nilai;
             return null;
         }
 
-        function resetSiswaMapel(nama, mapelId) {
-            const key = 'cbt_hasil_' + nama;
-            const data = getHasilSiswa(nama);
+        function resetSiswaMapel(nama, mapelId, kelas) {
+            const key = 'cbt_hasil_' + getHasilKey(nama, kelas);
+            const data = getHasilSiswa(nama, kelas);
             if (data[mapelId]) { delete data[mapelId];
                 localStorage.setItem(key, JSON.stringify(data)); return true; }
             return false;
         }
 
-        function resetSiswaAll(nama) {
-            const key = 'cbt_hasil_' + nama;
+        function resetSiswaAll(nama, kelas) {
+            const key = 'cbt_hasil_' + getHasilKey(nama, kelas);
             localStorage.removeItem(key);
         }
 
@@ -1864,7 +1865,6 @@
         let slideCurrentPage = 0;
         const ITEMS_PER_PAGE = 3;
 
-        // 🔥 PERUBAHAN: Filter mapel berdasarkan kelas dan status selesai
         function renderDaftarMapel() {
             const user = getSession();
             if (!user) return;
@@ -1877,18 +1877,14 @@
 
             let mapelItems = [];
             DATA_MAPEL.forEach(mapel => {
-                // 🔥 PERUBAHAN: Cek apakah ada soal untuk kelas ini
                 const hasSoal = hasSoalForKelas(mapel.id, user.kelas || 'all');
-                const selesai = isMapelSelesai(user.nama, mapel.id);
-                const nilai = getNilaiMapel(user.nama, mapel.id);
+                const selesai = isMapelSelesai(user.nama, mapel.id, user.kelas);
+                const nilai = getNilaiMapel(user.nama, mapel.id, user.kelas);
 
-                // 🔥 PERUBAHAN: Jika tidak ada soal untuk kelas ini DAN belum selesai, SKIP
                 if (!hasSoal && !selesai) {
-                    return; // Lanjut ke mapel berikutnya
+                    return;
                 }
 
-                // 🔥 PERUBAHAN: Jika sudah selesai tapi tidak ada soal (kemungkinan dari kelas lain), tetap tampilkan
-                // Tapi ini seharusnya tidak terjadi karena hasil disimpan per siswa
                 const soal = getSoalByMapelAndKelas(mapel.id, user.kelas || 'all');
                 const jumlah = soal.length;
 
@@ -1896,13 +1892,11 @@
                     onClick = `pilihMapel(${mapel.id})`;
 
                 if (selesai) {
-                    // 🔥 PERUBAHAN: Jika selesai, tampilkan status selesai dengan nilai
                     statusText = `✅ Selesai (${nilai})`;
                     statusClass = 'selesai';
                     disabledClass = 'disabled';
                     onClick = `alert('Anda sudah menyelesaikan ujian ${mapel.nama} dengan nilai ${nilai}. Tidak dapat mengulang.');`;
                 } else if (jumlah === 0) {
-                    // Tidak mungkin sampai sini karena sudah di-filter
                     return;
                 } else {
                     statusText = `${jumlah} soal tersedia`;
@@ -2004,7 +1998,7 @@
         function renderRiwayat() {
             const user = getSession();
             if (!user) return;
-            const data = getHasilSiswa(user.nama);
+            const data = getHasilSiswa(user.nama, user.kelas);
             const container = document.getElementById('siswa-riwayat');
             const keys = Object.keys(data);
             if (keys.length === 0) {
@@ -2287,7 +2281,6 @@
             }
         }
 
-        // 🔥 PERUBAHAN: Pilih mapel dengan filter kelas
         function pilihMapel(mapelId) {
             const user = getSession();
             if (!user) return;
@@ -2295,8 +2288,8 @@
             loadMapelFromStorage();
             loadSoalFromStorage();
 
-            if (isMapelSelesai(user.nama, mapelId)) {
-                const nilai = getNilaiMapel(user.nama, mapelId);
+            if (isMapelSelesai(user.nama, mapelId, user.kelas)) {
+                const nilai = getNilaiMapel(user.nama, mapelId, user.kelas);
                 alert(`Anda sudah menyelesaikan ujian ini dengan nilai ${nilai}. Tidak dapat mengulang.`);
                 return;
             }
@@ -2304,7 +2297,6 @@
             const mapel = DATA_MAPEL.find(m => m.id === mapelId);
             if (!mapel) return;
 
-            // Ambil soal berdasarkan kelas siswa
             const soal = getSoalByMapelAndKelas(mapelId, user.kelas || 'all');
             if (soal.length === 0) {
                 alert('❌ Belum ada soal untuk mapel ini di kelas Anda. Silakan pilih mapel lain.');
@@ -2501,14 +2493,14 @@
             const siswaList = getSiswa();
             
             siswaList.forEach(siswa => {
-                const hasil = getHasilSiswa(siswa.nama);
+                const hasil = getHasilSiswa(siswa.nama, siswa.kelas);
                 Object.keys(hasil).forEach(mapelId => {
                     const mapelIdNum = parseInt(mapelId);
                     if (guruMapel.includes(mapelIdNum)) {
                         const mapel = getMapelById(mapelIdNum);
                         semuaHasil.push({
                             nama: siswa.nama,
-                            kelas: hasil[mapelId].kelas || siswa.kelas || '-',
+                            kelas: siswa.kelas || '-',
                             mapelId: mapelIdNum,
                             mapelNama: mapel ? mapel.nama : 'Mapel ' + mapelId,
                             nilai: hasil[mapelId].nilai,
@@ -2522,7 +2514,7 @@
             cachedHasilGuru = semuaHasil;
             
             const nilaiList = semuaHasil.map(h => h.nilai);
-            const totalSiswa = new Set(semuaHasil.map(h => h.nama)).size;
+            const totalSiswa = new Set(semuaHasil.map(h => h.nama + '_' + h.kelas)).size;
             const rataRata = nilaiList.length > 0 ? Math.round(nilaiList.reduce((a,b) => a + b, 0) / nilaiList.length) : 0;
             const tertinggi = nilaiList.length > 0 ? Math.max(...nilaiList) : 0;
             
@@ -3097,7 +3089,7 @@
             }
 
             siswa.forEach((s, idx) => {
-                const hasil = getHasilSiswa(s.nama);
+                const hasil = getHasilSiswa(s.nama, s.kelas);
                 const totalUjian = Object.keys(hasil).length;
 
                 tbody.innerHTML += `
@@ -3107,18 +3099,18 @@
                         <td>${s.kelas || '-'}</td>
                         <td class="text-center">${totalUjian}</td>
                         <td class="text-center">
-                            <button onclick="bukaDetailSiswa('${s.nama}')" class="btn btn-primary btn-sm">📋 Detail</button>
+                            <button onclick="bukaDetailSiswa('${s.nama}', '${s.kelas}')" class="btn btn-primary btn-sm">📋 Detail</button>
                         </td>
                     </tr>
                 `;
             });
         }
 
-        function bukaDetailSiswa(nama) {
-            const hasil = getHasilSiswa(nama);
+        function bukaDetailSiswa(nama, kelas) {
+            const hasil = getHasilSiswa(nama, kelas);
             const keys = Object.keys(hasil);
 
-            document.getElementById('modal-siswa-nama').textContent = `📋 Riwayat Ujian - ${nama}`;
+            document.getElementById('modal-siswa-nama').textContent = `📋 Riwayat Ujian - ${nama} (${kelas})`;
             const content = document.getElementById('modal-siswa-content');
             content.innerHTML = '';
 
@@ -3136,7 +3128,7 @@
                                 <div class="nilai">Nilai: ${entry.nilai}</div>
                                 <div class="tgl">${entry.tanggal}</div>
                             </div>
-                            <button onclick="resetSiswaMapelHandler('${nama}', ${mapelId})" class="btn btn-danger btn-sm" style="width:auto;">🔄 Reset</button>
+                            <button onclick="resetSiswaMapelHandler('${nama}', '${kelas}', ${mapelId})" class="btn btn-danger btn-sm" style="width:auto;">🔄 Reset</button>
                         </div>
                     `;
                 });
@@ -3144,9 +3136,9 @@
 
             const btnResetAll = document.getElementById('btn-reset-all-siswa');
             btnResetAll.onclick = function() {
-                if (confirm(`⚠️ Yakin ingin mereset SEMUA ujian untuk siswa "${nama}"? Siswa akan dapat mengulang semua mapel.`)) {
-                    resetSiswaAll(nama);
-                    alert('✅ Semua ujian untuk siswa "' + nama + '" telah direset.');
+                if (confirm(`⚠️ Yakin ingin mereset SEMUA ujian untuk siswa "${nama}" (${kelas})? Siswa akan dapat mengulang semua mapel.`)) {
+                    resetSiswaAll(nama, kelas);
+                    alert('✅ Semua ujian untuk siswa "' + nama + '" (' + kelas + ') telah direset.');
                     tutupModalDetailSiswa();
                     renderKelolaSiswa();
                     renderDaftarMapel();
@@ -3156,13 +3148,13 @@
             document.getElementById('modal-detail-siswa').classList.remove('hidden');
         }
 
-        function resetSiswaMapelHandler(nama, mapelId) {
+        function resetSiswaMapelHandler(nama, kelas, mapelId) {
             const mapel = DATA_MAPEL.find(m => m.id == mapelId);
             const namaMapel = mapel ? mapel.nama : 'Mapel ini';
-            if (confirm(`Yakin ingin mereset ujian "${namaMapel}" untuk siswa "${nama}"? Siswa dapat mengulang ujian ini.`)) {
-                if (resetSiswaMapel(nama, mapelId)) {
-                    alert('✅ Ujian "' + namaMapel + '" untuk siswa "' + nama + '" telah direset.');
-                    bukaDetailSiswa(nama);
+            if (confirm(`Yakin ingin mereset ujian "${namaMapel}" untuk siswa "${nama}" (${kelas})? Siswa dapat mengulang ujian ini.`)) {
+                if (resetSiswaMapel(nama, mapelId, kelas)) {
+                    alert('✅ Ujian "' + namaMapel + '" untuk siswa "' + nama + '" (' + kelas + ') telah direset.');
+                    bukaDetailSiswa(nama, kelas);
                     renderKelolaSiswa();
                     renderDaftarMapel();
                 } else {
@@ -3188,8 +3180,8 @@
             
             if (!nama) { alert('Nama tidak boleh kosong!'); return; }
             
-            if (users.some(u => u.nama.toLowerCase() === nama.toLowerCase())) {
-                alert('Nama sudah terdaftar!');
+            if (users.some(u => u.nama.toLowerCase() === nama.toLowerCase() && u.kelas === kelas)) {
+                alert('Nama sudah terdaftar di kelas ini!');
                 return;
             }
             
