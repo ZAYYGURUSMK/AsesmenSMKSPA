@@ -7,6 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        /* ================================================================
+           GLASS THEME
+           ================================================================ */
         * { -webkit-tap-highlight-color: transparent; }
         
         body { 
@@ -1571,6 +1574,12 @@
             return soal.filter(s => s.kelas === 'all' || s.kelas === kelas);
         }
 
+        // 🔥 PERUBAHAN: Cek apakah mapel memiliki soal untuk kelas tertentu
+        function hasSoalForKelas(mapelId, kelas) {
+            const soal = getSoalByMapelAndKelas(mapelId, kelas);
+            return soal.length > 0;
+        }
+
         function getNextSoalId(mapelId) {
             const soal = DATA_SOAL[mapelId] || [];
             if (soal.length === 0) return (mapelId * 10) + 1;
@@ -1855,7 +1864,7 @@
         let slideCurrentPage = 0;
         const ITEMS_PER_PAGE = 3;
 
-        // 🔥 PERUBAHAN: Filter mapel berdasarkan kelas
+        // 🔥 PERUBAHAN: Filter mapel berdasarkan kelas dan status selesai
         function renderDaftarMapel() {
             const user = getSession();
             if (!user) return;
@@ -1868,27 +1877,33 @@
 
             let mapelItems = [];
             DATA_MAPEL.forEach(mapel => {
-                // Ambil soal berdasarkan kelas siswa
-                const soal = getSoalByMapelAndKelas(mapel.id, user.kelas || 'all');
-                const jumlah = soal.length;
+                // 🔥 PERUBAHAN: Cek apakah ada soal untuk kelas ini
+                const hasSoal = hasSoalForKelas(mapel.id, user.kelas || 'all');
                 const selesai = isMapelSelesai(user.nama, mapel.id);
                 const nilai = getNilaiMapel(user.nama, mapel.id);
 
-                // 🔥 PERUBAHAN: Jika tidak ada soal untuk kelas ini, SKIP (tidak ditampilkan)
-                if (jumlah === 0 && !selesai) {
+                // 🔥 PERUBAHAN: Jika tidak ada soal untuk kelas ini DAN belum selesai, SKIP
+                if (!hasSoal && !selesai) {
                     return; // Lanjut ke mapel berikutnya
                 }
+
+                // 🔥 PERUBAHAN: Jika sudah selesai tapi tidak ada soal (kemungkinan dari kelas lain), tetap tampilkan
+                // Tapi ini seharusnya tidak terjadi karena hasil disimpan per siswa
+                const soal = getSoalByMapelAndKelas(mapel.id, user.kelas || 'all');
+                const jumlah = soal.length;
 
                 let statusText, statusClass, disabledClass = '',
                     onClick = `pilihMapel(${mapel.id})`;
 
                 if (selesai) {
+                    // 🔥 PERUBAHAN: Jika selesai, tampilkan status selesai dengan nilai
                     statusText = `✅ Selesai (${nilai})`;
                     statusClass = 'selesai';
                     disabledClass = 'disabled';
                     onClick = `alert('Anda sudah menyelesaikan ujian ${mapel.nama} dengan nilai ${nilai}. Tidak dapat mengulang.');`;
                 } else if (jumlah === 0) {
-                    return; // Seharusnya tidak sampai sini
+                    // Tidak mungkin sampai sini karena sudah di-filter
+                    return;
                 } else {
                     statusText = `${jumlah} soal tersedia`;
                     statusClass = 'tersedia';
