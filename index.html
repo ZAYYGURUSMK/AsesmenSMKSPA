@@ -1509,7 +1509,7 @@
     </footer>
 
     <!-- ============================================================ -->
-    <!-- JAVASCRIPT - 100% LOCAL STORAGE + EXPORT EXCEL SIMPEL -->
+    <!-- JAVASCRIPT - 100% LOCAL STORAGE + EXPORT EXCEL -->
     <!-- ============================================================ -->
     <script>
         // ================================================================
@@ -1691,7 +1691,7 @@
         }
 
         // ================================================================
-        // EXPORT EXCEL SIMPEL - BERSIH & NYAMAN DILIHAT
+        // EXPORT EXCEL - TEMA STANDAR KANTOR
         // ================================================================
         function exportToExcel(data, filename = 'hasil_ujian') {
             if (!data || data.length === 0) {
@@ -1727,42 +1727,43 @@
                 </xml>
                 <![endif]-->
                 <style>
-                    /* ===== SIMPLE & CLEAN THEME ===== */
+                    /* ===== STANDAR KANTOR ===== */
                     body {
-                        font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
-                        padding: 30px 35px;
+                        font-family: 'Calibri', 'Arial', sans-serif;
+                        padding: 25px 30px;
                         background: #ffffff;
                         color: #222222;
+                        font-size: 14px;
                     }
                     
                     /* HEADER */
                     .header {
                         text-align: center;
-                        margin-bottom: 25px;
-                        padding-bottom: 15px;
-                        border-bottom: 2px solid #4f46e5;
+                        margin-bottom: 22px;
+                        padding-bottom: 14px;
+                        border-bottom: 2px solid #2c3e50;
                     }
                     .header .school {
-                        font-size: 13px;
-                        color: #6b7280;
+                        font-size: 12px;
+                        color: #7f8c8d;
                         letter-spacing: 2px;
                         font-weight: 600;
                         text-transform: uppercase;
                     }
                     .header h1 {
-                        font-size: 26px;
+                        font-size: 22px;
                         font-weight: 700;
-                        color: #1a1a2e;
-                        margin: 5px 0 3px 0;
+                        color: #2c3e50;
+                        margin: 4px 0 2px 0;
                     }
                     .header .sub {
-                        font-size: 14px;
-                        color: #6b7280;
+                        font-size: 13px;
+                        color: #7f8c8d;
                     }
                     .header .date {
-                        font-size: 12px;
-                        color: #9ca3af;
-                        margin-top: 3px;
+                        font-size: 11px;
+                        color: #95a5a6;
+                        margin-top: 2px;
                     }
                     
                     /* TABLE */
@@ -1770,30 +1771,30 @@
                         border-collapse: collapse;
                         width: 100%;
                         font-size: 13px;
-                        margin-top: 15px;
+                        margin-top: 12px;
                     }
                     table th {
-                        background-color: #4f46e5;
+                        background-color: #2c3e50;
                         color: #ffffff;
-                        font-weight: 600;
+                        font-weight: 700;
                         padding: 10px 14px;
                         text-align: left;
-                        border: 1px solid #4f46e5;
+                        border: 1px solid #2c3e50;
                         font-size: 11px;
-                        letter-spacing: 0.5px;
                         text-transform: uppercase;
+                        letter-spacing: 0.5px;
                     }
                     table td {
-                        padding: 9px 14px;
-                        border: 1px solid #e5e7eb;
-                        color: #1f2937;
+                        padding: 8px 14px;
+                        border: 1px solid #d5d8dc;
+                        color: #1c2833;
                         font-size: 13px;
                     }
                     table tr:nth-child(even) td {
-                        background-color: #f9fafb;
+                        background-color: #f4f6f7;
                     }
                     table tr:hover td {
-                        background-color: #eef2ff;
+                        background-color: #eaf2f8;
                     }
                     
                     /* NILAI */
@@ -1802,15 +1803,15 @@
                         text-align: center;
                         font-size: 14px;
                     }
-                    .nilai.tinggi { color: #059669; }
-                    .nilai.sedang { color: #d97706; }
-                    .nilai.rendah { color: #dc2626; }
+                    .nilai.tinggi { color: #27ae60; }
+                    .nilai.sedang { color: #f39c12; }
+                    .nilai.rendah { color: #e74c3c; }
                     
                     /* FOOTER */
                     .footer {
-                        margin-top: 18px;
-                        padding-top: 14px;
-                        border-top: 2px solid #e5e7eb;
+                        margin-top: 16px;
+                        padding-top: 12px;
+                        border-top: 2px solid #d5d8dc;
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
@@ -1819,18 +1820,18 @@
                     }
                     .footer .stats {
                         display: flex;
-                        gap: 24px;
+                        gap: 22px;
                         font-size: 13px;
-                        color: #4b5563;
+                        color: #5d6d7e;
                     }
                     .footer .stats strong {
-                        color: #1f2937;
+                        color: #2c3e50;
                         font-weight: 700;
                         font-size: 14px;
                     }
                     .footer .copyright {
                         font-size: 11px;
-                        color: #9ca3af;
+                        color: #95a5a6;
                     }
                     
                     /* COLUMN WIDTHS */
@@ -1839,13 +1840,13 @@
                     .col-kelas { width: 100px; }
                     .col-mapel { min-width: 140px; }
                     .col-nilai { text-align: center; width: 70px; }
-                    .col-tgl { text-align: center; width: 100px; color: #9ca3af; font-size: 12px; }
+                    .col-tgl { text-align: center; width: 100px; color: #95a5a6; font-size: 12px; }
                 </style>
             </head>
             <body>
                 <div class="header">
                     <div class="school">SMK Prama Artha</div>
-                    <h1>Laporan Hasil Ujian</h1>
+                    <h1>LAPORAN HASIL UJIAN</h1>
                     <div class="sub">Computer Based Test (CBT)</div>
                     <div class="date">${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })} 
                     • ${new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
