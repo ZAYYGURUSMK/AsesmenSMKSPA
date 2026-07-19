@@ -1691,7 +1691,7 @@
         }
 
         // ================================================================
-        // EXPORT EXCEL - UKURAN FONT & LEBAR KOLOM YANG SUDAH DIATUR
+        // EXPORT EXCEL - PERBAIKAN UNTUK HP (TIDAK CORRUPT)
         // ================================================================
         function exportToExcel(data, filename = 'hasil_ujian') {
             if (!data || data.length === 0) {
@@ -1706,12 +1706,15 @@
             const tertinggi = total > 0 ? Math.max(...nilaiList) : 0;
             const terendah = total > 0 ? Math.min(...nilaiList) : 0;
 
-            let html = `
+            // Gunakan UTF-8 BOM + table yang lebih simpel untuk kompatibilitas HP
+            let html = '\uFEFF'; // BOM UTF-8
+            html += `
             <html xmlns:o="urn:schemas-microsoft-com:office:office" 
                   xmlns:x="urn:schemas-microsoft-com:office:excel" 
                   xmlns="http://www.w3.org/TR/REC-html40">
             <head>
                 <meta charset="UTF-8">
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
                 <!--[if gte mso 9]>
                 <xml>
                     <x:ExcelWorkbook>
@@ -1727,120 +1730,111 @@
                 </xml>
                 <![endif]-->
                 <style>
-                    /* ===== CUSTOM FONT SIZE ===== */
+                    /* ===== STYLE UNTUK KOMPATIBILITAS HP ===== */
                     body {
                         font-family: 'Calibri', 'Arial', sans-serif;
-                        padding: 20px 25px;
+                        padding: 15px 20px;
                         background: #ffffff;
                         color: #222222;
                     }
                     
-                    /* HEADER - 25px */
                     .header {
                         text-align: center;
-                        margin-bottom: 18px;
-                        padding-bottom: 12px;
+                        margin-bottom: 15px;
+                        padding-bottom: 10px;
                         border-bottom: 2px solid #2c3e50;
                     }
                     .header .school {
-                        font-size: 13px;
+                        font-size: 12px;
                         color: #7f8c8d;
-                        letter-spacing: 2px;
+                        letter-spacing: 1px;
                         font-weight: 600;
                         text-transform: uppercase;
                     }
                     .header h1 {
-                        font-size: 25px;
+                        font-size: 20px;
                         font-weight: 700;
                         color: #2c3e50;
-                        margin: 3px 0 2px 0;
+                        margin: 2px 0 1px 0;
                     }
                     .header .sub {
-                        font-size: 15px;
+                        font-size: 13px;
                         color: #7f8c8d;
                     }
                     .header .date {
-                        font-size: 12px;
+                        font-size: 11px;
                         color: #95a5a6;
                         margin-top: 2px;
                     }
                     
-                    /* TABLE */
                     table {
                         border-collapse: collapse;
                         width: 100%;
-                        margin-top: 10px;
+                        margin-top: 8px;
                         table-layout: fixed;
                     }
-                    /* HEADER TABEL - 13px */
                     table th {
                         background-color: #2c3e50;
                         color: #ffffff;
                         font-weight: 700;
-                        padding: 8px 10px;
+                        padding: 6px 8px;
                         text-align: left;
                         border: 1px solid #2c3e50;
-                        font-size: 13px;
+                        font-size: 12px;
                         text-transform: uppercase;
                         letter-spacing: 0.3px;
                     }
-                    /* ISI TABEL - 13px */
                     table td {
-                        padding: 7px 10px;
+                        padding: 6px 8px;
                         border: 1px solid #d5d8dc;
                         color: #1c2833;
-                        font-size: 13px;
+                        font-size: 12px;
                         word-wrap: break-word;
                     }
                     table tr:nth-child(even) td {
                         background-color: #f4f6f7;
                     }
-                    table tr:hover td {
-                        background-color: #eaf2f8;
-                    }
                     
                     /* LEBAR KOLOM - KOLOM A (No) 60px */
                     .col-no { width: 60px; text-align: center; }
-                    .col-nama { width: 300px; }
-                    .col-kelas { width: 100px; }
-                    .col-mapel { width: 250px; }
-                    .col-nilai { width: 65px; text-align: center; }
-                    .col-tgl { width: 90px; text-align: center; color: #95a5a6; font-size: 12px; }
+                    .col-nama { width: 280px; }
+                    .col-kelas { width: 90px; }
+                    .col-mapel { width: 200px; }
+                    .col-nilai { width: 60px; text-align: center; }
+                    .col-tgl { width: 85px; text-align: center; color: #95a5a6; font-size: 11px; }
                     
-                    /* NILAI - 14px */
                     .nilai {
                         font-weight: 700;
                         text-align: center;
-                        font-size: 14px;
+                        font-size: 13px;
                     }
                     .nilai.tinggi { color: #27ae60; }
                     .nilai.sedang { color: #f39c12; }
                     .nilai.rendah { color: #e74c3c; }
                     
-                    /* FOOTER - 15px */
                     .footer {
-                        margin-top: 14px;
-                        padding-top: 10px;
+                        margin-top: 12px;
+                        padding-top: 8px;
                         border-top: 2px solid #d5d8dc;
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
                         flex-wrap: wrap;
-                        gap: 8px;
+                        gap: 6px;
                     }
                     .footer .stats {
                         display: flex;
-                        gap: 18px;
-                        font-size: 15px;
+                        gap: 14px;
+                        font-size: 13px;
                         color: #5d6d7e;
                     }
                     .footer .stats strong {
                         color: #2c3e50;
                         font-weight: 700;
-                        font-size: 15px;
+                        font-size: 13px;
                     }
                     .footer .copyright {
-                        font-size: 11px;
+                        font-size: 10px;
                         color: #95a5a6;
                     }
                 </style>
@@ -1909,6 +1903,7 @@
             </html>
             `;
 
+            // Gunakan blob dengan charset UTF-8 yang benar
             const blob = new Blob([html], { 
                 type: 'application/vnd.ms-excel;charset=utf-8' 
             });
