@@ -1082,6 +1082,7 @@
                 <button onclick="gantiHalaman('view-admin-kelola-mapel')" class="btn btn-primary btn-sm">📚 Kelola Mapel</button>
                 <button onclick="gantiHalaman('view-admin-kelola-guru')" class="btn btn-guru btn-sm">👨‍🏫 Kelola Guru</button>
                 <button onclick="gantiHalaman('view-admin-kelola-siswa')" class="btn btn-warning btn-sm">👥 Kelola Siswa</button>
+                <button onclick="exportAllData()" class="btn btn-export btn-sm">📊 Export Semua Data</button>
                 <button onclick="resetSemuaData()" class="btn btn-danger btn-sm">🗑️ Reset Data</button>
             </div>
 
@@ -1691,7 +1692,7 @@
         }
 
         // ================================================================
-        // EXPORT EXCEL - PERBAIKAN UNTUK HP (TIDAK CORRUPT)
+        // EXPORT EXCEL MURNI (CSV) - KOMPATIBEL HP
         // ================================================================
         function exportToExcel(data, filename = 'hasil_ujian') {
             if (!data || data.length === 0) {
@@ -1706,207 +1707,111 @@
             const tertinggi = total > 0 ? Math.max(...nilaiList) : 0;
             const terendah = total > 0 ? Math.min(...nilaiList) : 0;
 
-            // Gunakan UTF-8 BOM + table yang lebih simpel untuk kompatibilitas HP
-            let html = '\uFEFF'; // BOM UTF-8
-            html += `
-            <html xmlns:o="urn:schemas-microsoft-com:office:office" 
-                  xmlns:x="urn:schemas-microsoft-com:office:excel" 
-                  xmlns="http://www.w3.org/TR/REC-html40">
-            <head>
-                <meta charset="UTF-8">
-                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-                <!--[if gte mso 9]>
-                <xml>
-                    <x:ExcelWorkbook>
-                        <x:ExcelWorksheets>
-                            <x:ExcelWorksheet>
-                                <x:Name>Hasil Ujian</x:Name>
-                                <x:WorksheetOptions>
-                                    <x:DisplayGridlines/>
-                                </x:WorksheetOptions>
-                            </x:ExcelWorksheet>
-                        </x:ExcelWorksheets>
-                    </x:ExcelWorkbook>
-                </xml>
-                <![endif]-->
-                <style>
-                    /* ===== STYLE UNTUK KOMPATIBILITAS HP ===== */
-                    body {
-                        font-family: 'Calibri', 'Arial', sans-serif;
-                        padding: 15px 20px;
-                        background: #ffffff;
-                        color: #222222;
-                    }
-                    
-                    .header {
-                        text-align: center;
-                        margin-bottom: 15px;
-                        padding-bottom: 10px;
-                        border-bottom: 2px solid #2c3e50;
-                    }
-                    .header .school {
-                        font-size: 12px;
-                        color: #7f8c8d;
-                        letter-spacing: 1px;
-                        font-weight: 600;
-                        text-transform: uppercase;
-                    }
-                    .header h1 {
-                        font-size: 20px;
-                        font-weight: 700;
-                        color: #2c3e50;
-                        margin: 2px 0 1px 0;
-                    }
-                    .header .sub {
-                        font-size: 13px;
-                        color: #7f8c8d;
-                    }
-                    .header .date {
-                        font-size: 11px;
-                        color: #95a5a6;
-                        margin-top: 2px;
-                    }
-                    
-                    table {
-                        border-collapse: collapse;
-                        width: 100%;
-                        margin-top: 8px;
-                        table-layout: fixed;
-                    }
-                    table th {
-                        background-color: #2c3e50;
-                        color: #ffffff;
-                        font-weight: 700;
-                        padding: 6px 8px;
-                        text-align: left;
-                        border: 1px solid #2c3e50;
-                        font-size: 12px;
-                        text-transform: uppercase;
-                        letter-spacing: 0.3px;
-                    }
-                    table td {
-                        padding: 6px 8px;
-                        border: 1px solid #d5d8dc;
-                        color: #1c2833;
-                        font-size: 12px;
-                        word-wrap: break-word;
-                    }
-                    table tr:nth-child(even) td {
-                        background-color: #f4f6f7;
-                    }
-                    
-                    /* LEBAR KOLOM - KOLOM A (No) 60px */
-                    .col-no { width: 60px; text-align: center; }
-                    .col-nama { width: 280px; }
-                    .col-kelas { width: 90px; }
-                    .col-mapel { width: 200px; }
-                    .col-nilai { width: 60px; text-align: center; }
-                    .col-tgl { width: 85px; text-align: center; color: #95a5a6; font-size: 11px; }
-                    
-                    .nilai {
-                        font-weight: 700;
-                        text-align: center;
-                        font-size: 13px;
-                    }
-                    .nilai.tinggi { color: #27ae60; }
-                    .nilai.sedang { color: #f39c12; }
-                    .nilai.rendah { color: #e74c3c; }
-                    
-                    .footer {
-                        margin-top: 12px;
-                        padding-top: 8px;
-                        border-top: 2px solid #d5d8dc;
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        flex-wrap: wrap;
-                        gap: 6px;
-                    }
-                    .footer .stats {
-                        display: flex;
-                        gap: 14px;
-                        font-size: 13px;
-                        color: #5d6d7e;
-                    }
-                    .footer .stats strong {
-                        color: #2c3e50;
-                        font-weight: 700;
-                        font-size: 13px;
-                    }
-                    .footer .copyright {
-                        font-size: 10px;
-                        color: #95a5a6;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <div class="school">SMK Prama Artha</div>
-                    <h1>LAPORAN HASIL UJIAN</h1>
-                    <div class="sub">Computer Based Test (CBT)</div>
-                    <div class="date">${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })} 
-                    • ${new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
-                </div>
+            // Buat data dalam format array 2D
+            const rows = [];
+            
+            // HEADER UTAMA
+            rows.push(['LAPORAN HASIL UJIAN CBT']);
+            rows.push(['SMK Prama Artha']);
+            rows.push(['']);
+            rows.push(['Tanggal:', new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })]);
+            rows.push(['Waktu:', new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })]);
+            rows.push(['']);
+            rows.push(['----------------------------------------']);
+            rows.push([]);
+            
+            // REKAP PER MAPEL
+            const mapelGroups = {};
+            data.forEach(item => {
+                if (!mapelGroups[item.mapelNama]) {
+                    mapelGroups[item.mapelNama] = [];
+                }
+                mapelGroups[item.mapelNama].push(item);
+            });
+            
+            rows.push(['REKAP PER MATA PELAJARAN']);
+            rows.push([]);
+            
+            const mapelNames = Object.keys(mapelGroups);
+            mapelNames.forEach((mapelName, idx) => {
+                const items = mapelGroups[mapelName];
+                const values = items.map(i => i.nilai);
+                const count = values.length;
+                const avg = Math.round(values.reduce((a,b) => a + b, 0) / count);
+                const max = Math.max(...values);
+                const min = Math.min(...values);
                 
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="col-no">No</th>
-                            <th class="col-nama">Nama Siswa</th>
-                            <th class="col-kelas">Kelas</th>
-                            <th class="col-mapel">Mata Pelajaran</th>
-                            <th class="col-nilai">Nilai</th>
-                            <th class="col-tgl">Tanggal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
+                rows.push([`${idx + 1}. ${mapelName}`]);
+                rows.push(['   Jumlah Siswa :', count]);
+                rows.push(['   Rata-rata    :', avg]);
+                rows.push(['   Tertinggi    :', max]);
+                rows.push(['   Terendah     :', min]);
+                rows.push([]);
+            });
+            
+            rows.push(['----------------------------------------']);
+            rows.push([]);
+            
+            // DETAIL DATA SISWA
+            rows.push(['DATA LENGKAP SISWA']);
+            rows.push([]);
+            rows.push(['No', 'Nama Siswa', 'Kelas', 'Mata Pelajaran', 'Nilai', 'Tanggal Ujian']);
+            rows.push(['--', '-----------', '-----', '---------------', '-----', '------------']);
+            
             data.forEach((item, idx) => {
-                let nilaiClass = 'nilai';
-                if (item.nilai >= 80) nilaiClass += ' tinggi';
-                else if (item.nilai >= 60) nilaiClass += ' sedang';
-                else nilaiClass += ' rendah';
-
                 const tgl = item.tanggal ? new Date(item.tanggal).toLocaleDateString('id-ID', { 
                     day: '2-digit', month: 'short', year: 'numeric' 
                 }) : '-';
+                rows.push([
+                    idx + 1,
+                    item.nama,
+                    item.kelas,
+                    item.mapelNama,
+                    item.nilai,
+                    tgl
+                ]);
+            });
+            
+            rows.push([]);
+            rows.push(['----------------------------------------']);
+            rows.push([]);
+            
+            // STATISTIK KESELURUHAN
+            rows.push(['STATISTIK KESELURUHAN']);
+            rows.push([]);
+            rows.push(['Total Siswa       :', total]);
+            rows.push(['Rata-rata Nilai   :', rataRata]);
+            rows.push(['Nilai Tertinggi   :', tertinggi]);
+            rows.push(['Nilai Terendah    :', terendah]);
+            rows.push([]);
+            rows.push(['========================================']);
+            rows.push(['© ' + new Date().getFullYear() + ' SMK Prama Artha']);
+            rows.push(['Dicetak dari Sistem CBT Offline']);
 
-                html += `
-                    <tr>
-                        <td class="col-no">${idx + 1}</td>
-                        <td class="col-nama">${item.nama}</td>
-                        <td class="col-kelas">${item.kelas}</td>
-                        <td class="col-mapel">${item.mapelNama}</td>
-                        <td class="${nilaiClass}">${item.nilai}</td>
-                        <td class="col-tgl">${tgl}</td>
-                    </tr>
-                `;
+            // Konversi ke CSV
+            let csvContent = '';
+            rows.forEach(row => {
+                if (row.length === 0) {
+                    csvContent += '\n';
+                    return;
+                }
+                const escapedRow = row.map(cell => {
+                    if (cell === null || cell === undefined) return '';
+                    const str = String(cell);
+                    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                        return '"' + str.replace(/"/g, '""') + '"';
+                    }
+                    return str;
+                });
+                csvContent += escapedRow.join(',') + '\n';
             });
 
-            html += `
-                    </tbody>
-                </table>
-                
-                <div class="footer">
-                    <div class="stats">
-                        <span>📊 Total: <strong>${total}</strong></span>
-                        <span>📈 Rata-rata: <strong>${rataRata}</strong></span>
-                        <span>🏆 Tertinggi: <strong>${tertinggi}</strong></span>
-                        <span>📉 Terendah: <strong>${terendah}</strong></span>
-                    </div>
-                    <div class="copyright">
-                        &copy; ${new Date().getFullYear()} SMK Prama Artha
-                    </div>
-                </div>
-            </body>
-            </html>
-            `;
-
-            // Gunakan blob dengan charset UTF-8 yang benar
-            const blob = new Blob([html], { 
-                type: 'application/vnd.ms-excel;charset=utf-8' 
+            // Tambahkan BOM untuk UTF-8
+            const bom = '\uFEFF';
+            const blob = new Blob([bom + csvContent], { 
+                type: 'text/csv;charset=utf-8' 
             });
+            
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `${filename}_${new Date().toISOString().slice(0,10)}.xls`;
@@ -1914,6 +1819,45 @@
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(link.href);
+            
+            showToast('✅ Data berhasil diekspor!', 'success');
+        }
+
+        // ================================================================
+        // EXPORT SEMUA DATA (UNTUK ADMIN)
+        // ================================================================
+        function exportAllData() {
+            const user = getSession();
+            if (!user || user.role !== 'admin') {
+                alert('Akses ditolak! Hanya untuk Admin.');
+                return;
+            }
+
+            // Kumpulkan semua data hasil ujian
+            const allData = [];
+            const siswaList = users.filter(u => u.role === 'siswa');
+            
+            for (const siswa of siswaList) {
+                const hasil = getHasilSiswaFromCache(siswa.nama, siswa.kelas);
+                Object.keys(hasil).forEach(mapelId => {
+                    const mapel = DATA_MAPEL.find(m => m.id == mapelId);
+                    allData.push({
+                        nama: siswa.nama,
+                        kelas: siswa.kelas || '-',
+                        mapelNama: mapel ? mapel.nama : 'Mapel ' + mapelId,
+                        nilai: hasil[mapelId].nilai,
+                        tanggal: hasil[mapelId].tanggal
+                    });
+                });
+            }
+
+            if (allData.length === 0) {
+                alert('Belum ada data ujian!');
+                return;
+            }
+
+            const filename = `Semua_Data_Ujian_${new Date().toISOString().slice(0,10)}`;
+            exportToExcel(allData, filename);
         }
 
         // ================================================================
@@ -2947,11 +2891,12 @@
                 return;
             }
 
-            const mapelName = filterMapel !== 'all' ? DATA_MAPEL.find(m => m.id == parseInt(filterMapel))?.nama || 'selected' : 'semua';
+            const mapelName = filterMapel !== 'all' ? 
+                DATA_MAPEL.find(m => m.id == parseInt(filterMapel))?.nama || 'selected' : 
+                'semua_mapel';
             const filename = `Rekap_Nilai_${user.nama}_${mapelName}`;
             
             exportToExcel(dataToExport, filename);
-            showToast('✅ Data berhasil diekspor!', 'success');
         }
 
         // ================================================================
